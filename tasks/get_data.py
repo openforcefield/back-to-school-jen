@@ -6,7 +6,6 @@ https://github.com/fjclark/descent-workflow/blob/main/workflow/get_data.py
 
 import json
 import pathlib
-import typing
 import subprocess
 import argparse
 
@@ -21,7 +20,9 @@ import descent.targets.energy
 from openff.units import unit
 
 
-HARTREE_TO_KCAL = (1 * unit.hartree * unit.avogadro_constant).m_as(unit.kilocalories_per_mole)
+HARTREE_TO_KCAL = (1 * unit.hartree * unit.avogadro_constant).m_as(
+    unit.kilocalories_per_mole
+)
 BOHR_TO_ANGSTROM = (1.0 * unit.bohr).m_as(unit.angstrom)
 
 # This avoids Boron and Silicon as they're in 'SPICE PubChem Boron Silicon v1.0',
@@ -39,6 +40,7 @@ SPICE2_SOURCES = {
     "SPICE PubChem Set 9 Single Points Dataset v1.0",
     "SPICE PubChem Set 10 Single Points Dataset v1.0",
 }
+
 
 def download_spice2_data(data_dir: pathlib.Path) -> None:
     """Download the SPICE data from the Zenodo."""
