@@ -1,0 +1,36 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+    -   id: trailing-whitespace
+    -   id: end-of-file-fixer
+    - repo: local
+      hooks:
+      -   id: ruff-format
+          name: Autoformat python code
+          language: system
+          entry: bash
+          args: [-c, "make format"]
+          additional_dependencies: []
+          types: [python]
+          files: \.py$
+          pass_filenames: false
+          args: [-c, "make format", "--line-length=120"]
+      -   id: ruff
+          name: Lint python code
+          language: system
+          entry: bash
+          args: [-c, "make lint"]
+          additional_dependencies: []
+          types: [python]
+          files: \.py$
+          pass_filenames: false
+          args: [-c, "make lint", "--line-length=120"]
+
+  - repo: local
+    hooks:
+    -   id: mypy
+        name: Type check python code
+        language: system
+        entry: bash
+        args: [-c, "make type-check"]
