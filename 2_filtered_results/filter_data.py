@@ -14,11 +14,15 @@ Command-line Arguments
 Examples
 --------
 Filter a dataset using Z-score method (removes entries with Z-score > 4):
-$ python filter_data.py --data-dir ./data-raw
+$ cd /desired/output/directory
+$ python path/to/tasks/filter_data.py --data-dir /path/to/data-raw
 
 Filter using percentile method (removes top 5% by RMS forces):
-$ python filter_data.py --data-dir ./data-raw
+$ cd /desired/output/directory
+$ python path/to/tasks/filter_data.py --data-dir /path/to/data-raw
 # (requires uncommenting filter_dataset_by_forces_95_percentile in main)
+
+Output will be created in the current working directory regardless of input location.
 
 Input Dataset Structure
 -----------------------
@@ -33,20 +37,14 @@ data-dir/ : dir
 
 Output Structure
 ----------------
-Creates filtered datasets in new directories with suffixes:
-- data-dir_filtered-z-score/     # Z-score filtered dataset (main data)
-- data-dir_filtered-95thpercentile/  # Percentile filtered dataset (main data)
-
-Creates auxiliary files in the filtered_results directory:
-- filtered_results/[dataset_name]_filtered_z_score/
-- filtered_results/[dataset_name]_filtered_95thpercentile/
+Creates filtered datasets in the current working directory with names based on input directory:
+- [input_dir_name]-z-score/     # Z-score filtered dataset (complete HuggingFace dataset)
+- [input_dir_name]-95thpercentile/  # Percentile filtered dataset (complete HuggingFace dataset)
 
 Each filtered dataset directory contains:
 ├── dataset_info.json          # Updated dataset metadata
 ├── state.json                 # Updated dataset state
-└── data-00000-of-00001.arrow  # Filtered data in Apache Arrow format
-
-Each filtered_results subdirectory contains:
+├── data-00000-of-00001.arrow  # Filtered data in Apache Arrow format
 ├── rms_forces.png             # Force distribution visualization
 ├── high_force_smiles.json     # List of removed high-force SMILES
 └── smiles.json                # List of remaining SMILES after filtering
@@ -95,7 +93,7 @@ def filter_dataset_by_forces_95_percentile(input_dir: pathlib.Path) -> None:
     ----------
     input_dir : pathlib.Path
         Path to the directory containing HuggingFace formatted data.
-        Filtered data will be saved to input_dir_filtered-95thpercentile.
+        Filtered data will be saved to current working directory with name [input_dir.name]-95thpercentile.
 
     Raises
     ------
@@ -105,26 +103,18 @@ def filter_dataset_by_forces_95_percentile(input_dir: pathlib.Path) -> None:
     Notes
     -----
     This function has the following side effects:
-    - Creates input_dir_filtered-95thpercentile directory for filtered dataset
-    - Saves filtered dataset to input_dir_filtered-95thpercentile
-    - Creates filtered_results/[dataset_name]_filtered_95thpercentile directory
-    - Saves force distribution plot as filtered_results/[dataset_name]_filtered_95thpercentile/rms_forces.png
-    - Saves high force SMILES list as filtered_results/[dataset_name]_filtered_95thpercentile/high_force_smiles.json
-    - Saves filtered SMILES list as filtered_results/[dataset_name]_filtered_95thpercentile/smiles.json
+    - Creates [input_dir.name]-95thpercentile directory in current working directory containing filtered dataset
+    - Saves filtered dataset HuggingFace files to [input_dir.name]-95thpercentile directory
+    - Saves force distribution plot as [input_dir.name]-95thpercentile/rms_forces.png
+    - Saves high force SMILES list as [input_dir.name]-95thpercentile/high_force_smiles.json
+    - Saves filtered SMILES list as [input_dir.name]-95thpercentile/smiles.json
     """
 
     logger.info("Filtering dataset by forces below 95th percentile...")
 
-    output_dir = input_dir.parent / (input_dir.name + "_filtered-95thpercentile")
+    # Create output directory in current working directory with same name as input + suffix
+    output_dir = pathlib.Path.cwd() / (input_dir.name + "-95thpercentile")
     output_dir.mkdir(parents=True, exist_ok=True)
-
-    # Create filtered_results directory for auxiliary files
-    results_dir = (
-        input_dir.parent.parent
-        / "filtered_results"
-        / (input_dir.name.replace("-", "_") + "_filtered_95thpercentile")
-    )
-    results_dir.mkdir(parents=True, exist_ok=True)
 
     dataset = datasets.load_from_disk(input_dir)
     data_df = dataset.to_pandas()
@@ -164,13 +154,13 @@ def filter_dataset_by_forces_95_percentile(input_dir: pathlib.Path) -> None:
     ax.set_xlabel(r"RMS Forces (kcal mol$^{-1}$ $\mathrm{\AA}^{-1})$")
     ax.set_ylabel("Count")
     ax.set_title("Distribution of RMS Forces")
-    fig.savefig(str(results_dir / "rms_forces.png"), dpi=300, bbox_inches="tight")
+    fig.savefig(str(output_dir / "rms_forces.png"), dpi=300, bbox_inches="tight")
 
     # Get the data above the 95th percentile
     df_highest_95 = data_df[data_df["rms_forces"] > percentile_dict[95]]
     logger.info(f"Cutoff: {percentile_dict[95]:.2f} kcal/(mol Angstrom)")
     high_force_smiles: List[str] = df_highest_95["smiles"].tolist()
-    with open(results_dir / "high_force_smiles.json", "w") as file:
+    with open(output_dir / "high_force_smiles.json", "w") as file:
         json.dump(high_force_smiles, file)
     logger.info(f"Removed {len(df_highest_95)} entries with high forces")
 
@@ -181,10 +171,10 @@ def filter_dataset_by_forces_95_percentile(input_dir: pathlib.Path) -> None:
         f"Filtered dataset (containing {len(filtered_dataset)} entries) saved to {output_dir}"
     )
 
-    # Save all of the smiles to a json file in filtered_results
-    with open(results_dir / "smiles.json", "w") as file:
+    # Save all of the smiles to a json file in the output directory
+    with open(output_dir / "smiles.json", "w") as file:
         json.dump(list(filtered_dataset.unique("smiles")), file)
-    logger.info(f"Auxiliary files saved to {results_dir}")
+    logger.info(f"Auxiliary files saved to {output_dir}")
 
 
 def filter_dataset_by_forces_z_score(input_dir: pathlib.Path) -> None:
@@ -198,7 +188,7 @@ def filter_dataset_by_forces_z_score(input_dir: pathlib.Path) -> None:
     ----------
     input_dir : pathlib.Path
         Path to the directory containing HuggingFace formatted data.
-        Filtered data will be saved to input_dir_filtered-z-score.
+        Filtered data will be saved to current working directory with name [input_dir.name]-z-score.
 
     Raises
     ------
@@ -208,26 +198,18 @@ def filter_dataset_by_forces_z_score(input_dir: pathlib.Path) -> None:
     Notes
     -----
     This function has the following side effects:
-    - Creates input_dir_filtered-z-score directory for filtered dataset
-    - Saves filtered dataset to input_dir_filtered-z-score
-    - Creates filtered_results/[dataset_name]_filtered_z_score directory
-    - Saves force distribution plot as filtered_results/[dataset_name]_filtered_z_score/rms_forces.png
-    - Saves high force SMILES list as filtered_results/[dataset_name]_filtered_z_score/high_force_smiles.json
-    - Saves filtered SMILES list as filtered_results/[dataset_name]_filtered_z_score/smiles.json
+    - Creates [input_dir.name]-z-score directory in current working directory containing filtered dataset
+    - Saves filtered dataset HuggingFace files to [input_dir.name]-z-score directory
+    - Saves force distribution plot as [input_dir.name]-z-score/rms_forces.png
+    - Saves high force SMILES list as [input_dir.name]-z-score/high_force_smiles.json
+    - Saves filtered SMILES list as [input_dir.name]-z-score/smiles.json
     """
 
     logger.info("Filtering dataset by forces...")
 
-    output_dir = input_dir.parent / (input_dir.name + "_filtered-z-score")
+    # Create output directory in current working directory with same name as input + suffix
+    output_dir = pathlib.Path.cwd() / (input_dir.name + "-z-score")
     output_dir.mkdir(parents=True, exist_ok=True)
-
-    # Create filtered_results directory for auxiliary files
-    results_dir = (
-        input_dir.parent.parent
-        / "filtered_results"
-        / (input_dir.name.replace("-", "_") + "_filtered_z_score")
-    )
-    results_dir.mkdir(parents=True, exist_ok=True)
 
     dataset = datasets.load_from_disk(input_dir)
     data_df = dataset.to_pandas()
@@ -279,14 +261,14 @@ def filter_dataset_by_forces_z_score(input_dir: pathlib.Path) -> None:
     ax.set_xlabel(r"RMS Forces (kcal mol$^{-1}$ $\mathrm{\AA}^{-1})$")
     ax.set_ylabel("Count")
     ax.set_title("Distribution of RMS Forces")
-    fig.savefig(str(results_dir / "rms_forces.png"), dpi=300, bbox_inches="tight")
+    fig.savefig(str(output_dir / "rms_forces.png"), dpi=300, bbox_inches="tight")
 
     # Get the data above the 95th percentile
     cap_z_score = 4
     df_cap_z_score = data_df[data_df["rms_forces"] > z_score_dict[cap_z_score]]
     logger.info(f"Cutoff: {z_score_dict[cap_z_score]:.2f} kcal/(mol Angstrom)")
     high_force_smiles: List[str] = df_cap_z_score["smiles"].tolist()
-    with open(results_dir / "high_force_smiles.json", "w") as file:
+    with open(output_dir / "high_force_smiles.json", "w") as file:
         json.dump(high_force_smiles, file, indent=4)
     logger.info(f"Removed {len(df_cap_z_score)} entries with high forces")
 
@@ -297,10 +279,10 @@ def filter_dataset_by_forces_z_score(input_dir: pathlib.Path) -> None:
         f"Filtered dataset (containing {len(filtered_dataset)} entries) saved to {output_dir}"
     )
 
-    # Save all of the smiles to a json file in filtered_results
-    with open(results_dir / "smiles.json", "w") as file:
+    # Save all of the smiles to a json file in the output directory
+    with open(output_dir / "smiles.json", "w") as file:
         json.dump(list(filtered_dataset.unique("smiles")), file, indent=4)
-    logger.info(f"Auxiliary files saved to {results_dir}")
+    logger.info(f"Auxiliary files saved to {output_dir}")
 
 
 def main(data_dir: pathlib.Path) -> None:
@@ -323,12 +305,12 @@ def main(data_dir: pathlib.Path) -> None:
     -----
     This function performs the following workflow:
     1. Applies Z-score filtering to remove entries with Z-score > 4 for RMS forces
-    2. Saves the filtered dataset to a new directory with suffix "_filtered-z-score"
-    3. Generates visualization of force distributions
-    4. Saves lists of removed and remaining SMILES
+    2. Saves the filtered dataset to current working directory with name [input_dir.name]-z-score
+    3. Generates visualization of force distributions within the filtered dataset directory
+    4. Saves lists of removed and remaining SMILES within the filtered dataset directory
 
-    The percentile-based filtering function is commented out but can be enabled
-    by uncommenting the filter_dataset_by_forces_95_percentile call.
+    The percentile-based filtering function is also enabled and creates a dataset with
+    name [input_dir.name]-95thpercentile.
 
     This function is typically called from the command-line interface but
     can also be used programmatically when importing the module.
