@@ -25,3 +25,13 @@
 2) Install with:
 	- `srun -c 2 -p free --pty /bin/bash -i`
 	- `cd back-to-school-jen; micromamba create -n bts -f environment.yaml`
+3) From the repository root directory get data and reformat:
+```bash
+    python tasks/get_data_qca.py --datasets "OpenFF CX3-CX4 singlepoints v4.0" \
+                                 --dataset_type singlepoint \
+                                 --data_file ./data/singlepoint
+```
+or
+```bash
+    python tasks/get_data_spice2.py --data-dir "data"
+```
