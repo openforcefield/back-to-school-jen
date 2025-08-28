@@ -4,7 +4,7 @@ This module provides functionality to download, process, and filter SPICE2 datas
 for molecular property prediction workflows. It includes functions to:
 
 1. Download SPICE2 HDF5 data from Zenodo
-2. Process the raw HDF5 data into a structured dataset
+2. Process the raw HDF5 data into a HuggingFace structured dataset
 
 The module can be used as a command-line script or imported as a library.
 
@@ -243,7 +243,7 @@ def main(data_dir: pathlib.Path) -> None:
     This function performs the following workflow:
     1. Downloads SPICE-2.0.1.hdf5 from Zenodo if not present
     2. Processes the HDF5 data into descent-compatible format
-    3. Saves processed dataset in data_dir/raw-spice
+    3. Saves processed HuggingFace dataset in data_dir/raw-spice
     4. Creates a JSON file with unique SMILES strings
 
     This function is typically called from the command-line interface but

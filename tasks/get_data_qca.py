@@ -4,7 +4,7 @@ This module provides functionality to download, process, and filter QCArchive da
 for molecular property prediction workflows. It includes functions to:
 
 1. Retrieve a dataset from QCArchive
-2. Process the QCArchive dataset into a structured dataset
+2. Process the QCArchive dataset into a HuggingFace structured dataset
 
 The module can be used as a command-line script or imported as a library.
 
