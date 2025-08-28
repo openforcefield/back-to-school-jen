@@ -6,11 +6,32 @@ for molecular property prediction workflows. It includes functions to:
 1. Download SPICE2 HDF5 data from Zenodo
 2. Process the raw HDF5 data into a structured dataset
 
+The module can be used as a command-line script or imported as a library.
+
 Based on: https://github.com/fjclark/descent-workflow/blob/main/workflow/get_data.py
+
+Command-line Usage
+------------------
+python get_data_spice2.py --data-dir PATH
+
+Command-line Arguments
+----------------------
+--data-dir : str
+    Directory path for SPICE2 data storage and processing. The directory
+    will be created if it doesn't exist. This is where the SPICE-2.0.1.hdf5
+    file will be downloaded and where processed datasets will be saved.
+
+Examples
+--------
+# Download and process SPICE2 data to local directory
+python get_data_spice2.py --data-dir ./spice_data
+
+# Process data to specific path
+python get_data_spice2.py --data-dir /path/to/data/directory
 
 Outputs
 -------
-data-raw : dir
+raw-spice : dir
 ├── dataset_info.json          # Dataset metadata and schema
 ├── state.json                 # Dataset state information
 └── data-00000-of-00001.arrow  # Actual data in Apache Arrow format
@@ -19,10 +40,14 @@ data-raw : dir
     ├── energy (list) # flattened
     └── forces (list) # flattened
 
-Constants:
-    HARTREE_TO_KCAL: Conversion factor from Hartree to kcal/mol
-    BOHR_TO_ANGSTROM: Conversion factor from Bohr to Angstrom
-    SPICE2_SOURCES: Set of SPICE2 dataset sources to include (excludes B/Si sets)
+Constants
+---------
+HARTREE_TO_KCAL : float
+    Conversion factor from Hartree to kcal/mol
+BOHR_TO_ANGSTROM : float
+    Conversion factor from Bohr to Angstrom
+SPICE2_SOURCES : Set[str]
+    Set of SPICE2 dataset sources to include (excludes B/Si sets)
 """
 
 from __future__ import annotations
@@ -118,7 +143,7 @@ def process_dataset_spice2(data_dir: pathlib.Path) -> None:
     ----------
     data_dir : pathlib.Path
         Path to the directory containing the SPICE-2.0.1.hdf5 file.
-        The processed dataset will be saved to data_dir/data-raw.
+        The processed dataset will be saved to data_dir/raw-spice.
 
     Raises
     ------
@@ -130,12 +155,12 @@ def process_dataset_spice2(data_dir: pathlib.Path) -> None:
     Notes
     -----
     This function has the following side effects:
-    - Creates data_dir/data-raw directory
-    - Saves processed dataset to data_dir/data-raw
-    - Saves unique SMILES list to data_dir/data-raw/smiles.json
+    - Creates data_dir/raw-spice directory
+    - Saves processed dataset to data_dir/raw-spice
+    - Saves unique SMILES list to data_dir/raw-spice/smiles.json
     """
 
-    output_dir = data_dir / "data-raw"
+    output_dir = data_dir / "raw-spice"
 
     with h5py.File(data_dir / "SPICE-2.0.1.hdf5") as spice:
         all_data: List[Dict[str, Any]] = []
@@ -187,38 +212,59 @@ def process_dataset_spice2(data_dir: pathlib.Path) -> None:
             json.dump(list(unique_smiles), file)
 
 
-def main() -> None:
-    """Command-line interface for the SPICE2 data processing workflow.
+def main(data_dir: pathlib.Path) -> None:
+    """Main processing function for SPICE2 data workflow.
 
-    Parses command-line arguments and runs the complete data processing
-    workflow. The only required argument is --data-dir specifying where
-    to store the downloaded and processed data.
-
-    This is the main workflow function that orchestrates the entire data
-    preparation process including download, processing, and filtering.
+    Orchestrates the complete SPICE2 data processing workflow by downloading
+    the SPICE2 dataset from Zenodo and processing it into structured format
+    for machine learning applications.
 
     Parameters
     ----------
-    data_dir : Union[pathlib.Path, str]
+    data_dir : pathlib.Path
         Path to the directory where SPICE2 data should be stored.
-        Can be either a pathlib.Path or string path.
+        The directory will be created if it doesn't exist.
+
+    Returns
+    -------
+    None
+
+    Raises
+    ------
+    subprocess.CalledProcessError
+        If the download command fails.
+    FileNotFoundError
+        If the SPICE-2.0.1.hdf5 file cannot be found after download.
+    KeyError
+        If expected keys are missing from the HDF5 data.
 
     Notes
     -----
-    Command-line Arguments:
-        --data-dir : str
-            Directory path for SPICE2 data storage and processing.
-    This function has the following side effects:
-    - Downloads SPICE-2.0.1.hdf5 if not present
-    - Creates processed dataset in data_dir/data-raw
-    - Creates filtered dataset in data_dir/data-filtered-by-forces
-    - Generates visualization and metadata files
+    This function performs the following workflow:
+    1. Downloads SPICE-2.0.1.hdf5 from Zenodo if not present
+    2. Processes the HDF5 data into descent-compatible format
+    3. Saves processed dataset in data_dir/raw-spice
+    4. Creates a JSON file with unique SMILES strings
+
+    This function is typically called from the command-line interface but
+    can also be used programmatically when importing the module.
 
     Examples
     --------
-    >>> python get_data.py --data-dir ./spice_data
-    >>> python get_data.py --data-dir /path/to/data/directory
+    >>> # Programmatic usage:
+    >>> data_dir = pathlib.Path("./spice_data")
+    >>> main(data_dir)
+
+    >>> # With string path:
+    >>> main(pathlib.Path("/path/to/data/directory"))
     """
+    logger.info("Getting data for SPICE...")
+    download_spice2_data(data_dir)
+    process_dataset_spice2(data_dir)
+    logger.info("Done getting data for SPICE.")
+
+
+if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Download and process SPICE2 data for molecular ML workflows.",
         formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -238,11 +284,4 @@ Examples:
     args = parser.parse_args()
 
     data_dir = pathlib.Path(args.data_dir)
-    logger.info("Getting data for SPICE...")
-    download_spice2_data(data_dir)
-    process_dataset_spice2(data_dir)
-    logger.info("Done getting data for SPICE.")
-
-
-if __name__ == "__main__":
-    main()
+    main(data_dir)
