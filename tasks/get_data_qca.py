@@ -6,6 +6,42 @@ for molecular property prediction workflows. It includes functions to:
 1. Retrieve a dataset from QCArchive
 2. Process the QCArchive dataset into a structured dataset
 
+The module can be used as a command-line script or imported as a library.
+
+Command-line Usage
+------------------
+python get_data_qca.py --datasets "Dataset Name" --dataset_type TYPE --data_file PATH
+
+Command-line Arguments
+----------------------
+--datasets : List[str]
+    One or more QCArchive dataset names to retrieve and process. Multiple
+    dataset names should be separated by spaces. Each dataset name should
+    be quoted if it contains spaces.
+
+--dataset_type : str
+    Type of datasets to retrieve. Must be one of:
+    - 'optimization' : Geometry optimization datasets
+    - 'singlepoint' : Single-point energy calculations
+    - 'torsiondrive' : Torsion drive scan datasets
+
+--data_file : str
+    Output path for the processed dataset. The data will be saved in
+    HuggingFace datasets format with Arrow files.
+
+Examples
+--------
+# Process single optimization dataset
+python get_data_qca.py --datasets "OpenFF Gen 2 Opt Set 1 Roche" \\
+                       --dataset_type optimization \\
+                       --data_file ./qcarchive_data
+
+# Process multiple torsiondrive datasets
+python get_data_qca.py --datasets "OpenFF Gen 2 Torsion Set 1 Roche" \\
+                                  "OpenFF Gen 2 Torsion Set 2 Coverage" \\
+                       --dataset_type torsiondrive \\
+                       --data_file ./torsion_data
+
 Outputs
 -------
 data-dir : dir
@@ -17,9 +53,12 @@ data-dir : dir
     ├── energy (list) # flattened
     └── forces (list) # flattened
 
-Constants:
-    HARTREE_TO_KCAL: Conversion factor from Hartree to kcal/mol
-    BOHR_TO_ANGSTROM: Conversion factor from Bohr to Angstrom
+Constants
+---------
+HARTREE_TO_KCAL : float
+    Conversion factor from Hartree to kcal/mol
+BOHR_TO_ANGSTROM : float
+    Conversion factor from Bohr to Angstrom
 """
 
 from __future__ import annotations
@@ -256,17 +295,24 @@ def process_result_collection(
         json.dump(list(unique_smiles), file)
 
 
-def main() -> None:
-    """Command-line interface for QCArchive data processing workflow.
+def main(
+    datasets: List[str], dataset_type: str, data_file: Union[str, pathlib.Path]
+) -> None:
+    """Main processing function for QCArchive data workflow.
 
-    Parses command-line arguments and runs the complete QCArchive data processing
-    workflow. Retrieves datasets from QCArchive, processes them into structured
-    format, and saves the results in HuggingFace datasets format.
+    Orchestrates the complete QCArchive data processing workflow by retrieving
+    datasets from QCArchive and processing them into structured format for
+    machine learning applications.
 
     Parameters
     ----------
-    None
-        Command-line arguments are parsed from sys.argv.
+    datasets : List[str]
+        List of QCArchive dataset names to retrieve and process.
+    dataset_type : str
+        Type of datasets to retrieve. Must be one of: 'optimization',
+        'singlepoint', or 'torsiondrive'.
+    data_file : Union[str, pathlib.Path]
+        Output path for the processed dataset in HuggingFace format.
 
     Returns
     -------
@@ -274,42 +320,40 @@ def main() -> None:
 
     Raises
     ------
-    SystemExit
-        If required command-line arguments are missing or invalid.
     KeyError
-        If an invalid dataset type is specified.
+        If an invalid dataset_type is specified.
     ConnectionError
         If unable to connect to QCArchive portal.
+    FileNotFoundError
+        If the output directory cannot be created.
 
     Notes
     -----
-    Command-line Arguments:
-        --datasets : List[str]
-            One or more QCArchive dataset names to retrieve and process.
-        --dataset_type : str
-            Type of datasets to retrieve. Must be one of: 'optimization',
-            'singlepoint', or 'torsiondrive'.
-        --data_file : str
-            Output path for the processed dataset in HuggingFace format.
-
     The function performs the following workflow:
     1. Connects to QCArchive portal and retrieves specified datasets
     2. Processes the result collection into descent-compatible format
     3. Saves the processed data in HuggingFace datasets format
     4. Creates a JSON file with unique SMILES strings
 
+    This function is typically called from the command-line interface but
+    can also be used programmatically when importing the module.
+
     Examples
     --------
-    >>> # Command line usage:
-    >>> python get_data_qca.py --datasets "OpenFF Gen 2 Opt Set 1 Roche" \\
-    ...                        --dataset_type optimization \\
-    ...                        --data_file ./qcarchive_data
+    >>> # Programmatic usage:
+    >>> datasets = ["OpenFF Gen 2 Opt Set 1 Roche"]
+    >>> main(datasets, "optimization", "./qcarchive_data")
 
     >>> # Multiple datasets:
-    >>> python get_data_qca.py --datasets "Dataset 1" "Dataset 2" \\
-    ...                        --dataset_type torsiondrive \\
-    ...                        --data_file ./processed_torsions
+    >>> datasets = ["Dataset 1", "Dataset 2"]
+    >>> main(datasets, "torsiondrive", "./processed_torsions")
     """
+
+    result_collection = retrieve_datasets(datasets, dataset_type)
+    process_result_collection(result_collection, data_file)
+
+
+if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Download and process QCArchive datasets for molecular ML workflows.",
         formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -348,9 +392,4 @@ Examples:
     )
     args = parser.parse_args()
 
-    result_collection = retrieve_datasets(args.datasets, args.dataset_type)
-    process_result_collection(result_collection, args.data_file)
-
-
-if __name__ == "__main__":
-    main()
+    main(args.datasets, args.dataset_type, args.data_file)
