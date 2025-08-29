@@ -14,7 +14,7 @@ python get_data_qca.py --datasets "Dataset Name" --dataset_type TYPE --data_file
 
 Command-line Arguments
 ----------------------
---datasets : List[str]
+--datasets : list[str]
     One or more QCArchive dataset names to retrieve and process. Multiple
     dataset names should be separated by spaces. Each dataset name should
     be quoted if it contains spaces.
@@ -61,13 +61,10 @@ BOHR_TO_ANGSTROM : float
     Conversion factor from Bohr to Angstrom
 """
 
-from __future__ import annotations
-
-import os
 import argparse
 import json
 import pathlib
-from typing import List, Union
+from typing import Union
 from collections import defaultdict
 
 import descent.targets.energy
@@ -98,7 +95,7 @@ BOHR_TO_ANGSTROM: float = (1.0 * unit.bohr).m_as(unit.angstrom)
 
 
 def retrieve_datasets(
-    dataset_names: List[str], dataset_type: str, spec_name: str = "default"
+    dataset_names: list[str], dataset_type: str, spec_name: str = "default"
 ) -> Union[
     BasicResultCollection, OptimizationResultCollection, TorsionDriveResultCollection
 ]:
@@ -110,7 +107,7 @@ def retrieve_datasets(
 
     Parameters
     ----------
-    dataset_names : List[str]
+    dataset_names : list[str]
         List of dataset names to retrieve from QCArchive.
     dataset_type : str
         Type of dataset to retrieve. Must be one of: 'optimization',
@@ -217,6 +214,7 @@ def process_result_collection(
     """
 
     logger.info("Processing collection...")
+    data_file = pathlib.Path(data_file)
     data_by_smiles = defaultdict(list)
     records_and_molecules = list(result_collection.to_records())
     for record, _ in tqdm(records_and_molecules):  # lazily group by CMILES
@@ -285,18 +283,21 @@ def process_result_collection(
         descent_entries.append(entry)
 
     dataset = descent.targets.energy.create_dataset(entries=descent_entries)
+    logger.info(f"Saving HuggingFace dataset to: {data_file.resolve()}")
     dataset.save_to_disk(data_file)
     unique_smiles = dataset.unique("smiles")
     logger.info(
         f"Found {len(dataset)} ({len(unique_smiles)} unique) SMILES in requested datasets"
     )
-    path = os.path.split(data_file)[0]
-    with open(os.path.join(path, "smiles.json"), "w") as file:
+
+    filename = data_file / "smiles.json"
+    logger.info(f"Saving SMILES strings to: {filename}")
+    with open(filename, "w") as file:
         json.dump(list(unique_smiles), file)
 
 
 def main(
-    datasets: List[str], dataset_type: str, data_file: Union[str, pathlib.Path]
+    datasets: list[str], dataset_type: str, data_file: Union[str, pathlib.Path]
 ) -> None:
     """Main processing function for QCArchive data workflow.
 
@@ -306,7 +307,7 @@ def main(
 
     Parameters
     ----------
-    datasets : List[str]
+    datasets : list[str]
         List of QCArchive dataset names to retrieve and process.
     dataset_type : str
         Type of datasets to retrieve. Must be one of: 'optimization',
