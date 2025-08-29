@@ -35,6 +35,7 @@ dependencies:
   - tensorboard
   - tensorboardX
   - tbparse
+  - tensorflow
 
   # Benchmarking
   - openff-qcsubmit

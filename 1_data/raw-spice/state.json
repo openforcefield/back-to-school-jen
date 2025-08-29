@@ -1,22 +1,10 @@
 {
   "_data_files": [
     {
-      "filename": "data-00000-of-00005.arrow"
-    },
-    {
-      "filename": "data-00001-of-00005.arrow"
-    },
-    {
-      "filename": "data-00002-of-00005.arrow"
-    },
-    {
-      "filename": "data-00003-of-00005.arrow"
-    },
-    {
-      "filename": "data-00004-of-00005.arrow"
+      "filename": "data-00000-of-00001.arrow"
     }
   ],
-  "_fingerprint": "b7ae07e2d8d50a9f",
+  "_fingerprint": "a54585b14defaf38",
   "_format_columns": null,
   "_format_kwargs": {},
   "_format_type": "torch",

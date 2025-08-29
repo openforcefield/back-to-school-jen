@@ -56,6 +56,7 @@ import pathlib
 import math
 from collections import defaultdict
 import json
+from typing import Any
 
 import numpy as np
 from tqdm import tqdm
@@ -64,6 +65,9 @@ import argparse
 import smee.converters
 import datasets
 import descent
+import descent.train
+import descent.targets
+import descent.targets.energy
 from loguru import logger
 import deepchem as dc
 
@@ -90,8 +94,8 @@ parameters = {
 
 
 def prepare_to_train(
-    train_data_dir: pathlib.Path | str, offxml: pathlib.Path | str
-) -> tuple:
+    train_filename_data: pathlib.Path | str, offxml: pathlib.Path | str
+) -> tuple[Any, dict[str, Any]]:
     """Prepare molecular dataset and force field objects for training.
 
     Converts HuggingFace dataset to PyTorch format, creates OpenFF molecular
@@ -99,16 +103,17 @@ def prepare_to_train(
 
     Parameters
     ----------
-    train_data_dir : pathlib.Path | str
+    train_filename_data : pathlib.Path | str
         Path to directory containing training dataset in HuggingFace format.
     offxml : pathlib.Path | str
         Path to the starting force field OFFXML file.
 
     Returns
     -------
-    tuple[smee.ForceField, dict[str, smee.Topology]]
-        - smee_force_field: SMEE force field object ready for optimization
-        - topologies: Dictionary mapping SMILES strings to SMEE topology objects
+    smee_force_field : Any
+        SMEE force field object ready for optimization
+    topologies : dict[str, Any]
+        Dictionary mapping SMILES strings to SMEE topology objects
 
     Notes
     -----
@@ -129,10 +134,10 @@ def prepare_to_train(
     >>> print(f"Prepared {len(topologies)} molecular topologies")
     """
 
-    train_data_dir = pathlib.Path(train_data_dir)
+    train_filename_data = pathlib.Path(train_filename_data)
     offxml = pathlib.Path(offxml)
-    logger.info(f"Loading dataset {train_data_dir.resolve()}")
-    dataset = datasets.Dataset.load_from_disk(train_data_dir)
+    logger.info(f"Loading dataset {train_filename_data.resolve()}")
+    dataset = datasets.Dataset.load_from_disk(train_filename_data)
     dataset.set_format(
         "torch", columns=["energy", "coords", "forces"], output_all_columns=True
     )
@@ -165,10 +170,10 @@ def prepare_to_train(
     )
     topologies = dict(zip(all_smiles, smee_topologies))
 
-    return dataset, smee_force_field, topologies
+    return smee_force_field, topologies
 
 
-def split_train_test(data_dir: pathlib.Path | str) -> None:
+def split_train_test(filename_data: pathlib.Path | str) -> None:
     """Split a molecular dataset into training and testing sets using MaxMin splitting.
 
     Uses DeepChem's MaxMinSplitter to create a diverse training/test split based
@@ -176,7 +181,7 @@ def split_train_test(data_dir: pathlib.Path | str) -> None:
 
     Parameters
     ----------
-    data_dir : pathlib.Path | str
+    filename_data : pathlib.Path | str
         Path to directory containing the molecular dataset in HuggingFace format.
         Must contain smiles.json file in parent directory.
 
@@ -189,7 +194,7 @@ def split_train_test(data_dir: pathlib.Path | str) -> None:
     RuntimeError
         If a SMILES string is found in neither training nor testing set.
     FileNotFoundError
-        If smiles.json file is not found in data_dir.parent.
+        If smiles.json file is not found in filename_data.parent.
 
     Notes
     -----
@@ -207,20 +212,20 @@ def split_train_test(data_dir: pathlib.Path | str) -> None:
     >>> split_train_test("filtered_dataset")
     # Creates data-train/ and data-test/ directories
     """
-    data_dir = pathlib.Path(data_dir)
+    filename_data = pathlib.Path(filename_data)
 
     output_dirs = {
         "train": pathlib.Path.cwd() / "data-train",
         "test": pathlib.Path.cwd() / "data-test",
     }
 
-    filename = data_dir / "smiles.json"
+    filename = filename_data / "smiles.json"
     logger.info(f"Loading smiles.json from: {filename.resolve()}")
     with open(filename, "r") as file:
         smiles = json.load(file)
 
-    logger.info(f"Loading dataset from: {data_dir.resolve()}")
-    input_dataset = datasets.load_from_disk(data_dir)
+    logger.info(f"Loading dataset from: {filename_data.resolve()}")
+    input_dataset = datasets.load_from_disk(filename_data)
 
     logger.info(
         f"Splitting dataset into training and testing sets, writing to: {pathlib.Path.cwd()}"
@@ -259,9 +264,11 @@ def split_train_test(data_dir: pathlib.Path | str) -> None:
     }
 
     # Save the smiles to a json file
-    with open(data_dir / "smiles_test_train.json", "w") as file:
+    with open(filename_data / "smiles_test_train.json", "w") as file:
         json.dump(smiles_train_test_dict, file)
-    logger.info(f"Saved train/test smiles to {data_dir / 'smiles_test_train.json'}")
+    logger.info(
+        f"Saved train/test smiles to {filename_data / 'smiles_test_train.json'}"
+    )
 
 
 def write_metrics(
@@ -322,9 +329,9 @@ def write_metrics(
 
 
 def train_forcefield(
-    train_data_dir: pathlib.Path | str,
-    smee_force_field,
-    topologies: dict,
+    train_filename_data: pathlib.Path | str,
+    smee_force_field: Any,
+    topologies: dict[str, Any],
     n_epochs: int = 1000,
     learning_rate: float = 0.001,
     batch_size: int = 500,
@@ -337,7 +344,7 @@ def train_forcefield(
 
     Parameters
     ----------
-    train_data_dir : pathlib.Path | str
+    train_filename_data : pathlib.Path | str
         Path to directory containing training dataset in HuggingFace format.
     smee_force_field : smee.ForceField
         SMEE force field object with parameters to optimize.
@@ -376,9 +383,9 @@ def train_forcefield(
     ... )
     """
 
-    train_data_dir = pathlib.Path(train_data_dir)
-    logger.info(f"Loading dataset from: {train_data_dir.resolve()}")
-    dataset = datasets.Dataset.load_from_disk(train_data_dir)
+    train_filename_data = pathlib.Path(train_filename_data)
+    logger.info(f"Loading dataset from: {train_filename_data.resolve()}")
+    dataset = datasets.Dataset.load_from_disk(train_filename_data)
 
     trainable = descent.train.Trainable(
         force_field=smee_force_field, parameters=parameters, attributes={}
@@ -462,7 +469,7 @@ def train_forcefield(
         )
 
 
-def write_new_offxml(smee_force_field, offxml: str) -> None:
+def write_new_offxml(smee_force_field: Any, offxml: pathlib.Path | str) -> None:
     """Convert optimized SMEE force field parameters to OFFXML format.
 
     Takes the optimized parameters from a SMEE force field and writes them
@@ -471,9 +478,9 @@ def write_new_offxml(smee_force_field, offxml: str) -> None:
 
     Parameters
     ----------
-    smee_force_field : smee.ForceField
+    smee_force_field : Any
         Optimized SMEE force field containing fitted parameters.
-    offxml : str
+    offxml : pathlib.Path | str
         Path to the original OFFXML file (used for reference structure).
 
     Returns
@@ -497,8 +504,9 @@ def write_new_offxml(smee_force_field, offxml: str) -> None:
     >>> write_new_offxml(optimized_smee_ff, "openff-2.2.1.offxml")
     """
 
+    offxml = pathlib.Path(offxml)
     logger.info("Writing out new forcefield...")
-    starting_ff = ForceField("openff-2.2.1.offxml")
+    starting_ff = ForceField(offxml)
 
     for potential in smee_force_field.potentials:
         handler_name = potential.parameter_keys[0].associated_handler
@@ -551,8 +559,8 @@ def write_new_offxml(smee_force_field, offxml: str) -> None:
 
 
 def main(
-    data_dir: pathlib.Path,
-    offxml: str,
+    filename_data: pathlib.Path | str,
+    offxml: pathlib.Path | str,
     n_epochs: int = 1000,
     learning_rate: float = 0.001,
     batch_size: int = 500,
@@ -564,10 +572,10 @@ def main(
 
     Parameters
     ----------
-    data_dir : pathlib.Path
+    filename_data : pathlib.Path | str
         Path to directory containing HuggingFace formatted molecular dataset.
         Must contain dataset_info.json, state.json, and .arrow files.
-    offxml : str
+    offxml : pathlib.Path | str
         Path to the starting force field in OFFXML format.
     n_epochs : int, optional
         Number of training epochs, by default 1000.
@@ -609,8 +617,9 @@ def main(
     ...     batch_size=256
     ... )
     """
-    data_dir = pathlib.Path(data_dir)
-    split_train_test(data_dir)
+    filename_data = pathlib.Path(filename_data)
+    offxml = pathlib.Path(offxml)
+    split_train_test(filename_data)
     smee_force_field, topologies = prepare_to_train(
         pathlib.Path.cwd() / "data-train", offxml
     )
