@@ -52,8 +52,6 @@ Creates the following outputs in current working directory:
 - smiles_test_train.json       # Train/test split SMILES lists
 """
 
-from __future__ import annotations
-
 import pathlib
 import math
 from collections import defaultdict
@@ -83,22 +81,244 @@ parameters = {
         # include=[], <-- bonds to train. Not specifying trains all
         # exclude=[], <-- bonds NOT to train
     ),
-    "Angles": descent.train.ParameterConfig(
-        cols=["k", "angle"],
-        scales={"k": 1e-2, "angle": 1.0},
-        limits={"k": [0.0, None], "angle": [0.0, math.pi]},
-    ),
-    "ProperTorsions": descent.train.ParameterConfig(
-        # fit ks
-        cols=["k"],
-        scales={"k": 1.0},
-    ),
-    "ImproperTorsions": descent.train.ParameterConfig(
-        # fit ks
-        cols=["k"],
-        scales={"k": 1.0},
-    ),
+    #    "Angles": descent.train.ParameterConfig(
+    #        cols=["k", "angle"],
+    #        scales={"k": 1e-2, "angle": 1.0},
+    #        limits={"k": [0.0, None], "angle": [0.0, math.pi]},
+    #    ),
 }
+
+
+def prepare_to_train(
+    train_data_dir: pathlib.Path | str, offxml: pathlib.Path | str
+) -> tuple:
+    """Prepare molecular dataset and force field objects for training.
+
+    Converts HuggingFace dataset to PyTorch format, creates OpenFF molecular
+    objects, generates interchanges, and converts to SMEE format for training.
+
+    Parameters
+    ----------
+    train_data_dir : pathlib.Path | str
+        Path to directory containing training dataset in HuggingFace format.
+    offxml : pathlib.Path | str
+        Path to the starting force field OFFXML file.
+
+    Returns
+    -------
+    tuple[smee.ForceField, dict[str, smee.Topology]]
+        - smee_force_field: SMEE force field object ready for optimization
+        - topologies: Dictionary mapping SMILES strings to SMEE topology objects
+
+    Notes
+    -----
+    This function performs the following operations:
+    1. Loads dataset and sets PyTorch format for energy, coords, forces
+    2. Creates OpenFF Molecule objects from SMILES strings
+    3. Generates OpenFF Interchange objects for each molecule
+    4. Converts to SMEE format for efficient training
+
+    The conversion process handles:
+    - Stereochemistry with allow_undefined_stereo=True
+    - Automatic topology generation for each unique molecule
+    - Force field parameterization via OpenFF Interchange
+
+    Examples
+    --------
+    >>> smee_ff, topologies = prepare_to_train("data-train", "openff-2.2.1.offxml")
+    >>> print(f"Prepared {len(topologies)} molecular topologies")
+    """
+
+    train_data_dir = pathlib.Path(train_data_dir)
+    offxml = pathlib.Path(offxml)
+    logger.info(f"Loading dataset {train_data_dir.resolve()}")
+    dataset = datasets.Dataset.load_from_disk(train_data_dir)
+    dataset.set_format(
+        "torch", columns=["energy", "coords", "forces"], output_all_columns=True
+    )
+
+    # Ensure molecules are parametrizable
+    dataset_size = len(dataset)
+    unique_smiles = descent.targets.energy.extract_smiles(dataset)
+    dataset = dataset.filter(lambda d: d["smiles"] in unique_smiles)
+    logger.info(
+        f"Removed non-parameterisable molecules, dataset size change: {dataset_size} -> {len(dataset)}"
+    )
+
+    # Get starting forcefield
+    logger.info(f"Loading forcefield: {offxml.resolve()}")
+    starting_ff = ForceField(offxml)
+
+    # Get OpenFF Molecules and interchanges
+    logger.info("Creating interchanges...")
+    all_smiles = []
+    interchanges = []
+    for entry in tqdm(dataset):
+        mol = Molecule.from_mapped_smiles(entry["smiles"], allow_undefined_stereo=True)
+        all_smiles.append(entry["smiles"])
+        interchange = starting_ff.create_interchange(mol.to_topology())
+        interchanges.append(interchange)
+
+    logger.info("Prepare SMEE data structures...")
+    smee_force_field, smee_topologies = smee.converters.convert_interchange(
+        interchanges
+    )
+    topologies = dict(zip(all_smiles, smee_topologies))
+
+    return dataset, smee_force_field, topologies
+
+
+def split_train_test(data_dir: pathlib.Path | str) -> None:
+    """Split a molecular dataset into training and testing sets using MaxMin splitting.
+
+    Uses DeepChem's MaxMinSplitter to create a diverse training/test split based
+    on molecular descriptors, ensuring maximum structural diversity between sets.
+
+    Parameters
+    ----------
+    data_dir : pathlib.Path | str
+        Path to directory containing the molecular dataset in HuggingFace format.
+        Must contain smiles.json file in parent directory.
+
+    Returns
+    -------
+    None
+
+    Raises
+    ------
+    RuntimeError
+        If a SMILES string is found in neither training nor testing set.
+    FileNotFoundError
+        If smiles.json file is not found in data_dir.parent.
+
+    Notes
+    -----
+    This function has the following side effects:
+    - Creates data-train/ directory with 95% of molecules
+    - Creates data-test/ directory with 5% of molecules
+    - Saves smiles_test_train.json with SMILES lists for each split
+    - Uses MaxMin splitting for maximum structural diversity
+
+    The split is deterministic based on molecular structure, ensuring
+    reproducible train/test divisions across runs.
+
+    Examples
+    --------
+    >>> split_train_test("filtered_dataset")
+    # Creates data-train/ and data-test/ directories
+    """
+    data_dir = pathlib.Path(data_dir)
+
+    output_dirs = {
+        "train": pathlib.Path.cwd() / "data-train",
+        "test": pathlib.Path.cwd() / "data-test",
+    }
+
+    filename = data_dir / "smiles.json"
+    logger.info(f"Loading smiles.json from: {filename.resolve()}")
+    with open(filename, "r") as file:
+        smiles = json.load(file)
+
+    logger.info(f"Loading dataset from: {data_dir.resolve()}")
+    input_dataset = datasets.load_from_disk(data_dir)
+
+    logger.info(
+        f"Splitting dataset into training and testing sets, writing to: {pathlib.Path.cwd()}"
+    )
+    Xs = np.zeros(len(smiles))
+    dc_dataset = dc.data.DiskDataset.from_numpy(X=Xs, ids=smiles)
+    maxminspliter = dc.splits.MaxMinSplitter()
+    train_dataset, test_dataset = maxminspliter.train_test_split(
+        dataset=dc_dataset,
+        frac_train=0.95,
+        train_dir=output_dirs["train"],
+        test_dir=output_dirs["test"],
+    )
+
+    train_index, test_index = [], []
+    for i, entry in enumerate(input_dataset):
+        if entry["smiles"] in train_dataset.ids:
+            train_index.append(i)
+        elif entry["smiles"] in test_dataset.ids:
+            test_index.append(i)
+        else:
+            raise RuntimeError("The smiles was not in training or testing")
+
+    logger.info(
+        f"Train: {len(train_index)}, Test: {len(test_index)}, Total: {len(input_dataset)}"
+    )
+    train_split = input_dataset.select(indices=train_index)
+    train_split.save_to_disk(output_dirs["train"])
+    test_split = input_dataset.select(indices=test_index)
+    test_split.save_to_disk(output_dirs["test"])
+    logger.info("Done splitting SPICE2 dataset into training and testing sets.")
+
+    smiles_train_test_dict = {
+        "train": train_split.unique("smiles"),
+        "test": test_split.unique("smiles"),
+    }
+
+    # Save the smiles to a json file
+    with open(data_dir / "smiles_test_train.json", "w") as file:
+        json.dump(smiles_train_test_dict, file)
+    logger.info(f"Saved train/test smiles to {data_dir / 'smiles_test_train.json'}")
+
+
+def write_metrics(
+    epoch: int,
+    loss: torch.Tensor,
+    loss_energy: torch.Tensor,
+    loss_forces: torch.Tensor,
+    writer: tensorboardX.SummaryWriter,
+) -> None:
+    """Write training metrics to console and TensorBoard.
+
+    Logs training progress including total loss, energy loss, force loss,
+    and corresponding RMSE values to both console output and TensorBoard
+    for monitoring and visualization.
+
+    Parameters
+    ----------
+    epoch : int
+        Current training epoch number.
+    loss : torch.Tensor
+        Total loss (energy + force loss) for the epoch.
+    loss_energy : torch.Tensor
+        Energy-specific loss component for the epoch.
+    loss_forces : torch.Tensor
+        Force-specific loss component for the epoch.
+    writer : tensorboardX.SummaryWriter
+        TensorBoard writer object for logging metrics.
+
+    Returns
+    -------
+    None
+
+    Notes
+    -----
+    Logs the following metrics to TensorBoard:
+    - loss: Total combined loss
+    - loss_energy: Energy component loss
+    - loss_forces: Force component loss
+    - rmse_energy: Square root of energy loss
+    - rmse_forces: Square root of force loss
+
+    Console output shows epoch number and total loss value.
+
+    Examples
+    --------
+    >>> with tensorboardX.SummaryWriter("logs") as writer:
+    ...     write_metrics(10, total_loss, energy_loss, force_loss, writer)
+    """
+    print(f"epoch={epoch} loss={loss.detach().item():.6f}", flush=True)
+
+    writer.add_scalar("loss", loss.detach().item(), epoch)
+    writer.add_scalar("loss_energy", loss_energy.detach().item(), epoch)
+    writer.add_scalar("loss_forces", loss_forces.detach().item(), epoch)
+
+    writer.add_scalar("rmse_energy", math.sqrt(loss_energy.detach().item()), epoch)
+    writer.add_scalar("rmse_forces", math.sqrt(loss_forces.detach().item()), epoch)
+    writer.flush()
 
 
 def train_forcefield(
@@ -156,6 +376,8 @@ def train_forcefield(
     ... )
     """
 
+    train_data_dir = pathlib.Path(train_data_dir)
+    logger.info(f"Loading dataset from: {train_data_dir.resolve()}")
     dataset = datasets.Dataset.load_from_disk(train_data_dir)
 
     trainable = descent.train.Trainable(
@@ -168,6 +390,7 @@ def train_forcefield(
     trainable_parameters = trainable.to_values()
     device = trainable_parameters.device.type
 
+    logger.info("Start training...")
     with tensorboardX.SummaryWriter(str(directory)) as writer:
         optimizer = torch.optim.Adam(
             [trainable_parameters], lr=learning_rate, amsgrad=True
@@ -232,6 +455,7 @@ def train_forcefield(
                     directory / f"force-field-epoch-{i}.pt",
                 )
 
+        logger.info(f"Saving {directory / "final-force-field.pt"}")
         torch.save(
             trainable.to_force_field(trainable_parameters),
             directory / "final-force-field.pt",
@@ -273,6 +497,7 @@ def write_new_offxml(smee_force_field, offxml: str) -> None:
     >>> write_new_offxml(optimized_smee_ff, "openff-2.2.1.offxml")
     """
 
+    logger.info("Writing out new forcefield...")
     starting_ff = ForceField("openff-2.2.1.offxml")
 
     for potential in smee_force_field.potentials:
@@ -320,236 +545,9 @@ def write_new_offxml(smee_force_field, offxml: str) -> None:
                 opt_parameters = opt_parameters.detach().cpu().numpy()
                 ff_parameter.k = [opt_parameters[k_index] * parameter_units[k_index]]
 
-    starting_ff.to_file("final-force-field.offxml")
-
-
-# _______________________________________________________________________
-
-# def filter_unknown_smiles(dataset, forcefield) -> None:
-#    """Filter out any molecules which can't be parameterised."""
-#
-#    logger.info(f"Filtering {dataset} against, {forcefield}")
-#
-#    unique_smiles = descent.targets.energy.extract_smiles(dataset)
-#
-#    _, topologies = torch.load(config.torch_ffs_and_tops_path) # What is this??? just a saved version of smee_forcefields and topologies?
-#    topologies = {k: v for k, v in topologies.items() if k in unique_smiles}
-#
-#    dataset_size = len(dataset)
-#    dataset = dataset.filter(lambda d: d["smiles"] in topologies)
-#    logger.info(f"Removed non-parameterisable: {dataset_size} -> {len(dataset)}")
-#
-#    return dataset
-
-
-def split_train_test(data_dir: pathlib.Path | str) -> None:
-    """Split a molecular dataset into training and testing sets using MaxMin splitting.
-
-    Uses DeepChem's MaxMinSplitter to create a diverse training/test split based
-    on molecular descriptors, ensuring maximum structural diversity between sets.
-
-    Parameters
-    ----------
-    data_dir : pathlib.Path | str
-        Path to directory containing the molecular dataset in HuggingFace format.
-        Must contain smiles.json file in parent directory.
-
-    Returns
-    -------
-    None
-
-    Raises
-    ------
-    RuntimeError
-        If a SMILES string is found in neither training nor testing set.
-    FileNotFoundError
-        If smiles.json file is not found in data_dir.parent.
-
-    Notes
-    -----
-    This function has the following side effects:
-    - Creates data-train/ directory with 95% of molecules
-    - Creates data-test/ directory with 5% of molecules
-    - Saves smiles_test_train.json with SMILES lists for each split
-    - Uses MaxMin splitting for maximum structural diversity
-
-    The split is deterministic based on molecular structure, ensuring
-    reproducible train/test divisions across runs.
-
-    Examples
-    --------
-    >>> split_train_test("filtered_dataset")
-    # Creates data-train/ and data-test/ directories
-    """
-    data_dir = pathlib.Path(data_dir)
-    logger.info("Splitting dataset into training and testing sets...")
-
-    output_dirs = {
-        "train": pathlib.Path.cwd() / "data-train",
-        "test": pathlib.Path.cwd() / "data-test",
-    }
-
-    with open(data_dir.parent / "smiles.json", "r") as file:
-        smiles = json.load(file)
-    input_dataset = datasets.load_from_disk(data_dir)
-
-    Xs = np.zeros(len(smiles))
-    dc_dataset = dc.data.DiskDataset.from_numpy(X=Xs, ids=smiles)
-    maxminspliter = dc.splits.MaxMinSplitter()
-    train_dataset, test_dataset = maxminspliter.train_test_split(
-        dataset=dc_dataset,
-        frac_train=0.95,
-        train_dir=output_dirs["train"],
-        test_dir=output_dirs["test"],
-    )
-
-    train_index, test_index = [], []
-    for i, entry in enumerate(input_dataset):
-        if entry["smiles"] in train_dataset.ids:
-            train_index.append(i)
-        elif entry["smiles"] in test_dataset.ids:
-            test_index.append(i)
-        else:
-            raise RuntimeError("The smiles was not in training or testing")
-
-    logger.info(
-        f"Train: {len(train_index)}, Test: {len(test_index)}, Total: {len(input_dataset)}"
-    )
-    train_split = input_dataset.select(indices=train_index)
-    train_split.save_to_disk(output_dirs["train"])
-    test_split = input_dataset.select(indices=test_index)
-    test_split.save_to_disk(output_dirs["test"])
-    logger.info("Done splitting SPICE2 dataset into training and testing sets.")
-
-    smiles_train_test_dict = {
-        "train": train_split.unique("smiles"),
-        "test": test_split.unique("smiles"),
-    }
-
-    # Save the smiles to a json file
-    with open(data_dir / "smiles_test_train.json", "w") as file:
-        json.dump(smiles_train_test_dict, file)
-    logger.info(f"Saved train/test smiles to {data_dir / 'smiles_test_train.json'}")
-
-
-def prepare_to_train(train_data_dir: pathlib.Path | str, offxml: str) -> tuple:
-    """Prepare molecular dataset and force field objects for training.
-
-    Converts HuggingFace dataset to PyTorch format, creates OpenFF molecular
-    objects, generates interchanges, and converts to SMEE format for training.
-
-    Parameters
-    ----------
-    train_data_dir : pathlib.Path | str
-        Path to directory containing training dataset in HuggingFace format.
-    offxml : str
-        Path to the starting force field OFFXML file.
-
-    Returns
-    -------
-    tuple[smee.ForceField, dict[str, smee.Topology]]
-        - smee_force_field: SMEE force field object ready for optimization
-        - topologies: Dictionary mapping SMILES strings to SMEE topology objects
-
-    Notes
-    -----
-    This function performs the following operations:
-    1. Loads dataset and sets PyTorch format for energy, coords, forces
-    2. Creates OpenFF Molecule objects from SMILES strings
-    3. Generates OpenFF Interchange objects for each molecule
-    4. Converts to SMEE format for efficient training
-
-    The conversion process handles:
-    - Stereochemistry with allow_undefined_stereo=True
-    - Automatic topology generation for each unique molecule
-    - Force field parameterization via OpenFF Interchange
-
-    Examples
-    --------
-    >>> smee_ff, topologies = prepare_to_train("data-train", "openff-2.2.1.offxml")
-    >>> print(f"Prepared {len(topologies)} molecular topologies")
-    """
-
-    dataset = datasets.Dataset.load_from_disk(train_data_dir)
-    dataset.set_format(
-        "torch", columns=["energy", "coords", "forces"], output_all_columns=True
-    )
-
-    # Get starting forcefield
-    starting_ff = ForceField("openff-2.2.1.offxml")
-
-    # Get OpenFF Molecules and interchanges
-    all_smiles = []
-    interchanges = []
-    for entry in tqdm(dataset):
-        mol = Molecule.from_mapped_smiles(entry["smiles"], allow_undefined_stereo=True)
-        all_smiles.append(entry["smiles"])
-        interchange = starting_ff.create_interchange(mol.to_topology())
-        interchanges.append(interchange)
-
-    smee_force_field, smee_topologies = smee.converters.convert_interchange(
-        interchanges
-    )
-    topologies = dict(zip(all_smiles, smee_topologies))
-
-    return smee_force_field, topologies
-
-
-def write_metrics(
-    epoch: int,
-    loss: torch.Tensor,
-    loss_energy: torch.Tensor,
-    loss_forces: torch.Tensor,
-    writer: tensorboardX.SummaryWriter,
-) -> None:
-    """Write training metrics to console and TensorBoard.
-
-    Logs training progress including total loss, energy loss, force loss,
-    and corresponding RMSE values to both console output and TensorBoard
-    for monitoring and visualization.
-
-    Parameters
-    ----------
-    epoch : int
-        Current training epoch number.
-    loss : torch.Tensor
-        Total loss (energy + force loss) for the epoch.
-    loss_energy : torch.Tensor
-        Energy-specific loss component for the epoch.
-    loss_forces : torch.Tensor
-        Force-specific loss component for the epoch.
-    writer : tensorboardX.SummaryWriter
-        TensorBoard writer object for logging metrics.
-
-    Returns
-    -------
-    None
-
-    Notes
-    -----
-    Logs the following metrics to TensorBoard:
-    - loss: Total combined loss
-    - loss_energy: Energy component loss
-    - loss_forces: Force component loss
-    - rmse_energy: Square root of energy loss
-    - rmse_forces: Square root of force loss
-
-    Console output shows epoch number and total loss value.
-
-    Examples
-    --------
-    >>> with tensorboardX.SummaryWriter("logs") as writer:
-    ...     write_metrics(10, total_loss, energy_loss, force_loss, writer)
-    """
-    print(f"epoch={epoch} loss={loss.detach().item():.6f}", flush=True)
-
-    writer.add_scalar("loss", loss.detach().item(), epoch)
-    writer.add_scalar("loss_energy", loss_energy.detach().item(), epoch)
-    writer.add_scalar("loss_forces", loss_forces.detach().item(), epoch)
-
-    writer.add_scalar("rmse_energy", math.sqrt(loss_energy.detach().item()), epoch)
-    writer.add_scalar("rmse_forces", math.sqrt(loss_forces.detach().item()), epoch)
-    writer.flush()
+    filename = "final-force-field.offxml"
+    logger.info(f"Saving new forcefield to: {filename}")
+    starting_ff.to_file(filename)
 
 
 def main(
