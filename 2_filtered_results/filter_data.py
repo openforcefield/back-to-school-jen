@@ -50,11 +50,8 @@ Each filtered dataset directory contains:
 └── smiles.json                # List of remaining SMILES after filtering
 """
 
-from __future__ import annotations
-
 import json
 import pathlib
-from typing import Dict, List
 
 import argparse
 import matplotlib.pyplot as plt
@@ -128,7 +125,7 @@ def filter_dataset_by_forces_95_percentile(input_dir: pathlib.Path) -> None:
     )
 
     # Create a dict of the percentiles
-    percentile_dict: Dict[float, float] = {
+    percentile_dict: dict[float, float] = {
         interval: value
         for interval, value in zip(percentile_intervals, percentile_values, strict=True)
     }
@@ -159,7 +156,7 @@ def filter_dataset_by_forces_95_percentile(input_dir: pathlib.Path) -> None:
     # Get the data above the 95th percentile
     df_highest_95 = data_df[data_df["rms_forces"] > percentile_dict[95]]
     logger.info(f"Cutoff: {percentile_dict[95]:.2f} kcal/(mol Angstrom)")
-    high_force_smiles: List[str] = df_highest_95["smiles"].tolist()
+    high_force_smiles: list[str] = df_highest_95["smiles"].tolist()
     with open(output_dir / "high_force_smiles.json", "w") as file:
         json.dump(high_force_smiles, file)
     logger.info(f"Removed {len(df_highest_95)} entries with high forces")
@@ -205,7 +202,7 @@ def filter_dataset_by_forces_z_score(input_dir: pathlib.Path) -> None:
     - Saves filtered SMILES list as [input_dir.name]-z-score/smiles.json
     """
 
-    logger.info("Filtering dataset by forces...")
+    logger.info("Filtering dataset by forces below a Z-score of 1...")
 
     # Create output directory in current working directory with same name as input + suffix
     output_dir = pathlib.Path.cwd() / (input_dir.name + "-z-score")
@@ -220,9 +217,10 @@ def filter_dataset_by_forces_z_score(input_dir: pathlib.Path) -> None:
     data_df["z-score"] = (data_df["rms_forces"] - rms_mean) / rms_std
 
     # Create a dict of the Z-scores
-    z_score_dict: Dict[float, float] = {
+    z_score_dict: dict[float, float] = {
         score: score * rms_std + rms_mean for score in [1, 2, 3, 4, 5, 6]
     }
+    logger.info(f"Z-scores: {z_score_dict}")
 
     # Plot boxplot of the rmse forces
     # Plot boxplot of the rmse forces
@@ -267,7 +265,7 @@ def filter_dataset_by_forces_z_score(input_dir: pathlib.Path) -> None:
     cap_z_score = 4
     df_cap_z_score = data_df[data_df["rms_forces"] > z_score_dict[cap_z_score]]
     logger.info(f"Cutoff: {z_score_dict[cap_z_score]:.2f} kcal/(mol Angstrom)")
-    high_force_smiles: List[str] = df_cap_z_score["smiles"].tolist()
+    high_force_smiles: list[str] = df_cap_z_score["smiles"].tolist()
     with open(output_dir / "high_force_smiles.json", "w") as file:
         json.dump(high_force_smiles, file, indent=4)
     logger.info(f"Removed {len(df_cap_z_score)} entries with high forces")
