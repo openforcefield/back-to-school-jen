@@ -46,17 +46,15 @@ HARTREE_TO_KCAL : float
     Conversion factor from Hartree to kcal/mol
 BOHR_TO_ANGSTROM : float
     Conversion factor from Bohr to Angstrom
-SPICE2_SOURCES : Set[str]
+SPICE2_SOURCES : set[str]
     Set of SPICE2 dataset sources to include (excludes B/Si sets)
 """
-
-from __future__ import annotations
 
 import argparse
 import json
 import pathlib
 import subprocess
-from typing import Any, Dict, List, Set
+from typing import Any
 
 import descent.targets.energy
 import h5py
@@ -73,7 +71,7 @@ HARTREE_TO_KCAL: float = (1 * unit.hartree * unit.avogadro_constant).m_as(
 BOHR_TO_ANGSTROM: float = (1.0 * unit.bohr).m_as(unit.angstrom)
 
 # This avoids Boron and Silicon as they're in 'SPICE PubChem Boron Silicon v1.0'
-SPICE2_SOURCES: Set[str] = {
+SPICE2_SOURCES: set[str] = {
     "SPICE DES Monomers Single Points Dataset v1.1",
     "SPICE Dipeptides Single Points Dataset v1.3",
     "SPICE PubChem Set 1 Single Points Dataset v1.3",
@@ -115,8 +113,12 @@ def download_spice2_data(data_dir: pathlib.Path) -> None:
 
     output_file = data_dir / "SPICE-2.0.1.hdf5"
     if output_file.exists():
-        logger.info(f"SPICE data already exists at {output_file}. Skipping download.")
+        logger.info(
+            f"SPICE data already exists at {output_file.resolve()}. Skipping download."
+        )
         return
+    else:
+        logger.info(f"SPICE will be saved to {output_file.resolve()}.")
 
     cmds = [
         f"mkdir -p {data_dir}",
@@ -163,8 +165,8 @@ def process_dataset_spice2(data_dir: pathlib.Path) -> None:
     output_dir = data_dir / "raw-spice"
 
     with h5py.File(data_dir / "SPICE-2.0.1.hdf5") as spice:
-        all_data: List[Dict[str, Any]] = []
-        all_smiles: Set[str] = set()
+        all_data: list[dict[str, Any]] = []
+        all_smiles: set[str] = set()
 
         for record in tqdm(spice.values(), desc="Extracting dataset", ncols=80):
             smiles: str = record["smiles"].asstr()[0]
@@ -179,15 +181,15 @@ def process_dataset_spice2(data_dir: pathlib.Path) -> None:
             n_conformers: int = record["conformations"].shape[0]
             assert len(record["dft_total_energy"]) == n_conformers
 
-            energies: List[float] = [
+            energies: list[float] = [
                 record["dft_total_energy"][i] * HARTREE_TO_KCAL
                 for i in range(n_conformers)
             ]
-            coords: List[npt.NDArray[np.float64]] = [
+            coords: list[npt.NDArray[np.float64]] = [
                 record["conformations"][i] * BOHR_TO_ANGSTROM
                 for i in range(n_conformers)
             ]
-            forces: List[npt.NDArray[np.float64]] = [
+            forces: list[npt.NDArray[np.float64]] = [
                 record["dft_total_gradient"][i]
                 * -1
                 * (HARTREE_TO_KCAL / BOHR_TO_ANGSTROM)
@@ -203,12 +205,15 @@ def process_dataset_spice2(data_dir: pathlib.Path) -> None:
             )
 
         dataset = descent.targets.energy.create_dataset(all_data)
-        dataset.save_to_disk(output_dir)
+        logger.info(f"Saving HuggingFace dataset to: {output_dir.resolve()}")
+        dataset.save_to_disk(output_dir.resolve())
         unique_smiles = dataset.unique("smiles")
         logger.info(
             f"Found {len(dataset)} ({len(unique_smiles)} unique) SMILES in SPICE2"
         )
-        with open(output_dir / "smiles.json", "w") as file:
+        filename = output_dir / "smiles.json"
+        logger.info(f"Saving SMILES strings to: {filename.resolve()}")
+        with open(filename, "w") as file:
             json.dump(list(unique_smiles), file)
 
 
