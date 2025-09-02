@@ -1,0 +1,13 @@
+WARNING:tensorflow:From /Users/jenniferclark/mamba/envs/bts/lib/python3.12/site-packages/tensorflow/python/util/deprecation.py:588: calling function (from tensorflow.python.eager.polymorphic_function.polymorphic_function) with experimental_relax_shapes is deprecated and will be removed in a future version.
+Instructions for updating:
+experimental_relax_shapes is deprecated, use reduce_retracing instead
+2025-09-02 12:29:41.311 | INFO     | __main__:split_train_test:90 - MinMax Splitting Options: {'frac_train': 0.95, 'seed': 42}
+2025-09-02 12:29:41.312 | INFO     | __main__:split_train_test:93 - Loading dataset from: /Users/jenniferclark/bin/back-to-school-jen/2_filtered_results/raw-spice-95thpercentile
+2025-09-02 12:29:41.352 | INFO     | __main__:split_train_test:97 - Loading smiles.json from: /Users/jenniferclark/bin/back-to-school-jen/2_filtered_results/raw-spice-95thpercentile/smiles.json
+2025-09-02 12:29:41.411 | INFO     | __main__:split_train_test:108 - Total number of points limited to 100, using seed=42
+2025-09-02 12:29:41.411 | INFO     | __main__:split_train_test:117 - Splitting dataset into training and testing sets, writing to: /Users/jenniferclark/bin/back-to-school-jen/3_split_train_test
+2025-09-02 12:29:51.880 | INFO     | __main__:split_train_test:139 - N_Train: 95, N_Test: 5, N_Total (before max_n_pts): 24326
+Saving the dataset (0/1 shards):   0%|          | 0/95 [00:00<?, ? examples/s]Saving the dataset (1/1 shards): 100%|██████████| 95/95 [00:00<00:00, 19157.60 examples/s]Saving the dataset (1/1 shards): 100%|██████████| 95/95 [00:00<00:00, 18536.42 examples/s]
+Saving the dataset (0/1 shards):   0%|          | 0/5 [00:00<?, ? examples/s]Saving the dataset (1/1 shards): 100%|██████████| 5/5 [00:00<00:00, 2460.29 examples/s]Saving the dataset (1/1 shards): 100%|██████████| 5/5 [00:00<00:00, 2352.91 examples/s]
+2025-09-02 12:29:51.892 | INFO     | __main__:split_train_test:146 - Done splitting dataset into training and testing sets.
+2025-09-02 12:29:51.898 | INFO     | __main__:split_train_test:157 - Saved train/test smiles to /Users/jenniferclark/bin/back-to-school-jen/3_split_train_test/smiles_test_train.json
