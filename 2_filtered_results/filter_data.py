@@ -60,6 +60,7 @@ import numpy as np
 import numpy.typing as npt
 from loguru import logger
 
+import descent.targets.energy
 import datasets
 
 
@@ -75,6 +76,52 @@ def get_rms(array: npt.NDArray[np.float64]) -> float:
         Root mean square value of the array elements.
     """
     return np.sqrt(np.mean(array**2))
+
+
+def filter_nonparametrizable_molecules(
+    dataset: datasets.Dataset | datasets.DatasetDict
+) -> datasets.Dataset:
+    """Remove non-parametrizable molecules from dataset.
+
+    Filters the dataset to retain only molecules that can be parametrized
+    by the force field, removing any molecules that would cause errors
+    during force field parameter assignment.
+
+    Parameters
+    ----------
+    dataset : datasets.Dataset | datasets.DatasetDict
+        Input HuggingFace dataset containing molecular data. Must be a Dataset
+        (not DatasetDict) for compatibility with descent.targets.energy.extract_smiles.
+
+    Returns
+    -------
+    datasets.Dataset
+        Filtered dataset containing only parametrizable molecules.
+
+    Raises
+    ------
+    TypeError
+        If dataset is a DatasetDict instead of Dataset.
+
+    Notes
+    -----
+    Uses descent.targets.energy.extract_smiles to identify which molecules
+    can be successfully parametrized by the force field. This function requires
+    a datasets.Dataset object as input.
+    """
+    # Ensure we have a Dataset object, not DatasetDict
+    if isinstance(dataset, datasets.DatasetDict):
+        raise TypeError("Function requires datasets.Dataset, not DatasetDict")
+
+    # Ensure molecules are parametrizable
+    dataset_size = len(dataset)
+    unique_smiles = descent.targets.energy.extract_smiles(dataset)
+    dataset = dataset.filter(lambda d: d["smiles"] in unique_smiles)
+    logger.info(
+        f"Removed non-parametrizable molecules, dataset size change: {dataset_size} -> {len(dataset)}"
+    )
+
+    return dataset
 
 
 def filter_dataset_by_forces_95_percentile(input_dir: pathlib.Path) -> None:
@@ -114,6 +161,7 @@ def filter_dataset_by_forces_95_percentile(input_dir: pathlib.Path) -> None:
     output_dir.mkdir(parents=True, exist_ok=True)
 
     dataset = datasets.load_from_disk(input_dir)
+    dataset = filter_nonparametrizable_molecules(dataset)
     data_df = dataset.to_pandas()
 
     data_df["rms_forces"] = data_df["forces"].apply(lambda x: get_rms(np.array(x)))
@@ -209,6 +257,7 @@ def filter_dataset_by_forces_z_score(input_dir: pathlib.Path) -> None:
     output_dir.mkdir(parents=True, exist_ok=True)
 
     dataset = datasets.load_from_disk(input_dir)
+    dataset = filter_nonparametrizable_molecules(dataset)
     data_df = dataset.to_pandas()
 
     data_df["rms_forces"] = data_df["forces"].apply(lambda x: get_rms(np.array(x)))
