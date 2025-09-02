@@ -1,0 +1,53 @@
+name: bts
+
+channels:
+  - conda-forge
+
+dependencies:
+
+  - python >=3.10
+  - pip
+
+  - smee    >=0.8.0
+  - descent >=0.4.0
+
+  # General
+  - tqdm
+  - loguru
+  - seaborn
+  - matplotlib
+  - numpy
+
+  # Dataset handling
+  - h5py
+  - datasets
+
+  # Parameterization
+  - openff-toolkit
+  - openff-interchange
+  - openff-units
+  - rdkit
+#  - openeye-toolkits
+
+  # Training
+  - tensorboard
+  - tensorboardX
+  - tbparse
+
+  # Benchmarking
+  - openff-qcsubmit
+  - click-option-group
+  - dask
+  - dask-jobqueue
+  - geometric
+
+  # Dev
+  - pre-commit
+  - ruff
+  - mypy
+
+# Pip
+  - pip:
+      - git+https://github.com/thomasjamespope/smee.git
+      - git+https://github.com/openforcefield/yammbs.git
+      - deepchem
