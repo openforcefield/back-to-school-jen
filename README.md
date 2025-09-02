@@ -10,7 +10,7 @@
 - Benchmarking QM
 
 ## Nice to have:
-- Incorporate neighbouring atoms
+- Incorporate neighboring atoms
 - Fit with torsions over-specified
 - Clustering final parameters
 - Other benchmarks
@@ -21,17 +21,20 @@
 
 ## Getting Started
 1) In home dir on UCI HPC3, clone this repo somewhere in `/dfs9/dmobley-lab/user_id/` with:
-   `git clone https://github.com/openforcefield/back-to-school-jen.git`
-2) Install with:
-	- `srun -c 2 -p free --pty /bin/bash -i`
-	- `cd back-to-school-jen; micromamba create -n bts -f environment.yaml`
-3) From the repository root directory get data and reformat:
 ```bash
-    python tasks/get_data_qca.py --datasets "OpenFF CX3-CX4 singlepoints v4.0" \
-                                 --dataset_type singlepoint \
-                                 --data_file ./data/singlepoint
+   git clone https://github.com/openforcefield/back-to-school-jen.git
 ```
-or
+2) Install with:
 ```bash
-    python tasks/get_data_spice2.py --data-dir "data"
+	srun -c 2 -p free --pty /bin/bash -i
+	cd back-to-school-jen; micromamba create -f environment.yaml
+```
+3) From the `1_data` directory get data and reformat:
+```bash
+    python get_data_spice2.py --data-dir "." 2>&1 | tee log.txt
+```
+    or
+```bash
+    chmod 774 run_local.sh
+    ./run_local.sh
 ```
