@@ -2,8 +2,6 @@ name: bts
 
 channels:
   - conda-forge
-  - openeye
-  - bioconda
 
 dependencies:
 
