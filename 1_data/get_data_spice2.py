@@ -71,19 +71,19 @@ HARTREE_TO_KCAL: float = (1 * unit.hartree * unit.avogadro_constant).m_as(
 BOHR_TO_ANGSTROM: float = (1.0 * unit.bohr).m_as(unit.angstrom)
 
 # This avoids Boron and Silicon as they're in 'SPICE PubChem Boron Silicon v1.0'
-SPICE2_SOURCES: set[str] = {  # NoteHere uncomment remaining datasets
-    "SPICE DES Monomers Single Points Dataset v1.1",  # 374
-    #    "SPICE Dipeptides Single Points Dataset v1.3", # 677
-    #    "SPICE PubChem Set 1 Single Points Dataset v1.3", # 2372
-    #    "SPICE PubChem Set 2 Single Points Dataset v1.3", # 2431
-    #    "SPICE PubChem Set 3 Single Points Dataset v1.3", # 2446
-    #    "SPICE PubChem Set 4 Single Points Dataset v1.3", # 2455
-    #    "SPICE PubChem Set 5 Single Points Dataset v1.3", #
-    #    "SPICE PubChem Set 6 Single Points Dataset v1.3", #
-    #    "SPICE PubChem Set 7 Single Points Dataset v1.0", #
-    #    "SPICE PubChem Set 8 Single Points Dataset v1.0", #
-    #    "SPICE PubChem Set 9 Single Points Dataset v1.0", #
-    #    "SPICE PubChem Set 10 Single Points Dataset v1.0", #
+SPICE2_SOURCES: set[str] = {
+    "SPICE DES Monomers Single Points Dataset v1.1",
+    "SPICE Dipeptides Single Points Dataset v1.3",
+    "SPICE PubChem Set 1 Single Points Dataset v1.3",
+    "SPICE PubChem Set 2 Single Points Dataset v1.3",
+    "SPICE PubChem Set 3 Single Points Dataset v1.3",
+    "SPICE PubChem Set 4 Single Points Dataset v1.3",
+    "SPICE PubChem Set 5 Single Points Dataset v1.3",
+    "SPICE PubChem Set 6 Single Points Dataset v1.3",
+    "SPICE PubChem Set 7 Single Points Dataset v1.0",
+    "SPICE PubChem Set 8 Single Points Dataset v1.0",
+    "SPICE PubChem Set 9 Single Points Dataset v1.0",
+    "SPICE PubChem Set 10 Single Points Dataset v1.0",
 }
 
 
@@ -168,9 +168,7 @@ def process_dataset_spice2(data_dir: pathlib.Path) -> None:
         all_data: list[dict[str, Any]] = []
         all_smiles: set[str] = set()
 
-        for record in tqdm(
-            spice.values(), desc="Extracting dataset", ncols=80
-        ):  # NoteHere: Limiting HDF5 to run test
+        for record in tqdm(spice.values(), desc="Extracting dataset", ncols=80):
             smiles: str = record["smiles"].asstr()[0]
             subset: str = record["subset"].asstr()[0]
 
