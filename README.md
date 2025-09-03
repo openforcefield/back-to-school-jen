@@ -38,3 +38,4 @@
     chmod 774 run_local.sh
     ./run_local.sh
 ```
+5) Split filtered data into the training and test set from `3_split_train_test`
