@@ -32,7 +32,7 @@ $ python setup_train_ff_topo.py --data-dir ./data-train --offxml openff-2.2.1.of
 
 With custom parameters:
 $ python setup_train_ff_topo.py --data-dir ./data-train --offxml openff-2.2.1.offxml \\
-    --batch-size 100 --device cuda --file-format json
+    --device cuda --file-format json
 """
 
 import pathlib
@@ -153,7 +153,6 @@ def prepare_to_train(
 
     Notes
     -----
-    For large datasets, use batching in calling code to pre-batch dataset into subsets.
     Failed molecules are logged and skipped. Uses `smee.converters.convert_interchange` for tensor conversion.
 
     Examples
@@ -231,12 +230,11 @@ def save_smee_output(
     topologies: dict[str, smee.TensorTopology],
     file_format: Literal["pkl", "json"] = "pkl",
     output_dir: pathlib.Path | str | None = None,
-    file_suffix: str | None = None,
     overwrite: bool = True,
 ) -> None:
     """Save SMEE objects to disk for training pipelines.
 
-    Serializes SMEE force field and topology objects with optional file labeling.
+    Serializes SMEE force field and topology objects.
 
     Parameters
     ----------
@@ -250,8 +248,6 @@ def save_smee_output(
         Default is 'pkl'.
     output_dir : pathlib.Path, str, or None, optional
         Output directory (None uses current directory). Default is None.
-    file_suffix : str or None, optional
-        Optional suffix for filenames (e.g., 'batch_001'). Default is None.
     overwrite : bool, optional
         Whether to overwrite existing files. Default is True.
 
@@ -262,23 +258,15 @@ def save_smee_output(
     Notes
     -----
     Creates files:
-    - smee_force_field[_{suffix}].{pkl|json}
-    - smee_topology_dict[_{suffix}].{pkl|json}
-    - smee_metadata[_{suffix}].json
+    - smee_force_field.{pkl|json}
+    - smee_topology_dict.{pkl|json}
+    - smee_metadata.json
 
     JSON format converts tensors to lists. Pickle preserves exact state.
 
     Examples
     --------
     >>> save_smee_output(smee_ff, topologies, output_dir="./models")
-
-    >>> # Save with batch suffix for identification
-    >>> save_smee_output(
-    ...     smee_ff, topologies,
-    ...     file_suffix="batch_001",
-    ...     output_dir="./training_data"
-    ... )
-    # Creates: ./training_data/smee_force_field_batch_001.pkl, etc.
 
     >>> # JSON format for inspection and debugging
     >>> save_smee_output(
@@ -311,11 +299,8 @@ def save_smee_output(
         return str(obj)
 
     def get_filename(name: str, extension: str) -> pathlib.Path | None:
-        """Generate filename with prefix and check for overwrites."""
-        if file_suffix is not None:
-            filename = output_dir / f"smee_{name}_{file_suffix}.{extension}"
-        else:
-            filename = output_dir / f"smee_{name}.{extension}"
+        """Generate filename and check for overwrites."""
+        filename = output_dir / f"smee_{name}.{extension}"
         if not overwrite and filename.exists():
             logger.warning(f"File {filename} exists and overwrite=False, skipping")
             return None
@@ -436,8 +421,6 @@ def main(
     filename_data: pathlib.Path | str,
     offxml: pathlib.Path | str,
     validate_molecules: bool = True,
-    batch_size: int | None = None,
-    start_index: int = 0,
     precision: Literal["single", "double"] = "single",
     device: Literal["cpu", "cuda"] | None = None,
     file_format: Literal["pkl", "json"] = "pkl",
@@ -453,10 +436,6 @@ def main(
         Path to OpenFF force field XML file.
     validate_molecules : bool, optional
         Whether to validate molecules before processing. Default is True.
-    batch_size : int or None, optional
-        Process molecules in batches. Default is None (process all at once).
-    start_index : int, optional
-        Starting dataset index for resuming batch processing. Default is 0.
     precision : {'single', 'double'}, optional
         Tensor precision. Default is 'single'.
     device : {'cpu', 'cuda'} or None, optional
@@ -472,90 +451,38 @@ def main(
 
     Notes
     -----
-    Converts molecular dataset and force field to SMEE format with optional batching.
+    Converts molecular dataset and force field to SMEE format.
 
     Examples
     --------
     >>> main("./data-train", "openff-2.2.1.offxml")
 
-    >>> main("./data-train", "openff-2.2.1.offxml", batch_size=100, device="cuda")
+    >>> main("./data-train", "openff-2.2.1.offxml", device="cuda")
     """
     filename_data = pathlib.Path(filename_data)
     offxml = pathlib.Path(offxml)
 
-    # Load dataset to determine batching strategy
+    # Load dataset
     logger.info(f"Loading dataset: {filename_data.resolve()}")
     dataset = load_dataset(filename_data)
     total_molecules = len(dataset)
 
-    # Determine processing strategy
-    if batch_size is not None and batch_size < total_molecules:
-        logger.info(
-            f"Processing {total_molecules} molecules in batches of {batch_size}"
-        )
-        if start_index > 0:
-            logger.info(f"Resuming from index {start_index}")
+    logger.info(f"Processing all {total_molecules} molecules")
 
-        # Process in batches
-        effective_batch_size = batch_size
-        total_batches = (
-            total_molecules + effective_batch_size - 1
-        ) // effective_batch_size
-        start_batch = start_index // effective_batch_size
+    smee_force_field, topologies = prepare_to_train(
+        dataset,
+        offxml,
+        device=device,
+        precision=precision,
+        validate_molecules=validate_molecules,
+    )
 
-        for batch_idx in range(start_batch, total_batches):
-            start_idx = max(batch_idx * effective_batch_size, start_index)
-            end_idx = min(start_idx + effective_batch_size, total_molecules)
-
-            # Skip if this batch is entirely before our start_index
-            if end_idx <= start_index:
-                continue
-
-            logger.info(
-                f"Processing batch {batch_idx + 1}/{total_batches}: molecules {start_idx}-{end_idx}"
-            )
-            smee_force_field, topologies = prepare_to_train(
-                dataset.select(range(start_idx, end_idx)),
-                offxml,
-                device=device,
-                precision=precision,
-                validate_molecules=validate_molecules,
-            )
-
-            save_smee_output(
-                smee_force_field,
-                topologies,
-                file_format=file_format,
-                output_dir=output_dir,
-                file_suffix=f"{start_idx}-{end_idx}",
-            )
-
-            logger.info(
-                f"Batch {batch_idx + 1} completed: {len(topologies)} molecules processed"
-            )
-
-        logger.info(f"All batches completed: {total_batches} batches processed")
-
-    else:
-        logger.info(f"Processing all {total_molecules} molecules at once")
-
-        smee_force_field, topologies = prepare_to_train(
-            dataset,
-            offxml,
-            device=device,
-            precision=precision,
-            validate_molecules=validate_molecules,
-        )
-
-        # Use start_index in file suffix if specified
-        file_suffix = f"from_{start_index}" if start_index > 0 else None
-        save_smee_output(
-            smee_force_field,
-            topologies,
-            file_format=file_format,
-            output_dir=output_dir,
-            file_suffix=file_suffix,
-        )
+    save_smee_output(
+        smee_force_field,
+        topologies,
+        file_format=file_format,
+        output_dir=output_dir,
+    )
 
 
 if __name__ == "__main__":
@@ -569,12 +496,7 @@ Examples:
 
     # With custom parameters
     python setup_train_ff_topo.py --data-dir /path/to/data --offxml openff-2.2.1.offxml \\
-        --batch-size 50 --precision double \\
-        --device cuda --file-format json --output-dir ./results
-
-    # Resume from a specific index after timeout
-    python setup_train_ff_topo.py --data-dir /path/to/data --offxml openff-2.2.1.offxml \\
-        --batch-size 100 --start-index 500
+        --precision double --device cuda --file-format json --output-dir ./results
         """,
     )
     parser.add_argument(
@@ -600,18 +522,6 @@ Examples:
         dest="validate_molecules",
         action="store_false",
         help="Skip molecule validation",
-    )
-    parser.add_argument(
-        "--batch-size",
-        type=int,
-        default=None,
-        help="Process molecules in batches with checkpointing for fault tolerance and resumption (default: process all at once)",
-    )
-    parser.add_argument(
-        "--start-index",
-        type=int,
-        default=0,
-        help="Starting index in dataset to resume batch processing (default: 0)",
     )
     parser.add_argument(
         "--precision",
@@ -645,8 +555,6 @@ Examples:
         args.data_dir,
         args.offxml,
         validate_molecules=args.validate_molecules,
-        batch_size=args.batch_size,
-        start_index=args.start_index,
         precision=args.precision,
         device=args.device,
         file_format=args.file_format,
