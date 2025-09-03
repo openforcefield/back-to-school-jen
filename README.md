@@ -38,3 +38,4 @@
     chmod 774 run_local.sh
     ./run_local.sh
 ```
+6) Create and save SMEE force field and topology inputs from openff interchanges in `4_setup_train_ff_topologies`
