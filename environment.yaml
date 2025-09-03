@@ -52,3 +52,4 @@ dependencies:
       - git+https://github.com/thomasjamespope/smee.git
       - git+https://github.com/openforcefield/yammbs.git
       - deepchem
+      - more_itertools

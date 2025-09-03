@@ -63,13 +63,11 @@ import math
 from collections import defaultdict
 import json
 import pickle
-import glob
 
 from tqdm import tqdm
 import torch
 import argparse
 import smee
-import smee.converters
 import datasets
 import descent
 import descent.train
@@ -103,34 +101,29 @@ def load_smee_outputs(
     filename_ff: pathlib.Path | str,
     filename_topo: pathlib.Path | str,
 ) -> tuple[smee.TensorForceField, dict[str, smee.TensorTopology]]:
-    """Load SMEE force field and topologies from disk with glob support.
+    """Load SMEE force field and topologies from disk.
 
     Loads SMEE objects from either pickle or JSON files. Automatically
-    detects file format based on extension. Supports glob patterns to
-    combine multiple force field and topology files.
+    detects file format based on extension.
 
     Parameters
     ----------
     filename_ff : pathlib.Path | str
-        Path or glob pattern to saved SMEE force field file(s) (.pkl or .json).
-        If glob pattern matches multiple files, force fields will be combined.
+        Path to saved SMEE force field file(s) (.pkl or .json).
     filename_topo : pathlib.Path | str
-        Path or glob pattern to saved SMEE topologies file(s) (.pkl or .json).
-        If glob pattern matches multiple files, topology dictionaries will be merged.
+        Path to saved SMEE topologies file(s) (.pkl or .json).
 
     Returns
     -------
     smee_force_field : smee.TensorForceField
         SMEE force field tensor object with parameters and potentials.
-        If multiple files matched, contains combined potentials from all files.
     topologies : dict[str, smee.TensorTopology]
         Dictionary mapping SMILES strings to SMEE topology tensor objects.
-        If multiple files matched, contains merged topology dictionaries.
 
     Raises
     ------
     FileNotFoundError
-        If no files match the glob pattern(s).
+        If fileis not found.
     ValueError
         If file format is not supported or loading fails.
 
@@ -140,16 +133,6 @@ def load_smee_outputs(
     >>> ff, topologies = load_smee_outputs(
     ...     "smee_force_field.pkl",
     ...     "smee_topology_dict.pkl"
-    ... )
-    >>> # Load multiple files using glob patterns
-    >>> ff, topologies = load_smee_outputs(
-    ...     "smee_force_field_*.pkl",
-    ...     "smee_topology_dict_*.pkl"
-    ... )
-    >>> # Mix single file with glob pattern
-    >>> ff, topologies = load_smee_outputs(
-    ...     "smee_force_field.json",
-    ...     "smee_topology_dict_batch_*.json"
     ... )
     """
 
@@ -163,128 +146,59 @@ def load_smee_outputs(
             return torch.tensor(obj)
         return obj
 
-    # Expand glob patterns to get file lists
-    ff_files = sorted(glob.glob(str(filename_ff)))
-    topo_files = sorted(glob.glob(str(filename_topo)))
+    filename_ff = pathlib.Path(filename_ff)
+    if not pathlib.Path(filename_ff).exists():
+        raise FileNotFoundError(f"Force field file not found: {filename_ff}")
 
-    # Handle case where no glob expansion occurred (direct file paths)
-    if not ff_files:
-        ff_files = [str(filename_ff)]
-    if not topo_files:
-        topo_files = [str(filename_topo)]
+    filename_topo = pathlib.Path(filename_topo)
+    if not pathlib.Path(filename_topo).exists():
+        raise FileNotFoundError(f"Topology file not found: {filename_topo}")
 
-    # Check if files exist
-    for ff_file in ff_files:
-        if not pathlib.Path(ff_file).exists():
-            raise FileNotFoundError(f"Force field file not found: {ff_file}")
-    for topo_file in topo_files:
-        if not pathlib.Path(topo_file).exists():
-            raise FileNotFoundError(f"Topology file not found: {topo_file}")
+    logger.info(f"Loading SMEE force field from: {filename_ff}")
 
-    logger.info(
-        f"Loading {len(ff_files)} force field file(s) and {len(topo_files)} topology file(s)"
-    )
-
-    # Load and combine force fields
-    combined_potentials = []
-    base_ff = None
-
-    for i, ff_file in enumerate(ff_files):
-        ff_path = pathlib.Path(ff_file)
-        logger.info(f"Loading SMEE force field from: {ff_path}")
-
-        if ff_path.suffix.lower() == ".pkl":
-            with open(ff_path, "rb") as f_pkl:
-                smee_ff = pickle.load(f_pkl)
-        elif ff_path.suffix.lower() == ".json":
-            with open(ff_path, "r") as f_json:
-                ff_dict = json.load(f_json)
-            try:
-                ff_dict = convert_to_tensors(ff_dict)
-                smee_ff = smee.TensorForceField(**ff_dict)
-            except Exception as e:
-                raise ValueError(
-                    f"Failed to reconstruct force field from JSON {ff_file}: {e}"
-                )
-        else:
+    if filename_ff.suffix.lower() == ".pkl":
+        with open(filename_ff, "rb") as f_pkl:
+            smee_ff = pickle.load(f_pkl)
+    elif filename_ff.suffix.lower() == ".json":
+        with open(filename_ff, "r") as f_json:
+            ff_dict = json.load(f_json)
+        try:
+            ff_dict = convert_to_tensors(ff_dict)
+            smee_ff = smee.TensorForceField(**ff_dict)
+        except Exception as e:
             raise ValueError(
-                f"Unsupported file format for force field: {ff_path.suffix}"
+                f"Failed to reconstruct force field from JSON {filename_ff}: {e}"
             )
-
-        # Store the first force field as the base for structure
-        if i == 0:
-            base_ff = smee_ff
-
-        # Add potentials from this force field to the combined list
-        if hasattr(smee_ff, "potentials") and smee_ff.potentials:
-            combined_potentials.extend(smee_ff.potentials)
-            logger.info(
-                f"Added {len(smee_ff.potentials)} potentials from {ff_path.name}"
-            )
-
-    # Create combined force field using the base structure
-    if base_ff is None:
-        raise FileNotFoundError("No force field files found")
-
-    # Create new force field with combined potentials
-    try:
-        # Try to preserve all attributes from base while updating potentials
-        if hasattr(base_ff, "__dict__"):
-            ff_kwargs = {k: v for k, v in base_ff.__dict__.items() if k != "potentials"}
-            ff_kwargs["potentials"] = combined_potentials
-            combined_force_field = smee.TensorForceField(**ff_kwargs)
-        else:
-            # Fallback: create with just potentials
-            combined_force_field = smee.TensorForceField(potentials=combined_potentials)
-    except Exception as e:
-        logger.warning(
-            f"Failed to create combined force field with all attributes: {e}"
+    else:
+        raise ValueError(
+            f"Unsupported file format for force field: {filename_ff.suffix}"
         )
-        # Final fallback: just combine potentials manually
-        combined_force_field = base_ff
-        if hasattr(combined_force_field, "potentials"):
-            combined_force_field.potentials = combined_potentials
 
-    # Load and combine topologies
-    combined_topologies = {}
-    for topo_file in topo_files:
-        topo_path = pathlib.Path(topo_file)
-        logger.info(f"Loading SMEE topologies from: {topo_path}")
-
-        if topo_path.suffix.lower() == ".pkl":
-            with open(topo_path, "rb") as f_pkl:
-                topologies = pickle.load(f_pkl)
-        elif topo_path.suffix.lower() == ".json":
-            with open(topo_path, "r") as f_json:
-                topo_dict = json.load(f_json)
-            topologies = {}
-            try:
-                for smiles, topo_data in topo_dict.items():
-                    # Convert lists back to tensors if needed
-                    for key, value in topo_data.items():
-                        if isinstance(value, list):
-                            topo_data[key] = torch.tensor(value)
-                    topologies[smiles] = smee.TensorTopology(**topo_data)
-            except Exception as e:
-                raise ValueError(
-                    f"Failed to reconstruct topologies from JSON {topo_file}: {e}"
-                )
-        else:
+    logger.info(f"Loading dict with SMILES and SMEE topologies from: {filename_topo}")
+    if filename_topo.suffix.lower() == ".pkl":
+        with open(filename_topo, "rb") as f_pkl:
+            topologies = pickle.load(f_pkl)
+    elif filename_topo.suffix.lower() == ".json":
+        with open(filename_topo, "r") as f_json:
+            topo_dict = json.load(f_json)
+        topologies = {}
+        try:
+            for smiles, topo_data in topo_dict.items():
+                # Convert lists back to tensors if needed
+                for key, value in topo_data.items():
+                    if isinstance(value, list):
+                        topo_data[key] = torch.tensor(value)
+                topologies[smiles] = smee.TensorTopology(**topo_data)
+        except Exception as e:
             raise ValueError(
-                f"Unsupported file format for topologies: {topo_path.suffix}"
+                f"Failed to reconstruct topologies from JSON {filename_topo}: {e}"
             )
+    else:
+        raise ValueError(
+            f"Unsupported file format for topologies: {filename_topo.suffix}"
+        )
 
-        # Merge topologies (later files override earlier ones for same SMILES)
-        if isinstance(topologies, dict):
-            combined_topologies.update(topologies)
-            logger.info(f"Added {len(topologies)} topologies from {topo_path.name}")
-        else:
-            logger.warning(f"Unexpected topology format in {topo_path.name}, skipping")
-
-    logger.info(
-        f"Successfully loaded force field with {len(combined_potentials)} potentials and {len(combined_topologies)} topologies"
-    )
-    return combined_force_field, combined_topologies
+    return smee_ff, topologies
 
 
 def write_metrics(
@@ -646,7 +560,7 @@ def main(
     offxml = pathlib.Path(offxml)
     smee_force_field, topologies = load_smee_outputs(filename_ff, filename_topo)
     train_forcefield(
-        pathlib.Path.cwd() / "data-train",
+        filename_data,
         smee_force_field,
         topologies,
         n_epochs=n_epochs,

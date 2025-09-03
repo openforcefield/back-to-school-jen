@@ -445,6 +445,7 @@ dependencies:
   - zstd=1.5.7=h6491c7d_2
   - pip:
     - deepchem==2.5.0
+    - more-itertools==10.8.0
     - smee==0.1.dev111+g483fbe330
     - yammbs==0.2.0.post53+gc3b68d0
 
