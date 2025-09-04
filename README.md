@@ -33,4 +33,4 @@
 4) From the `2_filtered_results` directory filter out high energy conformations and any SMILES strings that cannot be parsed
 5) Split filtered data into the training and test set from `3_split_train_test`
 6) Create and save SMEE force field and topology inputs from openff interchanges in `4_setup_train_ff_topologies`
-8) In `5_run_fit` run the fit using previously prepared files
+8) In `6_run_fit` run the fit using previously prepared files
