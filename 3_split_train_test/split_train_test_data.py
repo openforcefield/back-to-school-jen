@@ -12,7 +12,7 @@ Required Input
 DATASET_PATH/ containing:
 ├── dataset_info.json          # Dataset metadata and schema
 ├── state.json                 # Dataset state information
-├── smiles.json                # List of SMILES strings
+├── smiles.json                # List of SMILES strings (non-HuggingFace file)
 └── data-*.arrow               # Molecular data (coords, energy, forces)
 
 Output
@@ -28,7 +28,8 @@ Basic usage:
     $ python split_train_test_data.py --data-dir ./filtered_dataset
 
 With options:
-    $ python split_train_test_data.py --data-dir ./data --max-n-pts 10000 --seed 123
+    $ python split_train_test_data.py --data-dir ./data --max-mols 10000 --seed 123
+    $ python split_train_test_data.py --data-dir ./data --max-mols -1 --seed 123  # Use all molecules
 """
 
 import pathlib
@@ -43,7 +44,7 @@ import deepchem as dc
 
 def split_train_test(
     filename_data: pathlib.Path | str,
-    max_n_pts: int | None = None,
+    max_mols: int = -1,
     seed: int = 42,
     kwargs_split: dict = {},
 ) -> None:
@@ -52,9 +53,9 @@ def split_train_test(
     Parameters
     ----------
     filename_data : pathlib.Path | str
-        Path to HuggingFace dataset directory containing smiles.json.
-    max_n_pts : int, optional
-        Maximum number of molecules to include. If None, uses all molecules.
+        Path to HuggingFace dataset directory that also contains smiles.json.
+    max_mols : int, default=-1
+        Maximum number of molecules to include. If -1, uses all molecules.
     seed : int, default=42
         Random seed for reproducibility in sampling and splitting.
     kwargs_split : dict, default={}
@@ -84,10 +85,10 @@ def split_train_test(
     Examples
     --------
     >>> split_train_test("filtered_dataset")
-    >>> split_train_test("data", max_n_pts=5000, seed=123)
+    >>> split_train_test("data", max_mols=5000, seed=123)
     """
-    options = {"frac_train": 0.95, "seed": seed}
-    options.update(kwargs_split)
+    options = {"seed": seed}
+    options["frac_train"] = kwargs_split.get("frac_train", 0.95)
     logger.info(f"MinMax Splitting Options: {options}")
 
     filename_data = pathlib.Path(filename_data)
@@ -100,15 +101,15 @@ def split_train_test(
         smiles = json.load(file)
 
     # Optionally restrict the number of datapoints
-    if max_n_pts is not None and max_n_pts < len(smiles):
+    if max_mols != -1 and max_mols < len(smiles):
         # Use numpy random number generator to avoid HuggingFace shuffle which loads the dataset into memory
         rng = np.random.default_rng(seed)
-        selected_indices = rng.choice(len(smiles), size=max_n_pts, replace=False)
+        selected_indices = rng.choice(len(smiles), size=max_mols, replace=False)
         discarded_smiles = [
             smiles[i] for i, smi in enumerate(smiles) if smi not in selected_indices
         ]
         smiles = [smiles[i] for i in selected_indices]
-        logger.info(f"Total number of points limited to {max_n_pts}, using seed={seed}")
+        logger.info(f"Total number of points limited to {max_mols}, using seed={seed}")
     else:
         logger.info(f"Total number of points: {len(smiles)}")
         discarded_smiles = []
@@ -129,6 +130,11 @@ def split_train_test(
         test_dir=output_dirs["test"],
         **options,
     )
+    overlap = set(train_dataset.ids).intersection(set(test_dataset.ids))
+    if overlap:
+        raise RuntimeError(
+            f"Data contamination detected: {len(overlap)} overlapping SMILES between train and test sets."
+        )
 
     train_index, test_index = [], []
     for i, entry in enumerate(input_dataset):
@@ -140,7 +146,7 @@ def split_train_test(
             raise RuntimeError("The smiles was not in training or testing")
 
     logger.info(
-        f"N_Train: {len(train_index)}, N_Test: {len(test_index)}, N_Total (before max_n_pts): {len(input_dataset)}"
+        f"N_Train: {len(train_index)}, N_Test: {len(test_index)}, N_Total (before max_mols): {len(input_dataset)}"
     )
     train_split = input_dataset.select(indices=train_index)
     train_split.save_to_disk(output_dirs["train"])
@@ -162,7 +168,7 @@ def split_train_test(
 
 def main(
     filename_data: pathlib.Path | str,
-    max_n_pts: int | None = None,
+    max_mols: int = -1,
     seed: int = 42,
     frac_train: float = 0.95,
 ) -> None:
@@ -173,8 +179,8 @@ def main(
     filename_data : pathlib.Path | str
         Path to HuggingFace dataset directory containing dataset_info.json,
         state.json, and .arrow files.
-    max_n_pts : int, optional
-        Maximum number of molecules to include. If None, uses all molecules.
+    max_mols : int, default=-1
+        Maximum number of molecules to include. If -1, uses all molecules.
     seed : int, default=42
         Random seed for reproducibility.
     frac_train : float, default=0.95
@@ -194,13 +200,13 @@ def main(
     Examples
     --------
     >>> main("filtered_dataset")
-    >>> main("data", max_n_pts=5000, seed=123, frac_train=0.9)
+    >>> main("data", max_mols=5000, seed=123, frac_train=0.9)
     """
 
     filename_data = pathlib.Path(filename_data)
     split_train_test(
         filename_data,
-        max_n_pts=max_n_pts,
+        max_mols=max_mols,
         seed=seed,
         kwargs_split={
             "frac_train": frac_train,
@@ -215,7 +221,8 @@ if __name__ == "__main__":
         epilog="""
 Examples:
     python split_train_test_data.py --data-dir ./filtered_dataset
-    python split_train_test_data.py --data-dir ./data --max-n-pts 10000 --seed 123
+    python split_train_test_data.py --data-dir ./data --max-mols 10000 --seed 123
+    python split_train_test_data.py --data-dir ./data --max-mols -1 --seed 123  # Use all molecules
         """,
     )
     parser.add_argument(
@@ -225,10 +232,10 @@ Examples:
         help="Directory containing HuggingFace structured dataset",
     )
     parser.add_argument(
-        "--max-n-pts",
+        "--max-mols",
         type=int,
-        default=None,
-        help="Maximum number of molecules to include (default: use all)",
+        default=-1,
+        help="Maximum number of molecules to include. A value of -1 includes all molecules (default: -1)",
     )
     parser.add_argument(
         "--seed",
@@ -245,7 +252,7 @@ Examples:
     args = parser.parse_args()
     main(
         args.data_dir,
-        max_n_pts=args.max_n_pts,
+        max_mols=args.max_mols,
         seed=args.seed,
         frac_train=args.frac_train,
     )

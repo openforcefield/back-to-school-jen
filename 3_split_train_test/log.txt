@@ -1,15 +1,0 @@
-WARNING:tensorflow:From /Users/jenniferclark/mamba/envs/bts/lib/python3.12/site-packages/tensorflow/python/util/deprecation.py:588: calling function (from tensorflow.python.eager.polymorphic_function.polymorphic_function) with experimental_relax_shapes is deprecated and will be removed in a future version.
-Instructions for updating:
-experimental_relax_shapes is deprecated, use reduce_retracing instead
-2025-09-03 15:07:45.981 | INFO     | __main__:split_train_test:91 - MinMax Splitting Options: {'frac_train': 0.95, 'seed': 42}
-2025-09-03 15:07:45.981 | INFO     | __main__:split_train_test:94 - Loading dataset from: /Users/jenniferclark/bin/back-to-school-jen/2_filtered_results/raw-spice-95.0thpercentile
-2025-09-03 15:07:46.012 | INFO     | __main__:split_train_test:98 - Loading smiles.json from: /Users/jenniferclark/bin/back-to-school-jen/2_filtered_results/raw-spice-95.0thpercentile/smiles.json
-2025-09-03 15:07:46.076 | INFO     | __main__:split_train_test:111 - Total number of points limited to 100, using seed=42
-2025-09-03 15:07:46.076 | INFO     | __main__:split_train_test:120 - Splitting dataset into training and testing sets, writing to: /Users/jenniferclark/bin/back-to-school-jen/3_split_train_test
-2025-09-03 15:08:01.111 | INFO     | __main__:split_train_test:142 - N_Train: 95, N_Test: 5, N_Total (before max_n_pts): 24326
-Saving the dataset (0/1 shards):   0%|          | 0/95 [00:00<?, ? examples/s]Saving the dataset (1/1 shards): 100%|██████████| 95/95 [00:00<00:00, 15972.22 examples/s]Saving the dataset (1/1 shards): 100%|██████████| 95/95 [00:00<00:00, 15528.41 examples/s]
-Saving the dataset (0/1 shards):   0%|          | 0/5 [00:00<?, ? examples/s]Saving the dataset (1/1 shards): 100%|██████████| 5/5 [00:00<00:00, 890.02 examples/s]Saving the dataset (1/1 shards): 100%|██████████| 5/5 [00:00<00:00, 880.27 examples/s]
-2025-09-03 15:08:01.129 | INFO     | __main__:split_train_test:149 - Done splitting dataset into training and testing sets.
-Flattening the indices:   0%|          | 0/95 [00:00<?, ? examples/s]Flattening the indices: 100%|██████████| 95/95 [00:00<00:00, 6064.18 examples/s]
-Flattening the indices:   0%|          | 0/5 [00:00<?, ? examples/s]Flattening the indices: 100%|██████████| 5/5 [00:00<00:00, 1606.15 examples/s]
-2025-09-03 15:08:01.159 | INFO     | __main__:split_train_test:160 - Saved train/test smiles to /Users/jenniferclark/bin/back-to-school-jen/3_split_train_test/smiles_test_train.json
