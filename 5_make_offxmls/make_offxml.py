@@ -2,8 +2,9 @@
 Force field parameter generation and coverage analysis pipeline.
 
 This module generates SMIRNOFF force field parameters from molecular datasets
-and validates parameter coverage. It processes bonds and angles at multiple
-specificity levels and creates comprehensive parameter definitions.
+and validates parameter coverage. It processes Bond and Angle components according to
+types that are defined by SMIRKS strings. These types can range in
+specificity level, creating comprehensive parameter definitions.
 
 Input Requirements
 ------------------
@@ -101,6 +102,7 @@ def summarize_all_types(
     mm_component_types : dict[int, dict[str, list[MMComponent]]]
         Components organized by specificity level and SMIRKS pattern.
         Structure: {specificity_level: {smirks_pattern: [component_instances]}}
+        where components are Bond or Angle.
 
     Returns
     -------
@@ -110,7 +112,9 @@ def summarize_all_types(
 
     Notes
     -----
-    Provides key statistics for force field parameter generation decisions:
+    "Types" are molecular mechanics component categories defined by SMIRKS
+    strings that can range in specificity. Provides key statistics for
+    force field parameter generation decisions:
     - Total unique types per specificity level
     - Top 10 most common component types
     - Percentage with count < 5 and singleton types
@@ -165,7 +169,9 @@ def get_components_by_type(
 
     Notes
     -----
-    Processes Bond and Angle components with population cutoff of 10 occurrences.
+    Components are molecular mechanics elements; this function processes Bond
+    and Angle components. "Types" are categories defined by SMIRKS strings that
+    can range in specificity. Processes with population cutoff of 10 occurrences.
     Specificity levels determine SMIRKS pattern generality (higher = more specific).
     """
 
@@ -320,8 +326,10 @@ def test_coverage(filename_offxml: str, smiles_dict: dict[str, list[str]]) -> No
 
     Notes
     -----
-    Uncovered components indicate molecular environments not present in the
-    force field, suggesting potential parameter gaps or training limitations.
+    Components are molecular mechanics elements; this function tests Bond and
+    Angle coverage. Uncovered components indicate molecular environments
+    not present in the force field, suggesting potential parameter gaps
+    or training limitations.
     """
 
     new_ff = ForceField(filename_offxml)
