@@ -1,20 +1,18 @@
 """Force field parameter optimization using molecular datasets.
 
-This module provides functions to train force field parameters against molecular
-energy and force data using gradient-based optimization. The workflow includes
-loading pre-prepared SMEE force fields and topologies, training with TensorBoard
-logging, and output of optimized parameters in OFFXML format.
+This module prepares data for use in parametrization with SMEE. The workflow includes
+loading pre-prepared SMEE force fields and topologies, and exporting them as .pkl files.
 
 Command-line Arguments
 ----------------------
 --data-dir : str
     Path to directory containing HuggingFace formatted molecular dataset.
     Must contain dataset_info.json, state.json, and .arrow files used as
-    an imput for the creation of SMEE force field and topology objects.
+    an input for the creation of SMEE force field and topology objects.
 --filename-forcefield : str
-    Path to saved SMEE force field file (.pkl or .json format).
+    Path to saved SMEE force field file (.pkl format).
 --filename-topo-dict : str
-    Path to saved SMEE topologies dictionary file (.pkl or .json format).
+    Path to saved SMEE topologies dictionary file (.pkl format).
 --offxml : str
     Path to reference OFFXML force field file for output structure.
     Must be the same as that used for constructing SMEE force field and topology
@@ -32,11 +30,6 @@ Train a force field with default parameters:
 $ python fit_data.py --data-dir ./data-train --filename-forcefield smee_force_field.pkl \\
     --filename-topo-dict smee_topology_dict.pkl --offxml openff-2.2.1.offxml
 
-Train with custom hyperparameters:
-$ python fit_data.py --data-dir ./data-train --filename-forcefield smee_force_field.json \\
-    --filename-topo-dict smee_topology_dict.json --offxml openff-2.2.1.offxml \\
-    --n-epochs 2000 --learning-rate 0.0005 --batch-size 256
-
 Input Dataset Structure
 -----------------------
 data-dir/ : dir
@@ -47,6 +40,17 @@ data-dir/ : dir
     ├── coords (list)          # Flattened 3D coordinates
     ├── energy (list)          # Flattened energy values
     └── forces (list)          # Flattened force vectors
+
+Required .pkl Files
+-------------------
+filename-forcefield.pkl : file
+    Serialized SMEE TensorForceField object containing force field parameters
+    and potentials ready for optimization. Generated from OFFXML force field.
+
+filename-topo-dict.pkl : file
+    Dictionary mapping SMILES strings to SMEE TensorTopology objects.
+    Contains molecular topology information (bonds, angles, dihedrals) for
+    each unique molecule in the dataset.
 
 Output Structure
 ----------------
@@ -61,7 +65,6 @@ Creates the following outputs in current working directory:
 import pathlib
 import math
 from collections import defaultdict
-import json
 import pickle
 
 from tqdm import tqdm
@@ -101,17 +104,14 @@ def load_smee_outputs(
     filename_ff: pathlib.Path | str,
     filename_topo: pathlib.Path | str,
 ) -> tuple[smee.TensorForceField, dict[str, smee.TensorTopology]]:
-    """Load SMEE force field and topologies from disk.
-
-    Loads SMEE objects from either pickle or JSON files. Automatically
-    detects file format based on extension.
+    """Load SMEE force field and topologies from pickle files.
 
     Parameters
     ----------
     filename_ff : pathlib.Path | str
-        Path to saved SMEE force field file(s) (.pkl or .json).
+        Path to saved SMEE force field .pkl file.
     filename_topo : pathlib.Path | str
-        Path to saved SMEE topologies file(s) (.pkl or .json).
+        Path to saved SMEE topologies .pkl file.
 
     Returns
     -------
@@ -123,7 +123,7 @@ def load_smee_outputs(
     Raises
     ------
     FileNotFoundError
-        If fileis not found.
+        If file is not found.
     ValueError
         If file format is not supported or loading fails.
 
@@ -135,16 +135,6 @@ def load_smee_outputs(
     ...     "smee_topology_dict.pkl"
     ... )
     """
-
-    def convert_to_tensors(obj):
-        """Helper function to convert lists back to tensors in JSON data."""
-        if isinstance(obj, dict):
-            return {k: convert_to_tensors(v) for k, v in obj.items()}
-        elif (
-            isinstance(obj, list) and len(obj) > 0 and isinstance(obj[0], (int, float))
-        ):
-            return torch.tensor(obj)
-        return obj
 
     filename_ff = pathlib.Path(filename_ff)
     if not pathlib.Path(filename_ff).exists():
@@ -159,16 +149,6 @@ def load_smee_outputs(
     if filename_ff.suffix.lower() == ".pkl":
         with open(filename_ff, "rb") as f_pkl:
             smee_ff = pickle.load(f_pkl)
-    elif filename_ff.suffix.lower() == ".json":
-        with open(filename_ff, "r") as f_json:
-            ff_dict = json.load(f_json)
-        try:
-            ff_dict = convert_to_tensors(ff_dict)
-            smee_ff = smee.TensorForceField(**ff_dict)
-        except Exception as e:
-            raise ValueError(
-                f"Failed to reconstruct force field from JSON {filename_ff}: {e}"
-            )
     else:
         raise ValueError(
             f"Unsupported file format for force field: {filename_ff.suffix}"
@@ -178,21 +158,6 @@ def load_smee_outputs(
     if filename_topo.suffix.lower() == ".pkl":
         with open(filename_topo, "rb") as f_pkl:
             topologies = pickle.load(f_pkl)
-    elif filename_topo.suffix.lower() == ".json":
-        with open(filename_topo, "r") as f_json:
-            topo_dict = json.load(f_json)
-        topologies = {}
-        try:
-            for smiles, topo_data in topo_dict.items():
-                # Convert lists back to tensors if needed
-                for key, value in topo_data.items():
-                    if isinstance(value, list):
-                        topo_data[key] = torch.tensor(value)
-                topologies[smiles] = smee.TensorTopology(**topo_data)
-        except Exception as e:
-            raise ValueError(
-                f"Failed to reconstruct topologies from JSON {filename_topo}: {e}"
-            )
     else:
         raise ValueError(
             f"Unsupported file format for topologies: {filename_topo.suffix}"
@@ -268,7 +233,8 @@ def train_forcefield(
 
     Optimizes force field parameters by minimizing the sum of squared errors
     between predicted and reference energies and forces using gradient descent
-    with the Adam optimizer.
+    with the
+    `Adam optimizer<https://docs.pytorch.org/docs/stable/generated/torch.optim.Adam.html>`_.
 
     Parameters
     ----------
@@ -509,15 +475,17 @@ def main(
         Path to directory containing training dataset in HuggingFace format.
         Must contain dataset_info.json, state.json, and .arrow files.
     filename_ff : pathlib.Path | str
-        Path to saved SMEE force field file (.pkl or .json format).
+        Path to saved SMEE force field .pkl file.
     filename_topo : pathlib.Path | str
-        Path to saved SMEE topologies dictionary file (.pkl or .json format).
+        Path to saved SMEE topologies dictionary .pkl file.
     offxml : pathlib.Path | str
         Path to reference OFFXML force field file for output structure.
     n_epochs : int, optional
         Number of training epochs (default: 1000).
     learning_rate : float, optional
-        Learning rate for Adam optimizer (default: 0.001).
+        Learning rate for
+        `Adam optimizer<https://docs.pytorch.org/docs/stable/generated/torch.optim.Adam.html>`_
+        (default: 0.001).
     batch_size : int, optional
         Batch size for training (default: 500).
 
@@ -589,13 +557,13 @@ Examples:
         "--filename-forcefield",
         type=str,
         required=True,
-        help="Filename for SMEE forcefield .pkl or .json file",
+        help="Filename for SMEE forcefield .pkl file",
     )
     parser.add_argument(
         "--filename-topo-dict",
         type=str,
         required=True,
-        help="Filename for dictionary of SMILES and SMEE topologies .pkl or .json file",
+        help="Filename for dictionary of SMILES and SMEE topologies .pkl file",
     )
     parser.add_argument(
         "--offxml",
@@ -613,13 +581,13 @@ Examples:
         "--learning-rate",
         type=float,
         default=0.001,
-        help="Learning rate ...",
+        help="Learning rate input for PyTorch Adam optimizer",
     )
     parser.add_argument(
         "--batch-size",
         type=int,
         default=500,
-        help="Batch size ...",
+        help="Batch size",
     )
     args = parser.parse_args()
     main(
