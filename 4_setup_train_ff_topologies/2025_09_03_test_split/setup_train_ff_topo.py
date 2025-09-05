@@ -3,6 +3,12 @@
 This script converts molecular datasets and force fields into SMEE format for
 efficient machine learning optimization workflows.
 
+Note that outputs may be saved as .pkl or .json files, where the latter is only
+for debugging purposes. During the serialization process in creating a .json file
+the objects are saved as strings which is not a comprehensive record. This script
+should be updated with a more thorough writer for a human readable output if the
+json output is meant to be used for force field fitting.
+
 Input Requirements
 ------------------
 Dataset Directory (--data-dir):
@@ -234,7 +240,8 @@ def save_smee_output(
 ) -> None:
     """Save SMEE objects to disk for training pipelines.
 
-    Serializes SMEE force field and topology objects.
+    Serializes SMEE force field and topology objects. Note that .json output
+    is meant for debugging purposes as objects are lost during serialization.
 
     Parameters
     ----------
@@ -245,7 +252,8 @@ def save_smee_output(
         Dictionary mapping SMILES to SMEE topology tensors.
     file_format : {'pkl', 'json'}, optional
         Serialization format ('pkl' for binary, 'json' for text).
-        Default is 'pkl'.
+        Default is 'pkl'. JSON is for debugging only as information is lost
+        during serialization.
     output_dir : pathlib.Path, str, or None, optional
         Output directory (None uses current directory). Default is None.
     overwrite : bool, optional
@@ -291,7 +299,7 @@ def save_smee_output(
         output_dir = pathlib.Path(output_dir)
         output_dir.mkdir(parents=True, exist_ok=True)
 
-    def tensor_to_list(obj: Any) -> Any:
+    def serialize_to_list_or_str(obj: Any) -> Any:
         """Custom JSON encoder for torch tensors and other non-serializable objects."""
         if isinstance(obj, torch.Tensor):
             return obj.tolist()
@@ -319,7 +327,9 @@ def save_smee_output(
             try:
                 ff_dict = dataclasses.asdict(smee_force_field)
                 with open(filename, "w") as json_file:
-                    json.dump(ff_dict, json_file, indent=2, default=tensor_to_list)
+                    json.dump(
+                        ff_dict, json_file, indent=2, default=serialize_to_list_or_str
+                    )
             except Exception as e:
                 logger.warning(f"Could not save JSON format for force field: {e}")
                 filename = None
@@ -349,7 +359,10 @@ def save_smee_output(
 
                 with open(filename, "w") as json_file:
                     json.dump(
-                        topologies_dict, json_file, indent=2, default=tensor_to_list
+                        topologies_dict,
+                        json_file,
+                        indent=2,
+                        default=serialize_to_list_or_str,
                     )
             except Exception as e:
                 logger.warning(f"Could not save JSON format for topologies: {e}")
@@ -542,7 +555,7 @@ Examples:
         type=str,
         choices=["pkl", "json"],
         default="pkl",
-        help="Output file format (default: pkl)",
+        help="Output file format (default: pkl). JSON format is for debugging only, as information is lost during serialization.",
     )
     parser.add_argument(
         "--output-dir",
