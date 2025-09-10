@@ -558,6 +558,52 @@ class Bond(MMComponent):
         )
         return parameter
 
+    def get_bond_length(self):
+        """
+        Calculate bond lengths from all molecular conformers.
+
+        Computes the Euclidean distance between the two atoms defining this bond
+        for each available conformer in the RDKit molecule. This provides geometric
+        information that can be used for parameter fitting or validation.
+
+        Returns
+        -------
+        list[float] or None
+            List of bond lengths in Angstroms, one for each conformer.
+            Returns None if no conformers are available.
+
+        Examples
+        --------
+        >>> from openff.toolkit import Molecule
+        >>> mol = Molecule.from_smiles("CCO")
+        >>> mol.generate_conformers(n_conformers=2)
+        >>> bond = Bond(indices=(0, 1), mol=mol, rdkit_mol=mol.to_rdkit())
+        >>> lengths = bond.get_bond_length()
+        >>> len(lengths)
+        2
+        >>> all(1.4 < length < 1.6 for length in lengths)  # Typical C-C bond
+        True
+
+        Notes
+        -----
+        The calculation uses 3D coordinates from RDKit conformers. If multiple
+        conformers are available, each will yield a separate bond length value
+        reflecting the molecular flexibility or different optimization states.
+        """
+        n_confs = self.rdkit_mol.GetNumConformers()
+        if n_confs == 0:
+            return None
+        lengths = []
+        for i in range(n_confs):
+            conf = self.rdkit_mol.GetConformer(i)
+            pos1 = conf.GetAtomPosition(self.indices[0])
+            pos2 = conf.GetAtomPosition(self.indices[1])
+            length = np.linalg.norm(
+                np.array([pos1.x, pos1.y, pos1.z]) - np.array([pos2.x, pos2.y, pos2.z])
+            )
+            lengths.append(length)
+        return lengths
+
 
 class Angle(MMComponent):
     """
@@ -646,6 +692,60 @@ class Angle(MMComponent):
             id=f"specificity={specificity_num} index={index} count={len(components)}",
         )
         return parameter
+
+    def get_angle(self):
+        """
+        Calculate angle values from all molecular conformers.
+
+        Computes the bond angle between the three atoms defining this angle
+        for each available conformer in the RDKit molecule. The angle is measured
+        between vectors from the central atom (second atom) to the two terminal atoms.
+
+        Returns
+        -------
+        list[float] or None
+            List of angle values in degrees, one for each conformer.
+            Each angle is between 0 and 180 degrees. Returns None if no conformers
+            are available.
+
+        Examples
+        --------
+        >>> from openff.toolkit import Molecule
+        >>> mol = Molecule.from_smiles("CCO")
+        >>> mol.generate_conformers(n_conformers=2)
+        >>> angle = Angle(indices=(0, 1, 2), mol=mol, rdkit_mol=mol.to_rdkit())
+        >>> angles = angle.get_angle()
+        >>> len(angles)
+        2
+        >>> all(100 < angle < 120 for angle in angles)  # Typical C-C-O angle
+        True
+
+        Notes
+        -----
+        The calculation uses 3D coordinates from RDKit conformers and applies
+        the standard vector dot product formula for angle calculation:
+
+        .. math::
+            \\theta = \\arccos\\left(\\frac{\\mathbf{v_1} \\cdot \\mathbf{v_2}}{|\\mathbf{v_1}| |\\mathbf{v_2}|}\\right)
+
+        where v1 and v2 are vectors from the central atom to the terminal atoms.
+        The result is clipped to [-1, 1] to avoid numerical errors in arccos.
+        """
+        n_confs = self.rdkit_mol.GetNumConformers()
+        if n_confs == 0:
+            return None
+        angles = []
+        for i in range(n_confs):
+            conf = self.rdkit_mol.GetConformer(i)
+            pos1 = conf.GetAtomPosition(self.indices[0])
+            pos2 = conf.GetAtomPosition(self.indices[1])
+            pos3 = conf.GetAtomPosition(self.indices[2])
+            v1 = np.array([pos1.x, pos1.y, pos1.z]) - np.array([pos2.x, pos2.y, pos2.z])
+            v2 = np.array([pos3.x, pos3.y, pos3.z]) - np.array([pos2.x, pos2.y, pos2.z])
+            cos_theta = np.dot(v1, v2) / (np.linalg.norm(v1) * np.linalg.norm(v2))
+            angle_rad = np.arccos(np.clip(cos_theta, -1.0, 1.0))
+            angles.append(np.degrees(angle_rad))
+        return angles
 
 
 class ProperTorsion(MMComponent):

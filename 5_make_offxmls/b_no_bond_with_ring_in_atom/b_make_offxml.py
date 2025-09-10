@@ -11,6 +11,15 @@ Input Requirements
 - JSON file with train/test SMILES splits: {"train": [smiles], "test": [smiles]}
 - Template OFFXML force field file
 - QCArchive dataset names for external validation
+- Dataset Directory (--data-dir):
+    HuggingFace datasets format with:
+    - dataset_info.json : Dataset metadata and column schemas
+    - state.json : Dataset state information
+    - data-*.arrow : Apache Arrow files containing:
+        - smiles (string) : SMILES molecular representations
+        - coords (float) : Flattened 3D coordinates [x1,y1,z1,x2,y2,z2,...]
+        - energy (float) : Total molecular energies
+        - forces (float) : Force vectors [fx1,fy1,fz1,fx2,fy2,fz2,...]
 
 Output Structure
 ----------------
@@ -23,7 +32,7 @@ Workflow
 2. Extract molecular mechanics components (bonds, angles)
 3. Generate SMIRKS patterns at specified levels
 4. Create enhanced force field with new parameters
-5. Test coverage against training, testing, and external datasets
+5. test coverage against training, testing, and external datasets
 
 Examples
 --------
@@ -32,7 +41,13 @@ Command line usage:
         --filename-offxml-out enhanced.offxml \\
         --filename-offxml-in openff-2.0.0.offxml \\
         --filename-test-train-smiles splits.json \\
-        --datasets dataset1 dataset2 --datasets-type optimization
+        --datasets dataset1 dataset2 --datasets-type optimization \\
+        -vv
+
+Verbosity levels:
+    -v   : WARNING level (errors and warnings only)
+    -vv  : INFO level (general information, recommended)
+    -vvv : DEBUG level (detailed debugging output)
 
 Programmatic usage:
     from make_offxml import main
@@ -41,48 +56,66 @@ Programmatic usage:
 
 import json
 import pathlib
+import sys
 
 import argparse
 from loguru import logger
+from datasets import load_from_disk
+
+
 from qcportal import PortalClient
 
 from openff.toolkit import ForceField
 
-from from_finlay.molecular_classes import (
+# Configure logger to be silent by default until verbosity is set
+logger.remove()  # Remove default handler immediately
+sys.path.insert(0, str(pathlib.Path(__file__).parent.parent))
+from from_finlay.molecular_classes import (  # noqa: E402
     SpecificityLevel,
     MMComponent,
     Bond,
     Angle,
 )
-from from_finlay import process_SMIRKS as ffps
-from from_finlay import process_mmcomponents as ffpmm
-from from_finlay.coverage import check_all_components_fully_covered_parallel_chunks
+from from_finlay import process_SMIRKS as ffps  # noqa: E402
+from from_finlay import process_mmcomponents as ffpmm  # noqa: E402
+from from_finlay.coverage import check_all_components_fully_covered_parallel_chunks  # noqa: E402
 
+# No bond order information
 SPECIFICITY_LEVELS_BY_COMPONENT: dict[
     type[MMComponent], dict[int, SpecificityLevel]
 ] = {
     Bond: {
         0: SpecificityLevel(
-            name="Standard",
-            get_atom_smirks=ffps.get_atom_smirks_standard,
-            get_bond_smirks=ffps.get_bond_smirks_standard,
+            name="0:AtomStandard-BondGeneralized",
+            get_atom_smirks=ffps.get_atom_smirks_with_ring_info,
+            get_bond_smirks=ffps.get_bond_smirks_all_bonds_generalised,
+        ),
+        1: SpecificityLevel(
+            name="1:AtomAllAtom-BondGeneralized",
+            get_atom_smirks=ffps.get_atom_smirks_all_bonded_atom_with_ring_info,
+            get_bond_smirks=ffps.get_bond_smirks_all_bonds_generalised,
         ),
     },
     Angle: {
         0: SpecificityLevel(
-            name="TerminalWildcard",
-            get_atom_smirks=ffps.get_atom_smirks_terminal_wildcard,
+            name="0:AtomTerminalWildcard-BondGeneralized",
+            get_atom_smirks=ffps.get_atom_smirks_terminal_wildcard_with_ring_info,
             get_bond_smirks=ffps.get_bond_smirks_non_central_bonds_generalised,
         ),
         1: SpecificityLevel(
-            name="TerminalHnoH",
-            get_atom_smirks=ffps.get_atom_smirks_terminal_h_no_h,
+            name="1:AtomTerminalHnoH-BondGeneralized",
+            get_atom_smirks=ffps.get_atom_smirks_terminal_h_no_h_with_ring_info,
             get_bond_smirks=ffps.get_bond_smirks_non_central_bonds_generalised,
         ),
         2: SpecificityLevel(
-            name="Standard",
-            get_atom_smirks=ffps.get_atom_smirks_standard,
-            get_bond_smirks=ffps.get_bond_smirks_standard,
+            name="2:AtomStandard-BondGeneralized",
+            get_atom_smirks=ffps.get_atom_smirks_with_ring_info,
+            get_bond_smirks=ffps.get_bond_smirks_all_bonds_generalised,
+        ),
+        3: SpecificityLevel(
+            name="3:AtomCentralAllAtoms-BondGeneralized",
+            get_atom_smirks=ffps.get_atom_smirks_central_all_bonded_atom_with_ring_info,
+            get_bond_smirks=ffps.get_bond_smirks_all_bonds_generalised,
         ),
     },
 }
@@ -92,32 +125,18 @@ def summarize_all_types(
     mm_component_types: dict[int, dict[str, list[MMComponent]]],
 ) -> None:
     """
-    Print statistical summary of molecular mechanics component types.
-
-    Analyzes component type distributions across specificity levels, providing
-    statistics on frequency, rare types, and overall diversity.
+    Log statistical summary of component types across specificity levels.
 
     Parameters
     ----------
     mm_component_types : dict[int, dict[str, list[MMComponent]]]
-        Components organized by specificity level and SMIRKS pattern.
-        Structure: {specificity_level: {smirks_pattern: [component_instances]}}
-        where components are Bond or Angle.
+        Structure: {specificity_level: {smirks_pattern: [components]}}.
 
-    Returns
-    -------
-    None
-        Logs statistics including total types, most common patterns,
-        and percentage of low-frequency types.
-
-    Notes
-    -----
-    "Types" are molecular mechanics component categories defined by SMIRKS
-    strings that can range in specificity. Provides key statistics for
-    force field parameter generation decisions:
-    - Total unique types per specificity level
-    - Top 10 most common component types
-    - Percentage with count < 5 and singleton types
+    Examples
+    --------
+    >>> types = {0: {"[#6:1]-[#6:2]": [bond1, bond2]}}
+    >>> summarize_all_types(types)
+    # Logs: "Total unique component types at specificity level 0: 1"
     """
     for specificity_num, components_by_type in mm_component_types.items():
         component_type_counts = ffpmm.get_mm_component_type_num(components_by_type)
@@ -147,42 +166,37 @@ def summarize_all_types(
 
 
 def get_components_by_type(
-    smiles_list: list[str],
+    data_dir: str,
 ) -> dict[type[MMComponent], dict[int, dict[str, list[MMComponent]]]]:
     """
-    Extract and categorize molecular mechanics components from SMILES list.
-
-    Processes molecular data to extract bonds and angles, organizing them by
-    component type and specificity level for force field parameter generation.
+    Extract and organize molecular mechanics components from dataset.
 
     Parameters
     ----------
-    smiles_list : list[str]
-        List of SMILES strings to process.
+    data_dir : str
+        Path to HuggingFace dataset directory.
 
     Returns
     -------
     dict[type[MMComponent], dict[int, dict[str, list[MMComponent]]]]
-        Components organized by class, specificity level, and SMIRKS pattern.
-        Structure: {ComponentClass: {level: {smirks: [components]}}}
-        where ComponentClass is Bond or Angle.
+        Structure: {ComponentClass: {level: {smirks: [components]}}}.
 
-    Notes
-    -----
-    Components are molecular mechanics elements; this function processes Bond
-    and Angle components. "Types" are categories defined by SMIRKS strings that
-    can range in specificity. Processes with population cutoff of 10 occurrences.
-    Specificity levels determine SMIRKS pattern generality (higher = more specific).
+    Examples
+    --------
+    >>> components = get_components_by_type("./dataset/")
+    >>> len(components[Bond])  # Number of specificity levels for bonds
+    2
     """
 
     logger.info("Getting components by type:")
+    dataset = load_from_disk(data_dir)
     components_by_type: dict[
         type[MMComponent], dict[int, dict[str, list[MMComponent]]]
     ] = {}
     for component_class in [Bond, Angle]:
         logger.info(f"\n{'=' * 20}\nProcessing {component_class.__name__}\n{'=' * 20}")
 
-        components = ffpmm.get_all_mm_components(smiles_list, component_class)  # type: ignore[type-abstract]
+        components = ffpmm.get_all_mm_components(dataset, component_class)  # type: ignore[type-abstract]
         logger.info(f"Found {len(components)} {component_class.__name__}s.")
 
         class_components_by_type = ffpmm.get_mm_components_by_specificity_by_type(
@@ -205,25 +219,21 @@ def write_forcefield_file(
     filename_offxml_in: pathlib.Path | str,
 ) -> None:
     """
-    Generate new force field file with additional parameters.
-
-    Takes a template force field and adds new bond and angle parameters derived
-    from molecular dataset analysis.
+    Generate enhanced force field with additional parameters.
 
     Parameters
     ----------
     components_by_type : dict[type[MMComponent], dict[int, dict[str, list[MMComponent]]]]
-        Components organized by class, specificity level, and SMIRKS pattern.
         Output from get_components_by_type().
     filename_offxml_out : pathlib.Path | str
-        Output path for the new force field file (.offxml format).
+        Output path for enhanced force field (.offxml).
     filename_offxml_in : pathlib.Path | str
-        Input template force field file path (valid SMIRNOFF format).
+        Input template force field path (.offxml).
 
-    Returns
-    -------
-    None
-        Writes enhanced force field to specified output file.
+    Examples
+    --------
+    >>> components = get_components_by_type("dataset/")
+    >>> write_forcefield_file(components, "out.offxml", "template.offxml")
     """
 
     filename_offxml_out = pathlib.Path(filename_offxml_out)
@@ -274,7 +284,14 @@ def get_qca_smiles_dict(datasets: list[str], dataset_type: str) -> dict[str, lis
     for dataset_name in datasets:
         ds = client.get_dataset(dataset_type, dataset_name)
         smiles_dict[dataset_name] = list(
-            set([entry["extras"]["mapped_smiles"] for entry in ds.get_entries])
+            set(
+                [
+                    entry.initial_molecule.extras[
+                        "canonical_isomeric_explicit_hydrogen_mapped_smiles"
+                    ]
+                    for entry in ds.iterate_entries()
+                ]
+            )
         )
     return smiles_dict
 
@@ -294,17 +311,17 @@ def get_train_test_smiles_dict(filename: pathlib.Path | str) -> dict[str, list[s
     Returns
     -------
     dict[str, list[str]]
-        Dictionary with "Train" and "Test" keys mapping to SMILES lists.
-        Structure: {"Train": [smiles1, ...], "Test": [smiles1, ...]}
+        Dictionary with "train" and "test" keys mapping to SMILES lists.
+        Structure: {"train": [smiles1, ...], "test": [smiles1, ...]}
     """
     with open(filename, "r") as f:
         smiles_data = json.load(f)
-    return {"Train": smiles_data["train"], "Test": smiles_data["test"]}
+    return {"train": smiles_data["train"], "test": smiles_data["test"]}
 
 
 def test_coverage(filename_offxml: str, smiles_dict: dict[str, list[str]]) -> None:
     """
-    Test force field parameter coverage across molecular datasets.
+    test force field parameter coverage across molecular datasets.
 
     Validates that the generated force field can parameterize molecules from
     training, testing, and external datasets, identifying any molecules or
@@ -347,6 +364,7 @@ def test_coverage(filename_offxml: str, smiles_dict: dict[str, list[str]]) -> No
 
 
 def main(
+    data_dir: str,
     filename_offxml_out: str,
     filename_offxml_in: pathlib.Path | str,
     filename_test_train_smiles: pathlib.Path | str,
@@ -358,6 +376,8 @@ def main(
 
     Parameters
     ----------
+    data_dir : str
+        Path to HugginFace structures dataset directory.
     filename_offxml_out : str
         Output path for the enhanced force field file (.offxml format).
     filename_offxml_in : pathlib.Path | str
@@ -375,7 +395,7 @@ def main(
     """
 
     smiles_dict = get_train_test_smiles_dict(filename_test_train_smiles)
-    components_by_type = get_components_by_type(smiles_dict["Train"])
+    components_by_type = get_components_by_type(data_dir)
     write_forcefield_file(components_by_type, filename_offxml_out, filename_offxml_in)
 
     qca_dict = get_qca_smiles_dict(datasets, dataset_type)
@@ -395,10 +415,16 @@ Examples:
             --filename-offxml-in sage-2.1.0.offxml \
             --filename-test-train-smiles molecular_splits.json \
             --datasets "OpenFF Additional Generated ChEMBL Optimizations v4.0" "OpenFF Additional Generated ChEMBL Optimizations v4.0" \
-            --datasets-type singlepoint
+            --datasets-type singlepoint \
+            -vv
+
+    With different verbosity levels:
+        -v    : Show only warnings
+        -vv   : Show warnings and info messages (recommended)
+        -vvv  : Show all messages including debug output
 
 Pipeline Overview:
-    1. Loads smiles set from a JSON file containing two lists under the keywords "Test" and "Train"
+    1. Loads smiles set from a JSON file containing two lists under the keywords "test" and "train"
     2. Extracts bonds and angles with SMIRKS pattern generation
     3. Creates enhanced force field with new parameters
     4. Validates coverage against train/test/external datasets
@@ -408,6 +434,12 @@ Output:
     - Enhanced force field file (.offxml format)
     - Comprehensive logging of component analysis and coverage statistics
         """,
+    )
+    parser.add_argument(
+        "--data-dir",
+        type=str,
+        required=True,
+        help="Path to HuggingFace structured dataset directory",
     )
     parser.add_argument(
         "--filename-offxml-out",
@@ -439,8 +471,29 @@ Output:
         type=str,
         help="Type of QCArchive dataset (e.g., 'optimization', 'singlepoint'). Required if --datasets is provided.",
     )
+    parser.add_argument(
+        "-v",
+        "--verbose",
+        action="count",
+        default=0,
+        help="Increase verbosity level: -v for WARNING, -vv for INFO, -vvv for DEBUG",
+    )
     args = parser.parse_args()
+
+    # Configure logging based on verbosity level
+    # Logger was already cleared of default handlers at import time
+    if args.verbose == 0:
+        # No logging output - keep logger silent
+        pass
+    elif args.verbose == 1:
+        logger.add(sys.stdout, level="WARNING")
+    elif args.verbose == 2:
+        logger.add(sys.stdout, level="INFO")
+    elif args.verbose >= 3:
+        logger.add(sys.stdout, level="DEBUG")
+
     main(
+        args.data_dir,
         args.filename_offxml_out,
         args.filename_offxml_in,
         args.filename_test_train_smiles,
