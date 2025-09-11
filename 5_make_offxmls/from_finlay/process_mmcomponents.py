@@ -81,6 +81,9 @@ def get_mm_components_from_huggingface(
     ----------
     ds_row : dict
         HuggingFace dataset row containing 'smiles' field and optional 'coords'.
+        The 'smiles' field should contain mapped SMILES strings with atom indexing.
+        The 'coords' field (if present) should be a flat list of xyz coordinates:
+        [x1,y1,z1, x2,y2,z2, ..., xN,yN,zN] for each conformer sequentially.
     component_type : type[MMComponent]
         Component class (Bond, Angle, ProperTorsion, ImproperTorsion).
 
@@ -100,7 +103,7 @@ def get_mm_components_from_huggingface(
     >>> # With coordinate data for multiple conformers
     >>> import numpy as np
     >>> row_with_coords = {
-    ...     "smiles": "[C:1][C:2][O:3]",
+    ...     "smiles": "[C:1][C:2][O:3]",  # 3 atoms
     ...     "coords": [
     ...         0.0, 0.0, 0.0, 1.5, 0.0, 0.0, 2.0, 1.0, 0.0,  # Conformer 1 flattened xyz-coord
     ...         0.1, 0.1, 0.1, 1.4, 0.1, 0.1, 2.1, 0.9, 0.1   # Conformer 2 flattened xyz-coord
@@ -183,7 +186,7 @@ def get_all_mm_components(
     >>> from datasets import Dataset
     >>> from molecular_classes import Bond
     >>> dataset = Dataset.from_dict({
-    ...     "mapped_smiles": ["[C:1][C:2][O:3]", "[C:1][C:2][C:3]"]
+    ...     "smiles": ["[C:1][C:2][O:3]", "[C:1][C:2][C:3]"]
     ... })
     >>> bonds = get_all_mm_components(dataset, Bond)
     >>> print(f"Total bonds: {len(bonds)}")
@@ -194,12 +197,6 @@ def get_all_mm_components(
     >>> filtered_bonds = get_all_mm_components(dataset, Bond, unwanted_smirks=unwanted)
     >>> print(f"Filtered bonds: {len(filtered_bonds)}")
     Filtered bonds: 3
-
-    >>> # Use custom column name
-    >>> dataset = Dataset.from_dict({
-    ...     "smiles": ["[C:1][C:2][O:3]", "[C:1][C:2][C:3]"]
-    ... })
-    >>> bonds = get_all_mm_components(dataset, Bond, smiles_column="smiles")
     """
     all_components = []
     for row in tqdm(dataset, desc="Processing HuggingFace Dataset"):
@@ -217,7 +214,7 @@ def get_all_mm_components(
             if not matched:
                 all_components_filtered.append(component)
         logger.info(
-            f"Filtered out {len(all_components) - len(all_components_filtered)} unwanted torsions."
+            f"Filtered out {len(all_components) - len(all_components_filtered)} unwanted components."
         )
         all_components = all_components_filtered
 
@@ -326,7 +323,7 @@ def merge_dicts(dicts):
 def get_all_mm_components_by_type_parallel(
     mm_components: Iterable[MMComponent],
     specificity_level: SpecificityLevel,
-    n_workers=None,
+    n_workers: int | None = None,
 ) -> dict[str, list[MMComponent]]:
     """
     Group components by SMIRKS patterns using parallel processing.
@@ -338,7 +335,8 @@ def get_all_mm_components_by_type_parallel(
     specificity_level : SpecificityLevel
         Determines SMIRKS pattern specificity.
     n_workers : int, optional
-        Number of worker processes. Default uses all CPU cores.
+        Number of worker processes. If None, uses all available CPU cores.
+        If os.cpu_count() returns None, defaults to 1 worker.
 
     Returns
     -------
@@ -362,6 +360,9 @@ def get_all_mm_components_by_type_parallel(
     mm_components = list(mm_components)
     if n_workers is None:
         n_workers = os.cpu_count()
+
+    # Ensure n_workers is not None for the division
+    n_workers = n_workers or 1
     chunk_size = math.ceil(len(mm_components) / n_workers)
     component_chunks = [
         mm_components[i : i + chunk_size]
@@ -404,7 +405,17 @@ def get_mm_components_by_specificity_by_type(
     Returns
     -------
     dict[int, dict[str, list[MMComponent]]]
-        Nested structure: {level: {smirks: [components]}}.
+        Hierarchical structure organized as:
+        {
+            specificity_level: {
+                "smirks_pattern": [component1, component2, ...],
+                ...
+            },
+            ...
+        }
+
+        Higher specificity levels contain common patterns with detailed SMIRKS.
+        Lower specificity levels contain rare patterns with broader SMIRKS.
 
     Examples
     --------
@@ -416,8 +427,13 @@ def get_mm_components_by_specificity_by_type(
     >>> hierarchical = get_mm_components_by_specificity_by_type(
     ...     torsions, specificity_levels, cutoff_population=10
     ... )
+    >>> # hierarchical[2] = high specificity patterns
+    >>> # hierarchical[1] = medium specificity patterns
+    >>> # hierarchical[0] = low specificity patterns
     >>> len(hierarchical[2])  # High specificity patterns
     25
+    >>> list(hierarchical[2].keys())[0]  # Example high-specificity SMIRKS
+    '[#6X4:1]-[#6X4:2]-[#8X2:3]-[#1:4]'
     """
     components_by_specificity = {}
     specificity_order = sorted(specificity_levels.keys(), reverse=True)
@@ -425,11 +441,15 @@ def get_mm_components_by_specificity_by_type(
 
     for i, specificity_num in enumerate(specificity_order):
         specificity_level = specificity_levels[specificity_num]
+        logger.info(
+            f"Getting Components by Type with Specificity {specificity_num}: {specificity_level.name}"
+        )
         components_by_type = get_all_mm_components_by_type_parallel(
             components_to_process, specificity_level
         )
         components_by_specificity[specificity_num] = components_by_type
 
+        logger.info("Finding component types that are too specific...")
         # Prepare for next (less specific) level
         if i < len(specificity_order) - 1:
             # Find component types below cutoff

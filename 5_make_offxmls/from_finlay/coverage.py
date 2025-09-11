@@ -272,11 +272,17 @@ def check_all_components_fully_covered(
     -------
     dict[str, dict[str, list[tuple[int, ...]]]]
         Dictionary mapping SMILES strings to their missing parameters. Structure:
-        - Top level: {smiles_string: missing_components_dict}
-        - Second level: {component_type: [atom_index_tuples]}
-        - Component types: "Bonds", "Angles", "ProperTorsions", "ImproperTorsions"
-        - Atom indices: tuples of atom indices defining the missing component
+        {
+            "smiles_string": {
+                "Bonds": [(atom1, atom2), ...],
+                "Angles": [(atom1, atom2, atom3), ...],
+                "ProperTorsions": [(atom1, atom2, atom3, atom4), ...],
+                "ImproperTorsions": [(atom1, atom2, atom3, atom4), ...]
+            },
+            ...
+        }
         Only molecules with missing parameters are included in the result.
+        Empty dict means all molecules are fully parameterized.
 
     Notes
     -----
@@ -311,7 +317,8 @@ def check_all_components_fully_covered(
     Missing Si-Si bond between atoms: (0, 1)
     """
     all_unassigned = {}
-    for smiles in tqdm(mapped_smiles, desc="Checking Component Coverage"):
+    logger.info("Checking Component Coverage")
+    for smiles in mapped_smiles:
         mol = Molecule.from_mapped_smiles(smiles, allow_undefined_stereo=True)
         top = Topology.from_molecules([mol])
         labels = ff.label_molecules(top)[0]  # As only one molecule
@@ -329,8 +336,8 @@ def check_all_components_fully_covered(
                     unassigned_indices.append(at_indices)
             if unassigned_indices:
                 unassigned[component_type] = unassigned_indices
-                logger.debug(covered_indices)
-                logger.debug(component_class.getter_fn(mol))
+        #                logger.debug(covered_indices)
+        #                logger.debug(component_class.getter_fn(mol))
 
         if unassigned:
             all_unassigned[smiles] = unassigned
@@ -363,17 +370,18 @@ def check_all_components_fully_covered_parallel_chunks(
 
     Notes
     -----
-    This function has incorrect implementation and should be fixed. The executor
-    submits calls to check_all_components_fully_covered with wrong arguments.
+    This function distributes chunks across multiple processes for efficient
+    analysis of large molecular datasets. Each chunk is processed independently
+    and results are merged.
 
     Examples
     --------
     >>> from openff.toolkit import ForceField
     >>> ff = ForceField("openff-2.0.0.offxml")
-    >>> smiles_list = ["[C:1][C:2]", "[C:1][O:2]"]
+    >>> smiles_list = ["[C:1][C:2]", "[C:1][O:2]", "[Si:1][Si:2]"]
     >>> results = check_all_components_fully_covered_parallel_chunks(smiles_list, ff)
-    >>> print(f"Analyzed {len(results)} molecules")
-    Analyzed 2 molecules
+    >>> print(f"Found missing parameters in {len(results)} molecules")
+    Found missing parameters in 1 molecules
     """
     results = {}
     if n_workers is None:

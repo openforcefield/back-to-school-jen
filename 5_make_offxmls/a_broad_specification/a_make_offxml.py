@@ -8,16 +8,19 @@ specificity level, creating comprehensive parameter definitions.
 
 Input Requirements
 ------------------
-- JSON file with train/test SMILES splits: {"train": [smiles], "test": [smiles]}
-- Template OFFXML force field file
-- QCArchive dataset names for external validation
-- Dataset Directory (--data-dir):
-    HuggingFace datasets format with:
+- Train/Test SMILES JSON file with structure:
+    {
+        "train": ["[C:1][C:2][O:3]", "[C:1][C:2][C:3]", ...],
+        "test": ["[C:1][C:2][N:3]", "[C:1][O:2]", ...]
+    }
+- Template SMIRNOFF OFFXML force field file (.offxml format)
+- QCArchive dataset names for external validation (optional)
+- HuggingFace Dataset Directory containing:
     - dataset_info.json : Dataset metadata and column schemas
     - state.json : Dataset state information
-    - data-*.arrow : Apache Arrow files containing:
-        - smiles (string) : SMILES molecular representations
-        - coords (float) : Flattened 3D coordinates [x1,y1,z1,x2,y2,z2,...]
+    - data-*.arrow : Apache Arrow files with columns:
+        - smiles (string) : Mapped SMILES representations
+        - coords (float) : Flattened coordinates [x1,y1,z1,x2,y2,z2,...]
         - energy (float) : Total molecular energies
         - forces (float) : Force vectors [fx1,fy1,fz1,fx2,fy2,fz2,...]
 
@@ -32,26 +35,35 @@ Workflow
 2. Extract molecular mechanics components (bonds, angles)
 3. Generate SMIRKS patterns at specified levels
 4. Create enhanced force field with new parameters
-5. test coverage against training, testing, and external datasets
+5. Test coverage against training, testing, and external datasets
 
 Examples
 --------
-Command line usage:
-    python make_offxml.py \\
-        --filename-offxml-out enhanced.offxml \\
-        --filename-offxml-in openff-2.0.0.offxml \\
-        --filename-test-train-smiles splits.json \\
-        --datasets dataset1 dataset2 --datasets-type optimization \\
+Command line usage for basic enhancement:
+    python a_make_offxml.py \\
+        --data-dir ./molecular_dataset/ \\
+        --filename-offxml-out enhanced_ff.offxml \\
+        --filename-offxml-in openff-2.2.0.offxml \\
+        --filename-test-train-smiles train_test_splits.json \\
+        --datasets "OpenFF ChEMBL v1.0" "OpenFF Optimization v1.2" \\
+        --datasets-type optimization \\
         -vv
 
-Verbosity levels:
+Processing pipeline with different verbosity:
     -v   : WARNING level (errors and warnings only)
-    -vv  : INFO level (general information, recommended)
+    -vv  : INFO level (general progress, recommended)
     -vvv : DEBUG level (detailed debugging output)
 
 Programmatic usage:
-    from make_offxml import main
-    main("output.offxml", "input.offxml", "splits.json", ["spice"], "optimization")
+    from a_make_offxml import main
+    main(
+        data_dir="./dataset/",
+        filename_offxml_out="output.offxml",
+        filename_offxml_in="input.offxml",
+        filename_test_train_smiles="splits.json",
+        datasets=["dataset1"],
+        dataset_type="optimization"
+    )
 """
 
 import json
@@ -66,8 +78,6 @@ from qcportal import PortalClient
 
 from openff.toolkit import ForceField
 
-# Configure logger to be silent by default until verbosity is set
-logger.remove()  # Remove default handler immediately
 sys.path.insert(0, str(pathlib.Path(__file__).parent.parent))
 from from_finlay.molecular_classes import (  # noqa: E402
     SpecificityLevel,
@@ -79,77 +89,98 @@ from from_finlay import process_SMIRKS as ffps  # noqa: E402
 from from_finlay import process_mmcomponents as ffpmm  # noqa: E402
 from from_finlay.coverage import check_all_components_fully_covered_parallel_chunks  # noqa: E402
 
+logger.remove()
+
+bond_specificities = {  # Must be in order from least specific to most specific
+    "AtomStandard-BondGeneralized": ffps.SMIRKSFactory(
+        atom_include_ring_info=True,
+        bond_include_ring_info=True,
+        bond_specificity=ffps.BondSpecificity.WILDCARD,
+    ),
+    "AtomStandard-BondStandard": ffps.SMIRKSFactory(
+        atom_include_ring_info=True,
+        bond_include_ring_info=True,
+        bond_specificity=ffps.BondSpecificity.STANDARD,
+    ),
+    "AtomAllAtom-BondStandard": ffps.SMIRKSFactory(
+        atom_include_ring_info=True,
+        atom_bonded_behavior=ffps.BondedAtomBehavior.EXPLICIT_ATOMS,
+        bond_include_ring_info=True,
+        bond_specificity=ffps.BondSpecificity.STANDARD,
+    ),
+    "AtomAllInfo-BondStandard": ffps.SMIRKSFactory(
+        atom_include_ring_info=True,
+        atom_bonded_behavior=ffps.BondedAtomBehavior.EXPLICIT_ATOMS_BONDS,
+        bond_include_ring_info=True,
+        bond_specificity=ffps.BondSpecificity.STANDARD,
+    ),
+}
+angle_specificities = {  # Must be in order from least specific to most specific
+    "AtomTerminalWildcard-BondGeneralized": ffps.SMIRKSFactory(
+        atom_include_ring_info=True,
+        atom_terminal_behavior=ffps.TerminalBehavior.WILDCARD,
+        bond_include_ring_info=True,
+        bond_specificity=ffps.BondSpecificity.WILDCARD,
+    ),
+    "AtomTerminalHnoH-BondGeneralized": ffps.SMIRKSFactory(
+        atom_include_ring_info=True,
+        atom_terminal_behavior=ffps.TerminalBehavior.H_NO_H,
+        bond_include_ring_info=True,
+        bond_specificity=ffps.BondSpecificity.WILDCARD,
+    ),
+    "AtomStandard-BondGeneralized": ffps.SMIRKSFactory(
+        atom_include_ring_info=True,
+        bond_include_ring_info=True,
+        bond_specificity=ffps.BondSpecificity.WILDCARD,
+    ),
+    "AtomTerminalHnoH-BondStandard": ffps.SMIRKSFactory(
+        atom_include_ring_info=True,
+        atom_terminal_behavior=ffps.TerminalBehavior.H_NO_H,
+        bond_include_ring_info=True,
+        bond_specificity=ffps.BondSpecificity.STANDARD,
+    ),
+    "AtomStandard-BondStandard": ffps.SMIRKSFactory(
+        atom_include_ring_info=True,
+        bond_include_ring_info=True,
+        bond_specificity=ffps.BondSpecificity.STANDARD,
+    ),
+    "AtomCentralAllAtoms-BondStandard": ffps.SMIRKSFactory(
+        atom_include_ring_info=True,
+        atom_bonded_behavior=ffps.BondedAtomBehavior.CENTRAL_EXPLICIT_ATOMS,
+        bond_include_ring_info=True,
+        bond_specificity=ffps.BondSpecificity.STANDARD,
+    ),
+    "AtomCentralAllInfo-BondStandard": ffps.SMIRKSFactory(
+        atom_include_ring_info=True,
+        atom_bonded_behavior=ffps.BondedAtomBehavior.CENTRAL_EXPLICIT_ATOMS_BONDS,
+        bond_include_ring_info=True,
+        bond_specificity=ffps.BondSpecificity.STANDARD,
+    ),
+    # Remove to reduce the number of parameters
+    #    "AtomAllAtom-BondStandard": ffps.SMIRKSFactory(
+    #        atom_include_ring_info=True,
+    #        atom_bonded_behavior=ffps.BondedAtomBehavior.EXPLICIT_ATOMS,
+    #        bond_include_ring_info=True,
+    #        bond_specificity=ffps.BondSpecificity.STANDARD,
+    #    ),
+    #    "AtomAllInfo-BondStandard": ffps.SMIRKSFactory(
+    #        atom_include_ring_info=True,
+    #        atom_bonded_behavior=ffps.BondedAtomBehavior.EXPLICIT_ATOMS_BONDS,
+    #        bond_include_ring_info=True,
+    #        bond_specificity=ffps.BondSpecificity.STANDARD,
+    #    ),
+}
+
 SPECIFICITY_LEVELS_BY_COMPONENT: dict[
     type[MMComponent], dict[int, SpecificityLevel]
 ] = {
     Bond: {
-        0: SpecificityLevel(
-            name="0:AtomStandard-BondGeneralized",
-            get_atom_smirks=ffps.get_atom_smirks_with_ring_info,
-            get_bond_smirks=ffps.get_bond_smirks_all_bonds_generalised,
-        ),
-        1: SpecificityLevel(
-            name="1:AtomStandard-BondStandard",
-            get_atom_smirks=ffps.get_atom_smirks_with_ring_info,
-            get_bond_smirks=ffps.get_bond_smirks_standard,
-        ),
-        2: SpecificityLevel(
-            name="2:AtomAllAtom-BondStandard",
-            get_atom_smirks=ffps.get_atom_smirks_all_bonded_atom_with_ring_info,
-            get_bond_smirks=ffps.get_bond_smirks_standard,
-        ),
-        3: SpecificityLevel(
-            name="3:AtomAllInfo-BondStandard",
-            get_atom_smirks=ffps.get_atom_smirks_all_bonded_info_with_ring_info,
-            get_bond_smirks=ffps.get_bond_smirks_standard,
-        ),
+        i: factory.create_specificity_level(f"{i}:" + name)
+        for i, (name, factory) in enumerate(bond_specificities.items())
     },
     Angle: {
-        0: SpecificityLevel(
-            name="0:AtomTerminalWildcard-BondGeneralized",
-            get_atom_smirks=ffps.get_atom_smirks_terminal_wildcard_with_ring_info,
-            get_bond_smirks=ffps.get_bond_smirks_non_central_bonds_generalised,
-        ),
-        1: SpecificityLevel(
-            name="1:AtomTerminalHnoH-BondGeneralized",
-            get_atom_smirks=ffps.get_atom_smirks_terminal_h_no_h_with_ring_info,
-            get_bond_smirks=ffps.get_bond_smirks_non_central_bonds_generalised,
-        ),
-        2: SpecificityLevel(
-            name="2:AtomStandard-BondGeneralized",
-            get_atom_smirks=ffps.get_atom_smirks_with_ring_info,
-            get_bond_smirks=ffps.get_bond_smirks_all_bonds_generalised,
-        ),
-        3: SpecificityLevel(
-            name="3:AtomTerminalHnoH-BondStandard",
-            get_atom_smirks=ffps.get_atom_smirks_terminal_h_no_h_with_ring_info,
-            get_bond_smirks=ffps.get_bond_smirks_standard,
-        ),
-        4: SpecificityLevel(
-            name="4:AtomStandard-BondStandard",
-            get_atom_smirks=ffps.get_atom_smirks_with_ring_info,
-            get_bond_smirks=ffps.get_bond_smirks_standard,
-        ),
-        5: SpecificityLevel(
-            name="5:AtomCentralAllAtoms-BondStandard",
-            get_atom_smirks=ffps.get_atom_smirks_central_all_bonded_atom_with_ring_info,
-            get_bond_smirks=ffps.get_bond_smirks_standard,
-        ),
-        6: SpecificityLevel(
-            name="6:AtomCentralAllInfo-BondStandard",
-            get_atom_smirks=ffps.get_atom_smirks_central_all_bonded_info_with_ring_info,
-            get_bond_smirks=ffps.get_bond_smirks_standard,
-        ),
-        7: SpecificityLevel(
-            name="7:AtomAllAtom-BondStandard",
-            get_atom_smirks=ffps.get_atom_smirks_all_bonded_atom_with_ring_info,
-            get_bond_smirks=ffps.get_bond_smirks_standard,
-        ),
-        8: SpecificityLevel(
-            name="8:AtomAllInfo-BondStandard",
-            get_atom_smirks=ffps.get_atom_smirks_all_bonded_info_with_ring_info,
-            get_bond_smirks=ffps.get_bond_smirks_standard,
-        ),
+        i: factory.create_specificity_level(f"{i}:" + name)
+        for i, (name, factory) in enumerate(angle_specificities.items())
     },
 }
 
@@ -193,8 +224,14 @@ def summarize_all_types(
 
     # Print the total number of unique component types across all specificity levels
     total_unique_component_types = len(all_component_type_counts)
+    first_component = next(
+        iter(next(iter(next(iter(mm_component_types.values())).values())))
+    )
+    component_type = first_component.__class__.__name__
     logger.info(
-        f"Total unique component types across all specificity levels: {total_unique_component_types}"
+        "\n-------------------------------------------------\n"
+        f"Total unique component types, {component_type}, across all specificity levels: {total_unique_component_types}"
+        "\n-------------------------------------------------"
     )
 
 
@@ -290,21 +327,25 @@ def get_qca_smiles_dict(datasets: list[str], dataset_type: str) -> dict[str, lis
     """
     Retrieve molecular SMILES from QCArchive datasets.
 
-    Connects to QCArchive portal and downloads molecular data from specified
+    Connects to the QCArchive portal and downloads molecular data from specified
     datasets, extracting mapped SMILES strings for coverage analysis.
 
     Parameters
     ----------
     datasets : list[str]
-        List of dataset names to retrieve from QCArchive.
+        List of dataset names to retrieve from QCArchive portal.
     dataset_type : str
-        Type of QCArchive dataset (e.g., "optimization", "torsiondrive").
+        Type of QCArchive dataset (e.g., "optimization", "torsiondrive", "singlepoint").
 
     Returns
     -------
     dict[str, list[str]]
         Dictionary mapping dataset names to lists of mapped SMILES strings.
-        Structure: {dataset_name: [mapped_smiles1, mapped_smiles2, ...]}
+        Structure: {
+            "dataset_name_1": ["[C:1][C:2][O:3]", "[C:1][C:2][C:3]", ...],
+            "dataset_name_2": ["[N:1][C:2][C:3]", "[O:1][C:2]", ...],
+            ...
+        }
 
     Notes
     -----
@@ -345,7 +386,10 @@ def get_train_test_smiles_dict(filename: pathlib.Path | str) -> dict[str, list[s
     -------
     dict[str, list[str]]
         Dictionary with "train" and "test" keys mapping to SMILES lists.
-        Structure: {"train": [smiles1, ...], "test": [smiles1, ...]}
+        Structure: {
+            "train": ["[C:1][C:2][O:3]", "[C:1][C:2][C:3]", ...],
+            "test": ["[C:1][C:2][N:3]", "[C:1][O:2]", ...]
+        }
     """
     with open(filename, "r") as f:
         smiles_data = json.load(f)
@@ -354,7 +398,7 @@ def get_train_test_smiles_dict(filename: pathlib.Path | str) -> dict[str, list[s
 
 def test_coverage(filename_offxml: str, smiles_dict: dict[str, list[str]]) -> None:
     """
-    test force field parameter coverage across molecular datasets.
+    Test force field parameter coverage across molecular datasets.
 
     Validates that the generated force field can parameterize molecules from
     training, testing, and external datasets, identifying any molecules or
@@ -388,12 +432,14 @@ def test_coverage(filename_offxml: str, smiles_dict: dict[str, list[str]]) -> No
         logger.info(f"\nChecking coverage for {dataset_name} dataset...")
         uncovered = check_all_components_fully_covered_parallel_chunks(smiles, new_ff)
         if uncovered:
-            total_uncovered = sum(len(v) for v in uncovered.values())
-            logger.debug([v.keys() for v in uncovered.values()])
-            logger.debug(uncovered)
-            logger.info(
-                f"Found {total_uncovered} uncovered components in {len(uncovered)} component types:"
-            )
+            component_types = ["Bonds", "Angles", "ImproperTorsions", "ProperTorsions"]
+            for comp_typ in component_types:
+                n_uncovered = [
+                    len(x[comp_typ]) for x in uncovered.values() if comp_typ in x.keys()
+                ]  # likely redundancy in component types
+                logger.info(
+                    f"Uncovered {comp_typ}: {sum(n_uncovered)} in {len(n_uncovered)} molecules"
+                )
 
 
 def main(
@@ -410,7 +456,7 @@ def main(
     Parameters
     ----------
     data_dir : str
-        Path to HugginFace structures dataset directory.
+        Path to HuggingFace dataset directory containing molecular structures.
     filename_offxml_out : str
         Output path for the enhanced force field file (.offxml format).
     filename_offxml_in : pathlib.Path | str
@@ -443,12 +489,13 @@ if __name__ == "__main__":
         epilog="""
 Examples:
     Basic force field enhancement from local dataset:
-        python make_offxml.py \
-            --filename-offxml-out comprehensive_ff.offxml \
-            --filename-offxml-in sage-2.1.0.offxml \
-            --filename-test-train-smiles molecular_splits.json \
-            --datasets "OpenFF Additional Generated ChEMBL Optimizations v4.0" "OpenFF Additional Generated ChEMBL Optimizations v4.0" \
-            --datasets-type singlepoint \
+        python a_make_offxml.py \\
+            --data-dir ./molecular_dataset/ \\
+            --filename-offxml-out comprehensive_ff.offxml \\
+            --filename-offxml-in sage-2.1.0.offxml \\
+            --filename-test-train-smiles molecular_splits.json \\
+            --datasets "OpenFF ChEMBL v1.0" "OpenFF Optimization v1.2" \\
+            --datasets-type optimization \\
             -vv
 
     With different verbosity levels:
@@ -514,7 +561,6 @@ Output:
     args = parser.parse_args()
 
     # Configure logging based on verbosity level
-    # Logger was already cleared of default handlers at import time
     if args.verbose == 0:
         # No logging output - keep logger silent
         pass

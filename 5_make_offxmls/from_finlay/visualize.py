@@ -9,7 +9,7 @@ provide comprehensive analysis tools for force field development workflows.
 Key Functions
 -------------
 Statistical Analysis:
-    - plot_historgram_of_n_mol_per_type: Histogram of molecule counts per component type
+    - plot_histogram_of_n_mol_per_type: Histogram of molecule counts per component type
     - plot_cdf_of_n_mol_per_type: Cumulative distribution function visualization
 
 Molecular Visualization:
@@ -26,7 +26,7 @@ Analyzing component type distributions:
 ...     0: {"specific": [Bond(...), Bond(...)]},
 ...     1: {"general": [Angle(...), Angle(...), Angle(...)]}
 ... }
->>> plot_historgram_of_n_mol_per_type(mm_components)
+>>> plot_histogram_of_n_mol_per_type(mm_components)
 >>> plt.show()
 
 Visualizing specific molecular components:
@@ -57,7 +57,7 @@ from .molecular_classes import MMComponent
 from .process_mmcomponents import flatten_mm_component_types
 
 
-def plot_historgram_of_n_mol_per_type(
+def plot_histogram_of_n_mol_per_type(
     mm_component_types: dict[int, dict[str, list[MMComponent]]],
 ) -> None:
     """
@@ -95,7 +95,7 @@ def plot_historgram_of_n_mol_per_type(
     ...     0: {"[#6:1]-[#6:2]": [Bond(...), Bond(...)]},
     ...     1: {"[*:1]-[*:2]": [Bond(...) for _ in range(10)]}
     ... }
-    >>> plot_historgram_of_n_mol_per_type(components)
+    >>> plot_histogram_of_n_mol_per_type(components)
     >>> plt.show()  # Displays histogram of component type frequencies
     """
 
@@ -189,10 +189,11 @@ def show_molecule_with_atom_indices(
     ----------
     mapped_smiles : str
         Mapped SMILES string representing the molecule to visualize.
-        Atom mapping is required for proper index identification.
+        Atom mapping format should be [element:index] (e.g., "[C:1][C:2][O:3]").
     highlight_indices : tuple[int, ...]
         Tuple of atom indices (0-based) to highlight and label in the structure.
         These atoms will be colored green and labeled with their index numbers.
+        Should correspond to the mapped indices in the SMILES string.
 
     Returns
     -------

@@ -17,23 +17,25 @@ Bond, Angle, ProperTorsion, ImproperTorsion : Concrete MM component classes
 
 Examples
 --------
-Creating a bond component from a molecule:
+Creating and analyzing bond components:
 
 >>> from openff.toolkit import Molecule
 >>> mol = Molecule.from_smiles("CCO")
 >>> bond_indices = (0, 1)  # C-C bond
 >>> bond = Bond(indices=bond_indices, mol=mol, rdkit_mol=mol.to_rdkit())
+>>> print(f"Bond: {bond.indices}")
+Bond: (0, 1)
 
-Generating SMIRKS patterns:
+Generating SMIRKS patterns for different specificity levels:
 
->>> specificity = SpecificityLevel(
-...     name="Standard",
-...     get_atom_smirks=get_atom_smirks_standard,
-...     get_bond_smirks=get_bond_smirks_standard
-... )
+>>> from process_SMIRKS import SMIRKSFactory
+>>> factory = SMIRKSFactory()
+>>> specificity = factory.create_specificity_level("RingAware")
 >>> smirks = bond.get_smirks(specificity)
+>>> print(f"SMIRKS: {smirks}")
+SMIRKS: [#6X4:1]-[#6X4:2]
 
-Getting parameters for multiple components:
+Creating force field parameters from component groups:
 
 >>> bonds = [Bond(...), Bond(...)]  # Multiple bond components
 >>> base_ff = ForceField("openff-2.0.0.offxml")
@@ -44,6 +46,8 @@ Getting parameters for multiple components:
 ...     index=0,
 ...     base_ff=base_ff
 ... )
+>>> print(f"Parameter length: {parameter.length}")
+Parameter length: 1.52 angstrom
 """
 
 from typing import Optional, Callable, cast
@@ -222,6 +226,10 @@ class MMComponent(ABC):
     This is an abstract base class that enforces subclasses to define required
     class attributes. The class uses __slots__ for memory efficiency.
 
+    All MMComponent instances automatically generate mapped SMILES strings
+    during initialization and provide methods for SMIRKS pattern generation
+    and parameter creation.
+
     Examples
     --------
     Subclasses must define all required class attributes:
@@ -229,8 +237,17 @@ class MMComponent(ABC):
     >>> class Bond(MMComponent):
     ...     n_atoms = 2
     ...     handler_class = BondHandler
+    ...     handler_version = 0.3
     ...     parameter_type = BondHandler.BondType
     ...     getter_fn = get_bond_idxs
+
+    Creating a component instance:
+
+    >>> from openff.toolkit import Molecule
+    >>> mol = Molecule.from_smiles("CCO")
+    >>> bond = Bond(indices=(0, 1), mol=mol, rdkit_mol=mol.to_rdkit())
+    >>> print(bond.mapped_smiles)
+    [C:1][C:2][O:3]
     """
 
     # __slots__ = ["mapped_smiles", "indices", "mol", "rdkit_mol", "n_atoms", "handler_class", "parameter_type", "getter_fn"]
