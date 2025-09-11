@@ -3,6 +3,8 @@
 This module prepares data for use in parametrization with SMEE. The workflow includes
 loading pre-prepared SMEE force fields and topologies, and exporting them as .pkl files.
 
+Note that for improper torsions we only fit the v2 terms
+
 Command-line Arguments
 ----------------------
 --data-dir : str
@@ -208,7 +210,7 @@ def write_metrics(
     Examples
     --------
     >>> with tensorboardX.SummaryWriter("logs") as writer:
-    ...     write_metrics(10, total_loss, energy_loss, force_loss, writer)
+    ...     write_metrics(10, epoch_loss, energy_loss, force_loss, writer)
     """
     print(f"epoch={epoch} loss={loss.detach().item():.6f}", flush=True)
 
@@ -231,7 +233,7 @@ def train_forcefield(
 ) -> None:
     """Train force field parameters using molecular energy and force data.
 
-    Optimizes force field parameters by minimizing the sum of squared errors
+    Optimizes force field parameters by minimizing the mean squared errors
     between predicted and reference energies and forces using gradient descent
     with the
     `Adam optimizer<https://docs.pytorch.org/docs/stable/generated/torch.optim.Adam.html>`_.
@@ -264,8 +266,8 @@ def train_forcefield(
     - Saves final optimized force field as final-force-field.pt
     - Logs training metrics (loss, RMSE) to TensorBoard
 
-    Loss function: L = Σ(E_pred - E_ref)² + Σ(F_pred - F_ref)²
-    where energies and forces are weighted equally.
+    Loss function: L = MSE(E_pred, E_ref) + MSE(F_pred, F_ref)
+    where MSE is the mean squared error and energies and forces are weighted equally.
 
     Examples
     --------
@@ -283,7 +285,7 @@ def train_forcefield(
     dataset = datasets.Dataset.load_from_disk(train_filename_data)
 
     trainable = descent.train.Trainable(
-        force_field=smee_force_field, parameters=parameters, attributes={}
+        force_field=smee_force_field, parameters=PARAMETERS, attributes={}
     )
 
     directory = pathlib.Path("my-smee-fit")
@@ -301,7 +303,7 @@ def train_forcefield(
 
         for i in range(n_epochs):
             ff = trainable.to_force_field(trainable_parameters)
-            total_loss = torch.zeros(size=(1,), device=device)
+            epoch_loss = torch.zeros(size=(1,), device=device)
             energy_loss = torch.zeros(size=(1,), device=device)
             force_loss = torch.zeros(size=(1,), device=device)
             grad = None
@@ -313,7 +315,9 @@ def train_forcefield(
                 total=math.ceil(len(dataset) / batch_size),
             ):
                 batch = dataset.select(indices=batch_ids)
-                true_batch_size = len(dataset)
+                true_batch_size = len(
+                    dataset
+                )  # because loss between batches are combined
                 e_ref, e_pred, f_ref, f_pred = descent.targets.energy.predict(
                     batch, ff, topologies, "mean"
                 )
@@ -334,7 +338,7 @@ def train_forcefield(
                     grad += batch_grad
 
                 # keep sum of squares to report MSE at the end
-                total_loss += batch_loss.detach()
+                epoch_loss += batch_loss.detach()
                 energy_loss += batch_loss_energy.detach()
                 force_loss += batch_loss_force.detach()
 
@@ -342,7 +346,7 @@ def train_forcefield(
 
             write_metrics(
                 epoch=i,
-                loss=total_loss,
+                loss=epoch_loss,
                 loss_energy=energy_loss,
                 loss_forces=force_loss,
                 writer=writer,
