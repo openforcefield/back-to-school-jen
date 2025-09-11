@@ -1,0 +1,11 @@
+2025-09-05 13:24:18.330 | INFO     | __main__:load_smee_outputs:157 - Loading SMEE force field from: ../../4_setup_train_ff_topologies/2025_09_03_test_split/smee_force_field.pkl
+2025-09-05 13:24:18.336 | INFO     | __main__:load_smee_outputs:177 - Loading dict with SMILES and SMEE topologies from: ../../4_setup_train_ff_topologies/2025_09_03_test_split/smee_topology_dict.pkl
+2025-09-05 13:24:18.416 | INFO     | __main__:train_forcefield:316 - Loading dataset from: /Users/jenniferclark/bin/back-to-school-jen/3_split_train_test/test_split/data-train
+2025-09-05 13:24:18.430 | INFO     | __main__:train_forcefield:329 - Start training...
+Calculating energies:   0%|                               | 0/1 [00:00<?, ?it/s]Calculating energies: 100%|███████████████████████| 1/1 [00:00<00:00,  1.94it/s]Calculating energies: 100%|███████████████████████| 1/1 [00:00<00:00,  1.94it/s]
+epoch=0 loss=464.847748
+Calculating energies:   0%|                               | 0/1 [00:00<?, ?it/s]Calculating energies: 100%|███████████████████████| 1/1 [00:00<00:00,  1.89it/s]Calculating energies: 100%|███████████████████████| 1/1 [00:00<00:00,  1.89it/s]
+epoch=1 loss=1928.995850
+2025-09-05 13:24:19.582 | INFO     | __main__:train_forcefield:394 - Saving my-smee-fit/final-force-field.pt
+2025-09-05 13:24:19.656 | INFO     | __main__:write_new_offxml:439 - Writing out new forcefield...
+2025-09-05 13:24:19.790 | INFO     | __main__:write_new_offxml:488 - Saving new forcefield to: final-force-field.offxml

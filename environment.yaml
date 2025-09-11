@@ -33,6 +33,7 @@ dependencies:
   - tensorboard
   - tensorboardX
   - tbparse
+  - tensorflow
 
   # Benchmarking
   - openff-qcsubmit
@@ -48,6 +49,8 @@ dependencies:
 
 # Pip
   - pip:
+      # This fork adds support for linear bonds and angles to Smee
       - git+https://github.com/thomasjamespope/smee.git
       - git+https://github.com/openforcefield/yammbs.git
       - deepchem
+      - more_itertools
