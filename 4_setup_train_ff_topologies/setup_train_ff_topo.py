@@ -41,12 +41,15 @@ $ python setup_train_ff_topo.py --data-dir ./data-train --offxml openff-2.2.1.of
     --device cuda --file-format json
 """
 
+import os
 import pathlib
 import dataclasses
 import json
 import pickle
 from typing import Any, Literal
 from datetime import datetime
+import multiprocessing
+import functools
 
 import argparse
 from loguru import logger
@@ -57,6 +60,7 @@ import datasets
 import torch
 
 from openff.toolkit import Molecule, ForceField
+from openff.interchange import Interchange
 
 
 def validate_molecular_dataset(
@@ -117,6 +121,52 @@ def validate_molecular_dataset(
         filtered_dataset = dataset
 
     return filtered_dataset
+
+
+def smiles_to_interchange(smiles: str, forcefield: ForceField) -> Interchange | None:
+    """Convert SMILES string to OpenFF Interchange object using force field.
+
+    Creates an OpenFF Interchange object from a SMILES string by generating
+    a molecule and applying the force field parameters.
+
+    Parameters
+    ----------
+    smiles : str
+        SMILES molecular representation string.
+    forcefield : ForceField
+        OpenFF force field object for parameterization.
+
+    Returns
+    -------
+    Interchange or None
+        OpenFF Interchange object if successful, None if parameterization fails.
+
+    Notes
+    -----
+    Failed molecules are logged as warnings. Uses `allow_undefined_stereo=True`
+    for molecule creation.
+
+    Examples
+    --------
+    >>> from openff.toolkit import ForceField
+    >>> ff = ForceField("openff-2.2.1.offxml")
+    >>> interchange = smiles_to_interchange("CCO", ff)
+    >>> interchange is not None
+    True
+
+    >>> # Failed case returns None
+    >>> interchange = smiles_to_interchange("invalid_smiles", ff)
+    >>> interchange is None
+    True
+    """
+    try:
+        mol = Molecule.from_mapped_smiles(smiles, allow_undefined_stereo=True)
+        interchange = forcefield.create_interchange(mol.to_topology())
+        return interchange
+
+    except Exception as e:
+        logger.warning(f"Failed to process molecule '{smiles}': {str(e)}")
+        return None
 
 
 def prepare_to_train(
@@ -188,24 +238,32 @@ def prepare_to_train(
 
     # Process molecules and create interchanges
     logger.info("Creating interchanges...")
-    all_smiles = []
-    all_interchanges = []
-    failed_molecules = 0
+    all_smiles = [entry["smiles"] for entry in dataset]  # type: ignore[index]
+    n_processes = os.cpu_count() or 1
+    chunk_size = max(1, len(all_smiles) // (n_processes * 4))
 
-    for entry in tqdm(dataset, desc="Creating interchanges"):
-        smiles: str = ""
-        try:
-            smiles = entry["smiles"]  # type: ignore[index]
-            mol = Molecule.from_mapped_smiles(smiles, allow_undefined_stereo=True)
-            interchange = starting_ff.create_interchange(mol.to_topology())
+    with multiprocessing.get_context("forkserver").Pool(processes=n_processes) as pool:
+        maybe_interchanges = list(
+            pool.imap(
+                functools.partial(
+                    smiles_to_interchange,
+                    forcefield=starting_ff,
+                ),
+                tqdm(all_smiles, desc="Parametrizing"),
+                chunksize=chunk_size,
+            ),
+        )
 
-            all_smiles.append(smiles)
-            all_interchanges.append(interchange)
-
-        except Exception as e:
-            failed_molecules += 1
-            logger.warning(f"Failed to process molecule '{smiles}': {e}")
-            continue
+    filtered_smiles, filtered_interchanges = zip(
+        *[
+            (smiles, interchange)
+            for smiles, interchange in zip(all_smiles, maybe_interchanges)
+            if interchange is not None
+        ]
+    )
+    all_smiles = list(filtered_smiles)
+    all_interchanges = list(filtered_interchanges)
+    failed_molecules = len(maybe_interchanges) - len(all_interchanges)
 
     if failed_molecules > 0:
         logger.warning(f"Failed to process {failed_molecules} molecules")
