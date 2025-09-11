@@ -83,7 +83,7 @@ import more_itertools
 
 from openff.toolkit import ForceField
 
-parameters = {
+PARAMETERS = {
     "Bonds": descent.train.ParameterConfig(
         cols=["k", "length"],
         scales={"k": 1e-2, "length": 1.0},  # normalize so roughly equal
