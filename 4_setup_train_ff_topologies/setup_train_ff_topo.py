@@ -422,7 +422,7 @@ def load_dataset(data_dir: pathlib.Path | str) -> datasets.Dataset:
     # Get Dataset
     train_filename_data = pathlib.Path(data_dir)
     logger.info(f"Loading dataset: {train_filename_data.resolve()}")
-    dataset = datasets.Dataset.load_from_disk(train_filename_data)
+    dataset = datasets.Dataset.load_from_disk(str(train_filename_data))
     dataset.set_format(
         "torch", columns=["energy", "coords", "forces"], output_all_columns=True
     )
@@ -477,7 +477,7 @@ def main(
 
     # Load dataset
     logger.info(f"Loading dataset: {filename_data.resolve()}")
-    dataset = load_dataset(filename_data)
+    dataset = load_dataset(str(filename_data))
     total_molecules = len(dataset)
 
     logger.info(f"Processing all {total_molecules} molecules")
