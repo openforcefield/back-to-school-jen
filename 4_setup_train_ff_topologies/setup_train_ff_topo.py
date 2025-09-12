@@ -158,9 +158,9 @@ def smiles_to_interchange(smiles: str, offxml: str) -> Interchange | None:
     >>> interchange is None
     True
     """
+    forcefield = ForceField(offxml)
+    mol = Molecule.from_mapped_smiles(smiles, allow_undefined_stereo=True)
     try:
-        forcefield = ForceField(offxml)
-        mol = Molecule.from_mapped_smiles(smiles, allow_undefined_stereo=True)
         logger.debug(f"Creating interchange for: {smiles}")
         interchange = forcefield.create_interchange(mol.to_topology())
         return interchange
@@ -310,6 +310,9 @@ def prepare_to_train(
                     raise
 
     logger.info("Processing completed")
+
+    if all(x is None for x in maybe_interchanges):
+        raise ValueError("All interchanges failed to be created.")
 
     filtered_smiles, filtered_interchanges = zip(
         *[
