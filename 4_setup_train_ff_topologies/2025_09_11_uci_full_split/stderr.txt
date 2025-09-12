@@ -1,1 +1,2 @@
-slurmstepd: error: *** JOB 43575652 ON hpc3-20-22 CANCELLED AT 2025-09-11T13:26:44 DUE TO PREEMPTION ***
+/export/spool/slurm/slurmd.spool/job43578001/slurm_script: line 17: ncpus: command not found
+slurmstepd: error: *** JOB 43578001 ON hpc3-21-03 CANCELLED AT 2025-09-12T05:40:16 ***

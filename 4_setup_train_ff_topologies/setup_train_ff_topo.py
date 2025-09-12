@@ -175,6 +175,7 @@ def prepare_to_train(
     device: str | None = None,
     precision: Literal["single", "double"] = "single",
     validate_molecules: bool = True,
+    n_cpus: int | None = None,
 ) -> tuple[smee.TensorForceField, dict[str, smee.TensorTopology]]:
     """Convert molecular dataset and force field to SMEE format for training.
 
@@ -199,6 +200,9 @@ def prepare_to_train(
     validate_molecules : bool, optional
         Whether to validate molecular structures before processing.
         Default is True.
+    n_cpus : int | None, optional
+        Number of CPUs used for parallelization of interchange creation.
+        Default is None which will detect the number of core.
 
     Returns
     -------
@@ -237,19 +241,21 @@ def prepare_to_train(
     logger.info(f"Processing {total_molecules} molecules.")
 
     # Process molecules and create interchanges
-    logger.info("Creating interchanges...")
     all_smiles = [entry["smiles"] for entry in dataset]  # type: ignore[index]
-    n_processes = os.cpu_count() or 1
-    chunk_size = max(1, len(all_smiles) // (n_processes * 4))
+    if n_cpus is None:
+        n_cpus = os.cpu_count() or 1
+    chunk_size = max(1, len(all_smiles) // (n_cpus * 4))
 
-    with multiprocessing.get_context("forkserver").Pool(processes=n_processes) as pool:
+    logger.info(f"Found {n_cpus} workers for interchange creation")
+
+    with multiprocessing.get_context("forkserver").Pool(processes=n_cpus) as pool:
         maybe_interchanges = list(
             pool.imap(
                 functools.partial(
                     smiles_to_interchange,
                     forcefield=starting_ff,
                 ),
-                tqdm(all_smiles, desc="Parametrizing"),
+                tqdm(all_smiles, desc="Creating Interchanges"),
                 chunksize=chunk_size,
             ),
         )
@@ -496,6 +502,7 @@ def main(
     device: Literal["cpu", "cuda"] | None = None,
     file_format: Literal["pkl", "json"] = "pkl",
     output_dir: pathlib.Path | str | None = None,
+    n_cpus: int | None = None,
 ) -> None:
     """Main pipeline for SMEE force field preparation.
 
@@ -515,6 +522,8 @@ def main(
         Output serialization format. Default is 'pkl'.
     output_dir : pathlib.Path, str, or None, optional
         Output directory. Default is None (current directory).
+    n_cpus : int | None, optional
+        Number of CPUs in a calculation. Default is None.
 
     Returns
     -------
@@ -546,6 +555,7 @@ def main(
         device=device,
         precision=precision,
         validate_molecules=validate_molecules,
+        n_cpus=n_cpus,
     )
 
     save_smee_output(
@@ -621,6 +631,12 @@ Examples:
         default=None,
         help="Directory to save output files (default: current directory)",
     )
+    parser.add_argument(
+        "--n-cpus",
+        type=str,
+        default=None,
+        help="Number of CPUs used in parallelization",
+    )
     args = parser.parse_args()
     main(
         args.data_dir,
@@ -630,4 +646,5 @@ Examples:
         device=args.device,
         file_format=args.file_format,
         output_dir=args.output_dir,
+        n_cpus=int(args.n_cpus),
     )

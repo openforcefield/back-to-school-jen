@@ -1,5 +1,5 @@
-Thu Sep 11 01:08:33 PM PDT 2025
-Running job on host hpc3-20-22
+Thu Sep 11 05:31:57 PM PDT 2025
+Running job on host hpc3-21-03
 LICENSE: Could not open license file "oe_license.txt" in local directory
 LICENSE: N.B. OE_LICENSE environment variable is not set
 LICENSE: N.B. OE_DIR environment variable is not set
@@ -11,14 +11,371 @@ The OpenEye Toolkits are found to be installed but not licensed and therefore wi
 The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
 The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
 The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
-2025-09-11 13:08:38.692 | INFO     | __main__:main:479 - Loading dataset: /dfs9/dmobley-lab/jclark9/descent/back-to-school-jen/3_split_train_test/full_split_uci/data-train
-2025-09-11 13:08:38.692 | INFO     | __main__:load_dataset:424 - Loading dataset: /dfs9/dmobley-lab/jclark9/descent/back-to-school-jen/3_split_train_test/full_split_uci/data-train
+2025-09-11 17:32:02.651 | INFO     | __main__:main:546 - Loading dataset: /dfs9/dmobley-lab/jclark9/descent/back-to-school-jen/3_split_train_test/full_split_uci/data-train
+2025-09-11 17:32:02.651 | INFO     | __main__:load_dataset:488 - Loading dataset: /dfs9/dmobley-lab/jclark9/descent/back-to-school-jen/3_split_train_test/full_split_uci/data-train
 /data/homezvol2/jclark9/micromamba/envs/descent-workflow/lib/python3.12/site-packages/datasets/table.py:1421: FutureWarning: promote has been superseded by promote_options='default'.
   table = cls._concat_blocks(blocks, axis=0)
-2025-09-11 13:08:44.399 | INFO     | __main__:main:483 - Processing all 23109 molecules
-2025-09-11 13:08:44.399 | INFO     | __main__:prepare_to_train:179 - Loading force field: /dfs9/dmobley-lab/jclark9/descent/openff-2.2.1.offxml
-2025-09-11 13:08:44.657 | INFO     | __main__:validate_molecular_dataset:88 - Validating molecules...
-2025-09-11 13:09:59.920 | INFO     | __main__:validate_molecular_dataset:116 - All molecules passed validation
-2025-09-11 13:09:59.921 | INFO     | __main__:prepare_to_train:187 - Processing 23109 molecules.
-2025-09-11 13:09:59.921 | INFO     | __main__:prepare_to_train:190 - Creating interchanges...
-Creating interchanges:   0%|          | 0/23109 [00:00<?, ?it/s]Creating interchanges:   0%|          | 1/23109 [00:09<62:42:17,  9.77s/it]Creating interchanges:   0%|          | 2/23109 [00:11<33:07:09,  5.16s/it]Creating interchanges:   0%|          | 3/23109 [00:14<26:33:10,  4.14s/it]Creating interchanges:   0%|          | 4/23109 [00:57<123:59:26, 19.32s/it]Creating interchanges:   0%|          | 5/23109 [01:00<85:43:49, 13.36s/it] Creating interchanges:   0%|          | 6/23109 [01:02<60:59:52,  9.50s/it]Creating interchanges:   0%|          | 7/23109 [03:40<373:41:42, 58.23s/it]Creating interchanges:   0%|          | 8/23109 [05:22<463:54:00, 72.29s/it]Creating interchanges:   0%|          | 9/23109 [06:06<407:07:10, 63.45s/it]Creating interchanges:   0%|          | 10/23109 [06:50<367:54:10, 57.34s/it]Creating interchanges:   0%|          | 11/23109 [07:34<341:03:37, 53.16s/it]Creating interchanges:   0%|          | 12/23109 [07:55<278:47:04, 43.45s/it]Creating interchanges:   0%|          | 13/23109 [08:42<285:31:00, 44.50s/it]Creating interchanges:   0%|          | 14/23109 [09:33<297:23:14, 46.36s/it]Creating interchanges:   0%|          | 15/23109 [10:34<326:40:03, 50.92s/it]Creating interchanges:   0%|          | 16/23109 [11:58<390:54:14, 60.94s/it]Creating interchanges:   0%|          | 17/23109 [12:39<352:39:36, 54.98s/it]Creating interchanges:   0%|          | 18/23109 [12:51<268:12:41, 41.82s/it]Creating interchanges:   0%|          | 19/23109 [13:28<258:50:25, 40.36s/it]Creating interchanges:   0%|          | 20/23109 [14:16<274:13:14, 42.76s/it]Creating interchanges:   0%|          | 21/23109 [15:35<344:22:31, 53.70s/it]
+2025-09-11 17:32:09.323 | INFO     | __main__:main:550 - Processing all 23109 molecules
+2025-09-11 17:32:09.324 | INFO     | __main__:prepare_to_train:233 - Loading force field: /dfs9/dmobley-lab/jclark9/descent/openff-2.2.1.offxml
+2025-09-11 17:32:09.549 | INFO     | __main__:validate_molecular_dataset:92 - Validating molecules...
+2025-09-11 17:33:24.821 | INFO     | __main__:validate_molecular_dataset:120 - All molecules passed validation
+2025-09-11 17:33:24.822 | INFO     | __main__:prepare_to_train:241 - Processing 23109 molecules.
+2025-09-11 17:33:29.626 | INFO     | __main__:prepare_to_train:249 - Found 32 workers for interchange creation
+Creating Interchanges:   0%|          | 0/23109 [00:00<?, ?it/s]LICENSE: Could not open license file "oe_license.txt" in local directory
+LICENSE: N.B. OE_LICENSE environment variable is not set
+LICENSE: N.B. OE_DIR environment variable is not set
+LICENSE: No product keys!
+LICENSE: Could not open license file "oe_license.txt" in local directory
+LICENSE: N.B. OE_LICENSE environment variable is not set
+LICENSE: N.B. OE_DIR environment variable is not set
+LICENSE: No product keys!
+LICENSE: Could not open license file "oe_license.txt" in local directory
+LICENSE: N.B. OE_LICENSE environment variable is not set
+LICENSE: N.B. OE_DIR environment variable is not set
+LICENSE: No product keys!
+LICENSE: Could not open license file "oe_license.txt" in local directory
+LICENSE: N.B. OE_LICENSE environment variable is not set
+LICENSE: N.B. OE_DIR environment variable is not set
+LICENSE: No product keys!
+LICENSE: Could not open license file "oe_license.txt" in local directory
+LICENSE: N.B. OE_LICENSE environment variable is not set
+LICENSE: N.B. OE_DIR environment variable is not set
+LICENSE: No product keys!
+LICENSE: Could not open license file "oe_license.txt" in local directory
+LICENSE: N.B. OE_LICENSE environment variable is not set
+LICENSE: N.B. OE_DIR environment variable is not set
+LICENSE: No product keys!
+LICENSE: Could not open license file "oe_license.txt" in local directory
+LICENSE: N.B. OE_LICENSE environment variable is not set
+LICENSE: N.B. OE_DIR environment variable is not set
+LICENSE: No product keys!
+LICENSE: Could not open license file "oe_license.txt" in local directory
+LICENSE: N.B. OE_LICENSE environment variable is not set
+LICENSE: N.B. OE_DIR environment variable is not set
+LICENSE: No product keys!
+LICENSE: Could not open license file "oe_license.txt" in local directory
+LICENSE: N.B. OE_LICENSE environment variable is not set
+LICENSE: N.B. OE_DIR environment variable is not set
+LICENSE: No product keys!
+LICENSE: Could not open license file "oe_license.txt" in local directory
+LICENSE: N.B. OE_LICENSE environment variable is not set
+LICENSE: N.B. OE_DIR environment variable is not set
+LICENSE: No product keys!
+LICENSE: No product keys!
+LICENSE: Could not open license file "oe_license.txt" in local directory
+LICENSE: N.B. OE_LICENSE environment variable is not set
+LICENSE: N.B. OE_DIR environment variable is not set
+LICENSE: No product keys!
+LICENSE: Could not open license file "oe_license.txt" in local directory
+LICENSE: N.B. OE_LICENSE environment variable is not set
+LICENSE: N.B. OE_DIR environment variable is not set
+LICENSE: No product keys!
+LICENSE: No product keys!
+LICENSE: Could not open license file "oe_license.txt" in local directory
+LICENSE: N.B. OE_LICENSE environment variable is not set
+LICENSE: N.B. OE_DIR environment variable is not set
+LICENSE: No product keys!
+LICENSE: Could not open license file "oe_license.txt" in local directory
+LICENSE: N.B. OE_LICENSE environment variable is not set
+LICENSE: N.B. OE_DIR environment variable is not set
+LICENSE: No product keys!
+LICENSE: Could not open license file "oe_license.txt" in local directory
+LICENSE: N.B. OE_LICENSE environment variable is not set
+LICENSE: N.B. OE_DIR environment variable is not set
+LICENSE: No product keys!
+LICENSE: No product keys!
+LICENSE: No product keys!
+LICENSE: No product keys!
+LICENSE: Could not open license file "oe_license.txt" in local directory
+LICENSE: N.B. OE_LICENSE environment variable is not set
+LICENSE: N.B. OE_DIR environment variable is not set
+LICENSE: No product keys!
+LICENSE: Could not open license file "oe_license.txt" in local directory
+LICENSE: N.B. OE_LICENSE environment variable is not set
+LICENSE: N.B. OE_DIR environment variable is not set
+LICENSE: No product keys!
+LICENSE: Could not open license file "oe_license.txt" in local directory
+LICENSE: N.B. OE_LICENSE environment variable is not set
+LICENSE: N.B. OE_DIR environment variable is not set
+LICENSE: No product keys!
+LICENSE: Could not open license file "oe_license.txt" in local directory
+LICENSE: N.B. OE_LICENSE environment variable is not set
+LICENSE: N.B. OE_DIR environment variable is not set
+LICENSE: No product keys!
+LICENSE: Could not open license file "oe_license.txt" in local directory
+LICENSE: N.B. OE_LICENSE environment variable is not set
+LICENSE: N.B. OE_DIR environment variable is not set
+LICENSE: No product keys!
+LICENSE: No product keys!
+LICENSE: Could not open license file "oe_license.txt" in local directory
+LICENSE: N.B. OE_LICENSE environment variable is not set
+LICENSE: N.B. OE_DIR environment variable is not set
+LICENSE: No product keys!
+LICENSE: Could not open license file "oe_license.txt" in local directory
+LICENSE: N.B. OE_LICENSE environment variable is not set
+LICENSE: N.B. OE_DIR environment variable is not set
+LICENSE: No product keys!
+LICENSE: No product keys!
+LICENSE: No product keys!
+LICENSE: Could not open license file "oe_license.txt" in local directory
+LICENSE: N.B. OE_LICENSE environment variable is not set
+LICENSE: N.B. OE_DIR environment variable is not set
+LICENSE: No product keys!
+LICENSE: No product keys!
+LICENSE: No product keys!
+LICENSE: No product keys!
+LICENSE: Could not open license file "oe_license.txt" in local directory
+LICENSE: N.B. OE_LICENSE environment variable is not set
+LICENSE: N.B. OE_DIR environment variable is not set
+LICENSE: No product keys!
+LICENSE: Could not open license file "oe_license.txt" in local directory
+LICENSE: N.B. OE_LICENSE environment variable is not set
+LICENSE: N.B. OE_DIR environment variable is not set
+LICENSE: No product keys!
+LICENSE: No product keys!
+LICENSE: No product keys!
+LICENSE: No product keys!
+LICENSE: Could not open license file "oe_license.txt" in local directory
+LICENSE: N.B. OE_LICENSE environment variable is not set
+LICENSE: N.B. OE_DIR environment variable is not set
+LICENSE: No product keys!
+LICENSE: No product keys!
+LICENSE: Could not open license file "oe_license.txt" in local directory
+LICENSE: N.B. OE_LICENSE environment variable is not set
+LICENSE: N.B. OE_DIR environment variable is not set
+LICENSE: No product keys!
+LICENSE: No product keys!
+LICENSE: No product keys!
+LICENSE: No product keys!
+LICENSE: No product keys!
+LICENSE: No product keys!
+LICENSE: No product keys!
+LICENSE: No product keys!
+LICENSE: No product keys!
+LICENSE: No product keys!
+LICENSE: No product keys!
+LICENSE: No product keys!
+LICENSE: No product keys!
+LICENSE: No product keys!
+LICENSE: No product keys!
+LICENSE: No product keys!
+LICENSE: No product keys!
+LICENSE: No product keys!
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+LICENSE: Could not open license file "oe_license.txt" in local directory
+LICENSE: N.B. OE_LICENSE environment variable is not set
+LICENSE: N.B. OE_DIR environment variable is not set
+LICENSE: No product keys!
+LICENSE: No product keys!
+LICENSE: No product keys!
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+LICENSE: No product keys!
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+LICENSE: No product keys!
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+LICENSE: No product keys!
+LICENSE: Could not open license file "oe_license.txt" in local directory
+LICENSE: N.B. OE_LICENSE environment variable is not set
+LICENSE: N.B. OE_DIR environment variable is not set
+LICENSE: No product keys!
+LICENSE: No product keys!
+LICENSE: No product keys!
+LICENSE: No product keys!
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+LICENSE: No product keys!
+LICENSE: No product keys!
+LICENSE: No product keys!
+LICENSE: No product keys!
+LICENSE: No product keys!
+LICENSE: No product keys!
+LICENSE: No product keys!
+LICENSE: No product keys!
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+LICENSE: No product keys!
+LICENSE: No product keys!
+LICENSE: No product keys!
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+LICENSE: No product keys!
+LICENSE: No product keys!
+LICENSE: No product keys!
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+LICENSE: No product keys!
+LICENSE: No product keys!
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+LICENSE: No product keys!
+LICENSE: No product keys!
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+LICENSE: No product keys!
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+LICENSE: No product keys!
+LICENSE: Could not open license file "oe_license.txt" in local directory
+LICENSE: N.B. OE_LICENSE environment variable is not set
+LICENSE: N.B. OE_DIR environment variable is not set
+LICENSE: No product keys!
+LICENSE: No product keys!
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+LICENSE: No product keys!
+LICENSE: No product keys!
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+LICENSE: No product keys!
+LICENSE: No product keys!
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+LICENSE: No product keys!
+LICENSE: No product keys!
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+LICENSE: No product keys!
+LICENSE: No product keys!
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+LICENSE: No product keys!
+LICENSE: No product keys!
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+LICENSE: No product keys!
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+LICENSE: No product keys!
+LICENSE: No product keys!
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+LICENSE: No product keys!
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+LICENSE: No product keys!
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+LICENSE: No product keys!
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+LICENSE: No product keys!
+LICENSE: No product keys!
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+LICENSE: No product keys!
+LICENSE: Could not open license file "oe_license.txt" in local directory
+LICENSE: N.B. OE_LICENSE environment variable is not set
+LICENSE: N.B. OE_DIR environment variable is not set
+LICENSE: No product keys!
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+LICENSE: No product keys!
+LICENSE: No product keys!
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+LICENSE: No product keys!
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+LICENSE: No product keys!
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+LICENSE: No product keys!
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+LICENSE: Could not open license file "oe_license.txt" in local directory
+LICENSE: N.B. OE_LICENSE environment variable is not set
+LICENSE: N.B. OE_DIR environment variable is not set
+LICENSE: No product keys!
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+LICENSE: No product keys!
+LICENSE: No product keys!
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+LICENSE: No product keys!
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+LICENSE: No product keys!
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+LICENSE: No product keys!
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+LICENSE: No product keys!
+LICENSE: No product keys!
+LICENSE: No product keys!
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+LICENSE: No product keys!
+LICENSE: No product keys!
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+LICENSE: No product keys!
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+Creating Interchanges:   1%|          | 180/23109 [00:05<12:22, 30.87it/s]Creating Interchanges:  11%|█         | 2520/23109 [00:05<00:34, 588.51it/s]Creating Interchanges:  20%|██        | 4680/23109 [00:06<00:14, 1279.29it/s]Creating Interchanges:  20%|██        | 4680/23109 [00:20<00:14, 1279.29it/s][19:28:58] UFFTYPER: Unrecognized charge state for atom: 28
+[19:54:11] UFFTYPER: Unrecognized charge state for atom: 18
+[20:54:49] UFFTYPER: Unrecognized charge state for atom: 15
+[00:02:39] UFFTYPER: Unrecognized atom type: S_5+4 (26)
+[03:17:17] UFFTYPER: Unrecognized charge state for atom: 19
+[04:03:51] UFFTYPER: Warning: hybridization set to SP3 for atom 23
