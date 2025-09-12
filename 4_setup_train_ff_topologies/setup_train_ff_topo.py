@@ -42,6 +42,7 @@ $ python setup_train_ff_topo.py --data-dir ./data-train --offxml openff-2.2.1.of
 """
 
 import os
+import sys
 import pathlib
 import dataclasses
 import json
@@ -157,10 +158,10 @@ def smiles_to_interchange(smiles: str, offxml: str) -> Interchange | None:
     >>> interchange is None
     True
     """
-
-    forcefield = ForceField(offxml)
-    mol = Molecule.from_mapped_smiles(smiles, allow_undefined_stereo=True)
     try:
+        forcefield = ForceField(offxml)
+        mol = Molecule.from_mapped_smiles(smiles, allow_undefined_stereo=True)
+        logger.debug(f"Creating interchange for: {smiles}")
         interchange = forcefield.create_interchange(mol.to_topology())
         return interchange
 
@@ -249,26 +250,64 @@ def prepare_to_train(
     else:
         if n_cpus is None:
             n_cpus = os.cpu_count() or 1
-        chunk_size = max(1, len(all_smiles) // (n_cpus * 4))
 
         logger.info(f"Found {n_cpus} workers for interchange creation")
-        logger.info(f"Chunk size: {chunk_size} molecules per chunk")
-        logger.info(f"Expected chunks: ~{len(all_smiles) // chunk_size}")
+        logger.info("Chunk size: 5 molecules per chunk")
+        logger.info(f"Expected chunks: ~{len(all_smiles) // 5}")
+
         logger.info("Starting multiprocessing...")
 
-        with multiprocessing.Pool(processes=n_cpus) as pool:
+        # forkserver context does not work with tqdm
+        if sys.platform == "darwin":  # macOS
+            try:
+                ctx = multiprocessing.get_context("fork")
+                logger.info("Using 'fork' context")
+            except Exception:
+                ctx = multiprocessing.get_context("spawn")  # type: ignore[assignment]
+                logger.info("Using 'spawn' context (fork unavailable)")
+        else:
+            ctx = multiprocessing  # type: ignore[assignment]
+            logger.info("Using default context")
+
+        with ctx.Pool(processes=n_cpus) as pool:
             with tqdm(total=len(all_smiles), desc="Creating Interchanges") as pbar:
                 maybe_interchanges = []
-                for result in pool.imap(
-                    functools.partial(
-                        smiles_to_interchange,
-                        offxml=str(offxml),
-                    ),
-                    all_smiles,
-                    chunksize=chunk_size,
-                ):
-                    maybe_interchanges.append(result)
-                    pbar.update(1)
+                processed_count = 0
+
+                try:
+                    # Use imap_unordered for potentially better performance and updates
+                    for result in pool.imap_unordered(
+                        functools.partial(
+                            smiles_to_interchange,
+                            offxml=str(offxml),
+                        ),
+                        all_smiles,
+                        chunksize=5,
+                    ):
+                        maybe_interchanges.append(result)
+                        processed_count += 1
+                        pbar.update(1)
+
+                        # Debug logging every 5 molecules for better feedback
+                        if processed_count % 5 == 0:
+                            logger.info(
+                                f"Processed {processed_count}/{len(all_smiles)} molecules"
+                            )
+
+                except KeyboardInterrupt:
+                    logger.warning(
+                        f"Interrupted after processing {processed_count} molecules"
+                    )
+                    pool.terminate()
+                    pool.join()
+                    raise
+                except Exception as e:
+                    logger.error(
+                        f"Error after processing {processed_count} molecules: {e}"
+                    )
+                    pool.terminate()
+                    pool.join()
+                    raise
 
     logger.info("Processing completed")
 
