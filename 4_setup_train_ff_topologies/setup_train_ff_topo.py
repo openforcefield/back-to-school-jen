@@ -123,7 +123,7 @@ def validate_molecular_dataset(
     return filtered_dataset
 
 
-def smiles_to_interchange(smiles: str, forcefield: ForceField) -> Interchange | None:
+def smiles_to_interchange(smiles: str, offxml: str) -> Interchange | None:
     """Convert SMILES string to OpenFF Interchange object using force field.
 
     Creates an OpenFF Interchange object from a SMILES string by generating
@@ -133,8 +133,8 @@ def smiles_to_interchange(smiles: str, forcefield: ForceField) -> Interchange | 
     ----------
     smiles : str
         SMILES molecular representation string.
-    forcefield : ForceField
-        OpenFF force field object for parameterization.
+    offxml : str
+        Path to OpenFF force field object for parameterization.
 
     Returns
     -------
@@ -148,19 +148,19 @@ def smiles_to_interchange(smiles: str, forcefield: ForceField) -> Interchange | 
 
     Examples
     --------
-    >>> from openff.toolkit import ForceField
-    >>> ff = ForceField("openff-2.2.1.offxml")
-    >>> interchange = smiles_to_interchange("CCO", ff)
+    >>> interchange = smiles_to_interchange("CCO", "openff-2.2.1.offxml")
     >>> interchange is not None
     True
 
     >>> # Failed case returns None
-    >>> interchange = smiles_to_interchange("invalid_smiles", ff)
+    >>> interchange = smiles_to_interchange("invalid_smiles", "openff-2.2.1.offxml")
     >>> interchange is None
     True
     """
+
+    forcefield = ForceField(offxml)
+    mol = Molecule.from_mapped_smiles(smiles, allow_undefined_stereo=True)
     try:
-        mol = Molecule.from_mapped_smiles(smiles, allow_undefined_stereo=True)
         interchange = forcefield.create_interchange(mol.to_topology())
         return interchange
 
@@ -231,7 +231,6 @@ def prepare_to_train(
     # Get starting forcefield
     offxml = pathlib.Path(offxml)
     logger.info(f"Loading force field: {offxml.resolve()}")
-    starting_ff = ForceField(offxml)
 
     # Optional molecule validation
     if validate_molecules:
@@ -242,23 +241,36 @@ def prepare_to_train(
 
     # Process molecules and create interchanges
     all_smiles = [entry["smiles"] for entry in dataset]  # type: ignore[index]
-    if n_cpus is None:
-        n_cpus = os.cpu_count() or 1
-    chunk_size = max(1, len(all_smiles) // (n_cpus * 4))
+    if n_cpus == 1:
+        maybe_interchanges = [
+            smiles_to_interchange(x, str(offxml))
+            for x in tqdm(all_smiles, desc="Creating Interchanges")
+        ]
+    else:
+        if n_cpus is None:
+            n_cpus = os.cpu_count() or 1
+        chunk_size = max(1, len(all_smiles) // (n_cpus * 4))
 
-    logger.info(f"Found {n_cpus} workers for interchange creation")
+        logger.info(f"Found {n_cpus} workers for interchange creation")
+        logger.info(f"Chunk size: {chunk_size} molecules per chunk")
+        logger.info(f"Expected chunks: ~{len(all_smiles) // chunk_size}")
+        logger.info("Starting multiprocessing...")
 
-    with multiprocessing.get_context("forkserver").Pool(processes=n_cpus) as pool:
-        maybe_interchanges = list(
-            pool.imap(
-                functools.partial(
-                    smiles_to_interchange,
-                    forcefield=starting_ff,
-                ),
-                tqdm(all_smiles, desc="Creating Interchanges"),
-                chunksize=chunk_size,
-            ),
-        )
+        with multiprocessing.Pool(processes=n_cpus) as pool:
+            with tqdm(total=len(all_smiles), desc="Creating Interchanges") as pbar:
+                maybe_interchanges = []
+                for result in pool.imap(
+                    functools.partial(
+                        smiles_to_interchange,
+                        offxml=str(offxml),
+                    ),
+                    all_smiles,
+                    chunksize=chunk_size,
+                ):
+                    maybe_interchanges.append(result)
+                    pbar.update(1)
+
+    logger.info("Processing completed")
 
     filtered_smiles, filtered_interchanges = zip(
         *[
@@ -646,5 +658,5 @@ Examples:
         device=args.device,
         file_format=args.file_format,
         output_dir=args.output_dir,
-        n_cpus=int(args.n_cpus),
+        n_cpus=int(args.n_cpus) if args.n_cpus is not None else args.n_cpus,
     )
