@@ -14,6 +14,7 @@ api.qcarchive.molssi*
 *.DS_Store
 *.arrow
 *.hdf5
+*.pkl
 
 # Distribution / packaging
 .Python
