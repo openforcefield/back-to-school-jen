@@ -12,14 +12,15 @@ Based on: https://github.com/fjclark/descent-workflow/blob/main/workflow/get_dat
 
 Command-line Usage
 ------------------
-python get_data_spice2.py --data-dir PATH
+python get_data_spice2.py --data-dir PATH --output-dir PATH
 
 Command-line Arguments
 ----------------------
 --data-dir : str
-    Directory path for SPICE2 data storage and processing. The directory
-    will be created if it doesn't exist. This is where the SPICE-2.0.1.hdf5
-    file will be downloaded and where processed datasets will be saved.
+    Directory path for SPICE2 data storage and processing. This is where
+    the SPICE-2.0.1.hdf5 file will be downloaded.
+--output-dir : str
+    Directory path to save HuggingFace data structure after SPICE2 data processing.
 
 Examples
 --------
@@ -27,7 +28,8 @@ Examples
 python get_data_spice2.py --data-dir ./spice_data
 
 # Process data to specific path
-python get_data_spice2.py --data-dir /path/to/data/directory
+python get_data_spice2.py --data-dir /path/to/data/directory \
+                          --output-dir "raw-spice"
 
 Outputs
 -------
@@ -133,7 +135,7 @@ def download_spice2_data(data_dir: pathlib.Path) -> None:
         )
 
 
-def process_dataset_spice2(data_dir: pathlib.Path) -> None:
+def process_dataset_spice2(data_dir: pathlib.Path, output_dir: pathlib.Path) -> None:
     """Process the raw SPICE2 HDF5 data into a structured dataset.
 
     Extracts molecular data (SMILES, coordinates, energies, forces) from the
@@ -145,7 +147,8 @@ def process_dataset_spice2(data_dir: pathlib.Path) -> None:
     ----------
     data_dir : pathlib.Path
         Path to the directory containing the SPICE-2.0.1.hdf5 file.
-        The processed dataset will be saved to data_dir/raw-spice.
+    output_dir : pathlib.Path
+        The processed dataset will be saved to this directory
 
     Raises
     ------
@@ -161,8 +164,6 @@ def process_dataset_spice2(data_dir: pathlib.Path) -> None:
     - Saves processed dataset to data_dir/raw-spice
     - Saves unique SMILES list to data_dir/raw-spice/smiles.json
     """
-
-    output_dir = data_dir / "raw-spice"
 
     with h5py.File(data_dir / "SPICE-2.0.1.hdf5") as spice:
         all_data: list[dict[str, Any]] = []
@@ -217,7 +218,7 @@ def process_dataset_spice2(data_dir: pathlib.Path) -> None:
             json.dump(list(unique_smiles), file)
 
 
-def main(data_dir: pathlib.Path) -> None:
+def main(data_dir: pathlib.Path, output_dir: pathlib.Path) -> None:
     """Main processing function for SPICE2 data workflow.
 
     Orchestrates the complete SPICE2 data processing workflow by downloading
@@ -227,8 +228,9 @@ def main(data_dir: pathlib.Path) -> None:
     Parameters
     ----------
     data_dir : pathlib.Path
-        Path to the directory where SPICE2 data should be stored.
-        The directory will be created if it doesn't exist.
+        Path to the directory where SPICE2 HDF5 data will be stored.
+    output_dir : pathlib.Path
+        The directory for the HuggingFace processed dataset
 
     Returns
     -------
@@ -248,8 +250,8 @@ def main(data_dir: pathlib.Path) -> None:
     This function performs the following workflow:
     1. Downloads SPICE-2.0.1.hdf5 from Zenodo if not present
     2. Processes the HDF5 data into descent-compatible format
-    3. Saves processed HuggingFace dataset in data_dir/raw-spice
-    4. Creates a JSON file with unique SMILES strings
+    3. Saves processed HuggingFace dataset in output_dir
+    4. Creates a JSON file with unique SMILES strings and saves in output_dir
 
     This function is typically called from the command-line interface but
     can also be used programmatically when importing the module.
@@ -265,7 +267,7 @@ def main(data_dir: pathlib.Path) -> None:
     """
     logger.info("Getting data for SPICE...")
     download_spice2_data(data_dir)
-    process_dataset_spice2(data_dir)
+    process_dataset_spice2(data_dir, output_dir)
     logger.info("Done getting data for SPICE.")
 
 
@@ -286,7 +288,14 @@ Examples:
         help="Directory to download and process SPICE2 data. "
         "Will be created if it doesn't exist.",
     )
+    parser.add_argument(
+        "--output-dir",
+        type=str,
+        required=True,
+        help="The directory for the HuggingFace processed dataset. "
+    )
     args = parser.parse_args()
 
     data_dir = pathlib.Path(args.data_dir)
-    main(data_dir)
+    output_dir = pathlib.Path(args.output_dir)
+    main(data_dir, output_dir)
