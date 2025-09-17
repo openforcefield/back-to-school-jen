@@ -182,7 +182,7 @@ def filter_dataset_by_forces_percentile(
     )
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    dataset = datasets.load_from_disk(input_dir)
+    dataset = datasets.load_from_disk(str(input_dir))
     dataset = filter_nonparametrizable_molecules(dataset)
     data_df = dataset.to_pandas()
 
@@ -287,7 +287,7 @@ def filter_dataset_by_forces_z_score(
     output_dir = pathlib.Path.cwd() / (input_dir.name + "-z-score")
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    dataset = datasets.load_from_disk(input_dir)
+    dataset = datasets.load_from_disk(str(input_dir))
     dataset = filter_nonparametrizable_molecules(dataset)
     data_df = dataset.to_pandas()
 
