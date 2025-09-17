@@ -59,7 +59,7 @@ Integration in force field workflows:
 >>> # The level methods are called to generate SMIRKS for each component
 >>> # in get_mm_components_by_specificity_by_type() function
 """
-
+import re
 from copy import deepcopy
 from enum import Enum
 from dataclasses import dataclass
@@ -181,9 +181,7 @@ def get_atom_descriptors(at_idx: int, mol: Chem.Mol) -> dict[str, str]:
         "atomic_num": f"#{atom.GetAtomicNum()}",
         "degree": f"X{atom.GetDegree()}",
         "charge": atom.GetFormalCharge(),
-        "ring_info": f";r{min(ring_sizes)}"
-        if ring_sizes
-        else ";!r3;!r4;!r5;!r6;!r7;!r8",
+        "ring_info": f";r{min(ring_sizes)}" if ring_sizes else "",
         "aromaticity": ";a" if atom.GetIsAromatic() else ";A",
     }
 
@@ -246,7 +244,8 @@ def get_bond_descriptors(
             in_small_ring = True
             break
 
-    ring_info = ";@" if in_small_ring else ";!@"
+    # Can't use ";!@" otherwise rings larger than 8 are not parametrized
+    ring_info = ";@" if in_small_ring else ""
 
     return {"bond_smarts": bond_smarts, "ring_info": ring_info}
 
@@ -600,8 +599,12 @@ def add_types_to_ff(
             enumerate(
                 sorted(
                     components_by_type.items(),
-                    key=lambda item: len(item[1]),
-                    reverse=True,
+                    key=lambda item: (
+                        # Sort by presence of r<int> pattern (strings without it first)
+                        bool(re.search(r"r\d+", item[0])),
+                        # Secondary sort by number of components (descending)
+                        -len(item[1]),
+                    ),
                 )
             ),
             total=len(components_by_type),
