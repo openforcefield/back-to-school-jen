@@ -244,13 +244,16 @@ def get_components_by_type(
             cutoff_population=10,
         )
 
-        if len(components) != sum([
-            len(comps)
-            for _, smirks_dict in class_components_by_type.items()
-            for _, comps in smirks_dict.items()
-        ]):
-            raise ValueError("Number of components before sorting does not equal the number of components after sorting.")
-
+        if len(components) != sum(
+            [
+                len(comps)
+                for _, smirks_dict in class_components_by_type.items()
+                for _, comps in smirks_dict.items()
+            ]
+        ):
+            raise ValueError(
+                "Number of components before sorting does not equal the number of components after sorting."
+            )
 
         summarize_all_types(class_components_by_type)
         components_by_type[component_class] = class_components_by_type  # type: ignore[type-abstract]
@@ -286,7 +289,7 @@ def write_forcefield_file(
     filename_offxml_out = pathlib.Path(filename_offxml_out)
     filename_offxml_in = pathlib.Path(filename_offxml_in)
     logger.info(f"Reading template force field: {filename_offxml_in.resolve()}")
-    new_ff = ForceField(filename_offxml_in)
+    new_ff = ForceField(str(filename_offxml_in))
     for component_class, angles_by_type in components_by_type.items():
         logger.info(f"\nAdding {component_class.__name__} parameters to force field...")
         new_ff = ffps.add_types_to_ff(
@@ -370,7 +373,9 @@ def get_train_test_smiles_dict(filename: pathlib.Path | str) -> dict[str, list[s
     """
     with open(filename, "r") as f:
         smiles_data = json.load(f)
-    logger.info(f"In the training and test sets there are {len(smiles_data['train'])} and {len(smiles_data['test'])} SMILES strings respectively.")
+    logger.info(
+        f"In the training and test sets there are {len(smiles_data['train'])} and {len(smiles_data['test'])} SMILES strings respectively."
+    )
     return {"train": smiles_data["train"], "test": smiles_data["test"]}
 
 
@@ -407,13 +412,20 @@ def test_coverage(filename_offxml: str, smiles_dict: dict[str, list[str]]) -> No
     new_ff = ForceField(filename_offxml)
 
     for dataset_name, smiles in smiles_dict.items():
-        logger.info(f"\nChecking coverage for {dataset_name} dataset with {len(smiles)} SMILES strings...")
+        logger.info(
+            f"\nChecking coverage for {dataset_name} dataset with {len(smiles)} SMILES strings..."
+        )
         uncovered = check_all_components_fully_covered_parallel_chunks(smiles, new_ff)
         if uncovered:
-            component_types = ["Bonds", "Angles"] #, "ImproperTorsions", "ProperTorsions"]
+            component_types = [
+                "Bonds",
+                "Angles",
+            ]  # , "ImproperTorsions", "ProperTorsions"]
             for comp_typ in component_types:
                 comp_uncovered = {
-                    mol: x[comp_typ] for mol, x in uncovered.items() if comp_typ in x.keys()
+                    mol: x[comp_typ]
+                    for mol, x in uncovered.items()
+                    if comp_typ in x.keys()
                 }  # likely redundancy in component types
                 logger.info(
                     f"Uncovered {comp_typ}: {sum([len(x) for x in comp_uncovered.values()])} in {len(comp_uncovered)} molecules"
@@ -422,6 +434,8 @@ def test_coverage(filename_offxml: str, smiles_dict: dict[str, list[str]]) -> No
                     logger.debug(f"    Uncovered {comp_typ}")
                     for mol, indices in comp_uncovered.items():
                         logger.debug(f"    {mol}: {indices}")
+
+
 #                        logger.debug(component_class.getter_fn(mol))
 
 
