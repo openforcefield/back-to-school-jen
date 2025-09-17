@@ -148,15 +148,18 @@ def get_mm_components_from_huggingface(
                 conf.SetAtomPosition(atom_idx, Point3D(pos[0], pos[1], pos[2]))
             rdkit_mol.AddConformer(conf, assignId=True)
 
-    component_idxs = component_type.getter_fn(mol)
-    return [
+    components = [
         component_type(
             indices=idxs,
             mol=mol,
             rdkit_mol=rdkit_mol,
         )
-        for idxs in component_idxs
+        for idxs in component_type.getter_fn(mol)
     ]
+    if not components:
+        raise ValueError(f"The following SMILES string produces no components: {ds_row["smiles"]}")
+
+    return components
 
 
 def get_all_mm_components(
@@ -199,7 +202,8 @@ def get_all_mm_components(
     Filtered bonds: 3
     """
     all_components = []
-    for row in tqdm(dataset, desc="Processing HuggingFace Dataset"):
+    lx = len(dataset)
+    for row in tqdm(dataset, desc=f"Processing HuggingFace Dataset with {lx} molecules"):
         all_components.extend(get_mm_components_from_huggingface(row, component_type))
 
     if unwanted_smirks:

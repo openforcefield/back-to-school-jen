@@ -336,8 +336,6 @@ def check_all_components_fully_covered(
                     unassigned_indices.append(at_indices)
             if unassigned_indices:
                 unassigned[component_type] = unassigned_indices
-        #                logger.debug(covered_indices)
-        #                logger.debug(component_class.getter_fn(mol))
 
         if unassigned:
             all_unassigned[smiles] = unassigned

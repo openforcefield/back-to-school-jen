@@ -312,6 +312,7 @@ class MMComponent(ABC):
 
         # Apply MDL aromaticity model
         Chem.SetAromaticity(self.rdkit_mol, Chem.AromaticityModel.AROMATICITY_MDL)
+        self.mapped_smiles = mol.to_smiles(mapped=True)
 
     @property
     def central_bond_index(self) -> Optional[int]:
