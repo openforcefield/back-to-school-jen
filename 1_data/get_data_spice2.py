@@ -292,7 +292,7 @@ Examples:
         "--output-dir",
         type=str,
         required=True,
-        help="The directory for the HuggingFace processed dataset. "
+        help="The directory for the HuggingFace processed dataset. ",
     )
     args = parser.parse_args()
 
