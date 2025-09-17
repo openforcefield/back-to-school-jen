@@ -23,9 +23,8 @@ dependencies:
   - datasets
 
   # Parameterization
-  - openff-toolkit >=0.17.0
-  - openff-interchange >=0.3.17
-  - openff-nagl-models >=2025.9.0
+  - openff-toolkit
+  - openff-interchange
   - openff-units
   - rdkit
 #  - openeye-toolkits
