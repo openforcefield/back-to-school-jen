@@ -158,6 +158,7 @@ def smiles_to_interchange(smiles: str, offxml: str) -> Interchange | None:
     >>> interchange is None
     True
     """
+    logger.info(f"Force Field for Interchanges: {offxml}")
     forcefield = ForceField(offxml)
     mol = Molecule.from_mapped_smiles(smiles, allow_undefined_stereo=True)
     try:
@@ -275,8 +276,7 @@ def prepare_to_train(
                 processed_count = 0
 
                 try:
-                    # Use imap_unordered for potentially better performance and updates
-                    for result in pool.imap_unordered(
+                    for result in pool.imap(
                         functools.partial(
                             smiles_to_interchange,
                             offxml=str(offxml),
