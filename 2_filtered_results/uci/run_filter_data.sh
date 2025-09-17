@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Download and Process SPICE2 Dataset from Zenodo
-python filter_data.py --data-dir "../1_data/raw-spice" \
+python ../filter_data.py --data-dir "../../1_data/uci/raw-spice" \
                       --z-score-cutoff 1 2>&1 | tee log.txt
 
 # From output Finlay's cutoff of everything in the 95th percentile
