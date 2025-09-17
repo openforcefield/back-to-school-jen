@@ -14,7 +14,6 @@
 date
 hn=`hostname`
 echo "Running job on host $hn"
-ncpus = $SLURM_CPUS_ON_NODE
 
 source ~/.bashrc
 micromamba activate descent-workflow
