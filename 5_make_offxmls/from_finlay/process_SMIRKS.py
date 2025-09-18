@@ -1,76 +1,59 @@
 """
-SMIRKS Pattern Generation with Factory Pattern.
+SMIRKS pattern generation factory for molecular mechanics force fields.
 
-This module provides a factory-based interface for generating SMIRKS patterns
-at different specificity levels for molecular mechanics force field parameters.
+This module generates SMIRKS patterns at configurable specificity levels for
+force field parameter assignment. Lower specificity levels create general patterns
+that match many molecular environments, while higher levels generate specific
+patterns for detailed chemical environments.
 
-Specificity Levels
-------------------
-Specificity levels control how detailed and chemical-environment-specific the
-generated SMIRKS patterns are:
+Classes
+-------
+SMIRKSFactory
+    Main factory for generating SMIRKS patterns with configurable specificity.
+TerminalBehavior
+    Enum defining how terminal atoms are handled in patterns.
+BondedAtomBehavior
+    Enum controlling inclusion of bonded atom information.
+BondSpecificity
+    Enum specifying bond pattern detail levels.
 
-- **Low specificity**: Generic patterns like [#6:1] (any carbon) that match
-  many molecular environments but provide less chemical detail.
-- **High specificity**: Detailed patterns like [#6X4;!r3;!r4;!r5;!r6;!r7;!r8:1]
-  (~[#1X1])(~[#8X2]) that match fewer environments but capture more chemistry.
-
-Lower-numbered specificity levels are applied first in force fields, with
-higher levels providing more specific overrides. This creates a hierarchical
-parameter assignment where general patterns are refined by specific ones.
-
-Key Classes
------------
-SMIRKSFactory : Main factory class for generating SMIRKS patterns
-AtomSMIRKSConfig : Configuration for atom-specific SMIRKS generation
-BondSMIRKSConfig : Configuration for bond-specific SMIRKS generation
-TerminalBehavior : Enum for terminal atom handling options
-BondedAtomBehavior : Enum for bonded atom inclusion options
-BondSpecificity : Enum for bond specificity levels
-
-Key Functions
--------------
-get_atom_descriptors : Extract atomic properties for SMIRKS patterns
-get_bond_descriptors : Extract bond properties for SMIRKS patterns
-add_types_to_ff : Add component parameters to OpenFF force fields
+Functions
+---------
+get_atom_descriptors
+    Extract atomic properties for SMIRKS generation.
+get_bond_descriptors
+    Extract bond properties for SMIRKS generation.
+add_types_to_ff
+    Integrate component parameters into OpenFF force fields.
+create_specificity_factories
+    Build SMIRKSFactory objects from configuration dictionaries.
+create_specificity_levels
+    Convert factory dictionaries to SpecificityLevel objects.
 
 Examples
 --------
-Basic factory usage:
->>> factory = SMIRKSFactory()
->>> specificity_level = factory.create_specificity_level("Standard")
-
-Ring-aware patterns:
 >>> factory = SMIRKSFactory(atom_include_ring_info=True)
->>> mol = Chem.MolFromSmiles("CCO")
->>> atom_smirks = factory.get_atom_smirks(0, 0, mol, (0, 2))
->>> print(atom_smirks)  # [#6X4;!r3;!r4;!r5;!r6;!r7;!r8:1]
-
-Using SpecificityLevel objects:
 >>> level = factory.create_specificity_level("RingAware")
->>> # Generate atom SMIRKS for carbon (index 0, position 0, terminals 0,2)
+>>> mol = Chem.MolFromSmiles("CCO")
 >>> atom_pattern = level.get_atom_smirks(0, 0, mol, (0, 2))
->>> print(atom_pattern)  # '[#6X4;!r3;!r4;!r5;!r6;!r7;!r8:1]'
->>> # Generate bond SMIRKS for C-C bond (atoms 0,1, not central)
 >>> bond_pattern = level.get_bond_smirks((0, 1), False, mol)
->>> print(bond_pattern)  # '-;!@'
-
-Integration in force field workflows:
->>> levels = {0: level}  # Dict used by component processing pipelines
->>> # The level methods are called to generate SMIRKS for each component
->>> # in get_mm_components_by_specificity_by_type() function
 """
-import re
+
+import os
+from concurrent.futures import ProcessPoolExecutor
 from copy import deepcopy
 from enum import Enum
-from dataclasses import dataclass
+from typing import Any
 
+from loguru import logger
+from dataclasses import dataclass
 from rdkit import Chem
 from tqdm import tqdm
 
 from openff.toolkit import ForceField
 from openff.toolkit.typing.engines.smirnoff.parameters import ParameterType
 
-from .molecular_classes import MMComponent, SpecificityLevel
+from .molecular_classes import MMComponent, SpecificityLevel, Bond, Angle
 
 
 class TerminalBehavior(Enum):
@@ -136,36 +119,30 @@ class BondSMIRKSConfig:
 
 def get_atom_descriptors(at_idx: int, mol: Chem.Mol) -> dict[str, str]:
     """
-    Generate comprehensive SMIRKS-ready descriptors for an atom.
-
-    Extracts atomic properties needed for SMIRKS pattern generation, including
-    atomic number, degree (number of bonds), formal charge, ring membership,
-    and aromaticity.
+    Extract atomic properties for SMIRKS pattern generation.
 
     Parameters
     ----------
     at_idx : int
-        Index of the atom in the molecule.
+        Atom index in the molecule.
     mol : rdkit.Chem.Mol
-        RDKit molecule object containing the atom.
+        RDKit molecule object.
 
     Returns
     -------
     dict[str, str]
-        Dictionary containing SMIRKS-formatted descriptors:
-        - 'atomic_num': Atomic number as "#N" (e.g., "#6" for carbon)
-        - 'degree': Degree as "XN" (e.g., "X4" for tetrahedral)
-        - 'charge': Formal charge as "+N" or "-N" (e.g., "+1", "-2")
-        - 'ring_info': Ring membership as ";rN" or ";!r3;!r4;!r5;!r6;!r7;!r8"
-        - 'aromaticity': Aromatic (";a") or non-aromatic (";A") designation
+        Atomic descriptors with keys:
+        - 'atomic_num': "#6" (atomic number)
+        - 'degree': "X4" (connectivity)
+        - 'charge': "+1" or "-2" (formal charge)
+        - 'ring_info': ";rN" where N is between 3 and 8 or ";!r3;!r4;!r5;!r6;!r7;!r8"
+        - 'aromaticity': ";a" or ";A"
 
     Examples
     --------
     >>> mol = Chem.MolFromSmiles("CCO")
-    >>> descriptors = get_atom_descriptors(0, mol)  # First carbon
-    >>> descriptors['atomic_num']  # '#6'
-    >>> descriptors['degree']      # 'X4'
-    >>> descriptors['ring_info']   # ';!r3;!r4;!r5;!r6;!r7;!r8' (not in ring)
+    >>> get_atom_descriptors(0, mol)
+    {'atomic_num': '#6', 'degree': 'X4', ...}
     """
     # Figure out if the atom is in a ring of size 3 - 8
     ring_sizes = []
@@ -181,7 +158,9 @@ def get_atom_descriptors(at_idx: int, mol: Chem.Mol) -> dict[str, str]:
         "atomic_num": f"#{atom.GetAtomicNum()}",
         "degree": f"X{atom.GetDegree()}",
         "charge": atom.GetFormalCharge(),
-        "ring_info": f";r{min(ring_sizes)}" if ring_sizes else "",
+        "ring_info": f";r{min(ring_sizes)}"
+        if ring_sizes
+        else ";!r3;!r4;!r5;!r6;!r7;!r8",
         "aromaticity": ";a" if atom.GetIsAromatic() else ";A",
     }
 
@@ -199,30 +178,29 @@ def get_bond_descriptors(
     atom_idxs: tuple[int, int], mol: Chem.Mol, max_ring_size: int = 8
 ) -> dict[str, str]:
     """
-    Generate comprehensive SMIRKS-ready descriptors for a bond.
+    Extract bond properties for SMIRKS pattern generation.
 
     Parameters
     ----------
     atom_idxs : tuple[int, int]
-        Indices of the two atoms forming the bond.
+        Indices of bonded atoms.
     mol : rdkit.Chem.Mol
-        RDKit molecule object containing the bond.
-    max_ring_size : int, optional, default=8
-        Maximum ring size detected to consider the bond to be in a ring.
+        RDKit molecule object.
+    max_ring_size : int, default=8
+        Maximum ring size to consider as "in ring".
 
     Returns
     -------
     dict[str, str]
-        Dictionary containing SMIRKS-formatted bond descriptors:
-        - 'bond_smarts': Bond type as SMIRKS symbol ('-', '=', '#', ':', or '~')
-        - 'ring_info': Ring membership as ';@' (in ring) or ';!@' (not in ring)
+        Bond descriptors with keys:
+        - 'bond_smarts': "-", "=", "#", ":", or "~"
+        - 'ring_info': ";@" (in ring ≤max_ring_size) or "" (not in ring)
 
     Examples
     --------
     >>> mol = Chem.MolFromSmiles("CCO")
-    >>> bond_desc = get_bond_descriptors((0, 1), mol)  # C-C bond
-    >>> bond_desc['bond_smarts']  # '-'
-    >>> bond_desc['ring_info']    # ';!@' (not in ring)
+    >>> get_bond_descriptors((0, 1), mol)
+    {'bond_smarts': '-', 'ring_info': ''}
     """
     bond = mol.GetBondBetweenAtoms(*atom_idxs)
     if bond is None:
@@ -252,30 +230,26 @@ def get_bond_descriptors(
 
 class SMIRKSFactory:
     """
-    Factory for generating SMIRKS patterns with configurable specificity levels.
-
-    Provides a unified interface for creating atom and bond SMIRKS patterns
-    with different levels of chemical detail and specificity.
+    Factory for generating SMIRKS patterns with configurable specificity.
 
     Parameters
     ----------
     atom_include_ring_info : bool, default=False
-        Include ring membership information in atom patterns.
+        Include ring membership in atom patterns.
     atom_bonded_behavior : BondedAtomBehavior, default=NONE
         How to handle bonded atom information.
     atom_terminal_behavior : TerminalBehavior, default=STANDARD
-        How to handle terminal atoms in patterns.
+        How to handle terminal atoms.
     bond_include_ring_info : bool, default=False
-        Include ring membership information in bond patterns.
+        Include ring membership in bond patterns.
     bond_specificity : BondSpecificity, default=STANDARD
-        Level of detail for bond type specification.
+        Level of bond type specification.
 
     Examples
     --------
-    >>> factory = SMIRKSFactory()
+    >>> factory = SMIRKSFactory(atom_include_ring_info=True)
     >>> mol = Chem.MolFromSmiles("CCO")
-    >>> atom_smirks = factory.get_atom_smirks(0, 0, mol, (0, 2))
-    >>> print(atom_smirks)  # '[#6X4:1]'
+    >>> pattern = factory.get_atom_smirks(0, 0, mol, (0, 2))
     """
 
     def __init__(
@@ -323,30 +297,23 @@ class SMIRKSFactory:
         terminal_idxs: tuple[int, int],
     ) -> str:
         """
-        Generate atom SMIRKS pattern with factory configuration.
+        Generate atom SMIRKS pattern.
 
         Parameters
         ----------
         at_idx : int
-            Index of the atom in the molecule.
+            Atom index in molecule.
         at_id : int
-            Position identifier in the component (0-based).
+            Position in component (0-based).
         mol : rdkit.Chem.Mol
-            RDKit molecule object containing the atom.
+            RDKit molecule object.
         terminal_idxs : tuple[int, int]
-            Indices of terminal atoms in the component.
+            Indices of terminal atoms.
 
         Returns
         -------
         str
-            SMIRKS atom pattern according to factory configuration.
-
-        Examples
-        --------
-        >>> factory = SMIRKSFactory()
-        >>> mol = Chem.MolFromSmiles("CCO")
-        >>> pattern = factory.get_atom_smirks(0, 0, mol, (0, 2))
-        >>> print(pattern)  # '[#6X4:1]'
+            SMIRKS atom pattern, e.g., "[#6X4:1]".
         """
         mol = Chem.AddHs(mol, explicitOnly=False)
         return self._generate_atom_smirks(
@@ -360,28 +327,21 @@ class SMIRKSFactory:
         mol: Chem.Mol,
     ) -> str:
         """
-        Generate bond SMIRKS pattern with factory configuration.
+        Generate bond SMIRKS pattern.
 
         Parameters
         ----------
         atom_idxs : tuple[int, int]
-            Indices of the two atoms forming the bond.
+            Indices of bonded atoms.
         central_bond : bool
             Whether this is the central bond in the component.
         mol : rdkit.Chem.Mol
-            RDKit molecule object containing the bond.
+            RDKit molecule object.
 
         Returns
         -------
         str
-            SMIRKS bond pattern according to factory configuration.
-
-        Examples
-        --------
-        >>> factory = SMIRKSFactory()
-        >>> mol = Chem.MolFromSmiles("CCO")
-        >>> pattern = factory.get_bond_smirks((0, 1), False, mol)
-        >>> print(pattern)  # '-'
+            SMIRKS bond pattern, e.g., "-" or "~;@".
         """
         mol = Chem.AddHs(mol, explicitOnly=False)
         return self._generate_bond_smirks(
@@ -390,11 +350,7 @@ class SMIRKSFactory:
 
     def create_specificity_level(self, name: str) -> SpecificityLevel:
         """
-        Create a SpecificityLevel with the factory's current configuration.
-
-        The returned SpecificityLevel object encapsulates the factory's SMIRKS
-        generation methods and is used by molecular component processing pipelines
-        to generate consistent SMIRKS patterns for force field parameterization.
+        Create SpecificityLevel with current factory configuration.
 
         Parameters
         ----------
@@ -404,39 +360,14 @@ class SMIRKSFactory:
         Returns
         -------
         SpecificityLevel
-            Configured specificity level for use with molecular components.
-            Contains bound methods for atom and bond SMIRKS generation that
-            will use this factory's configuration settings.
+            Configured level with bound SMIRKS generation methods.
 
         Examples
         --------
-        Basic usage:
         >>> factory = SMIRKSFactory(atom_include_ring_info=True)
         >>> level = factory.create_specificity_level("RingAware")
-        >>> level.name  # 'RingAware'
-
-        Generate SMIRKS patterns:
-        >>> mol = Chem.MolFromSmiles("CCO")
-        >>> # Generate atom SMIRKS for first carbon (index 0, position 0, terminals at 0,2)
-        >>> atom_smirks = level.get_atom_smirks(0, 0, mol, (0, 2))
-        >>> print(atom_smirks)  # '[#6X4;!r3;!r4;!r5;!r6;!r7;!r8:1]'
-        >>> # Generate bond SMIRKS for C-C bond (atoms 0,1, not central bond)
-        >>> bond_smirks = level.get_bond_smirks((0, 1), False, mol)
-        >>> print(bond_smirks)  # '-;!@'
-
-        Use in component processing:
-        >>> levels = {0: factory.create_specificity_level("Level0")}
-        >>> # levels dict is passed to get_mm_components_by_specificity_by_type()
-        >>> # which uses level.get_atom_smirks() and level.get_bond_smirks()
-        >>> # to generate SMIRKS patterns for molecular components
-
-        Integration with force field generation:
-        >>> bond_levels = {
-        ...     0: factory1.create_specificity_level("Standard"),
-        ...     1: factory2.create_specificity_level("HighSpec")
-        ... }
-        >>> # Used in SPECIFICITY_LEVELS_BY_COMPONENT dictionary
-        >>> # for hierarchical force field parameter generation
+        >>> level.name
+        'RingAware'
         """
         return SpecificityLevel(
             name=name,
@@ -549,70 +480,103 @@ class SMIRKSFactory:
         return bond_type
 
 
+def _process_component_for_ff(args):
+    """
+    Helper function for parallel processing in add_types_to_ff.
+
+    Must be defined at module level for multiprocessing compatibility.
+
+    Parameters
+    ----------
+    args : tuple
+        (i, (smirks, components), component_class, specificity_num, ff)
+
+    Returns
+    -------
+    ParameterType
+        Generated parameter for the component.
+    """
+    i, (smirks, components), component_class, specificity_num, ff = args
+    return component_class.get_parameter(smirks, specificity_num, components, i, ff)
+
+
 def add_types_to_ff(
     ff: ForceField,
     component_types: dict[int, dict[str, list[MMComponent]]],
     component_class: type[MMComponent],
     extra_parameters: list[ParameterType] | None = None,
+    n_workers: int | None = None,
 ) -> ForceField:
     """
-    Add molecular mechanics component parameters to a force field.
-
-    Integrates component-specific parameters into an OpenFF force field by creating
-    a new parameter handler and populating it with parameters derived from the
-    provided component types and their associated molecules.
+    Add component parameters to a force field.
 
     Parameters
     ----------
     ff : openff.toolkit.ForceField
-        Base force field to extend with new parameters.
+        Base force field to extend.
     component_types : dict[int, dict[str, list[MMComponent]]]
-        Hierarchical organization of components:
-        - First level: specificity level number
-        - Second level: SMIRKS pattern string
-        - Third level: list of components matching that pattern
+        Component organization: {specificity_level: {smirks: [components]}}.
     component_class : type[MMComponent]
-        Type of component (Bond, Angle, ProperTorsion, ImproperTorsion).
+        Component type (Bond, Angle, etc.).
     extra_parameters : list[ParameterType], optional
-        Additional parameters to append at the end of the handler.
+        Additional parameters to append.
+    n_workers : int, optional
+        Number of worker processes. If None, uses all CPU cores.
 
     Returns
     -------
     openff.toolkit.ForceField
-        New force field with integrated component parameters. The original
-        force field is deep-copied to avoid modification.
+        New force field with added parameters.
 
     Examples
     --------
-    >>> from openff.toolkit import ForceField
     >>> ff = ForceField("openff-2.0.0.offxml")
     >>> enhanced_ff = add_types_to_ff(ff, component_types, Bond)
     """
     ff_copy = deepcopy(ff)
     handler = component_class.handler_class(version=component_class.handler_version)
 
+    logger.info(f"Using {n_workers} workers to assemble the force field.")
+    if n_workers is None:
+        n_workers = os.cpu_count() or 1  # Fallback to 1 if cpu_count() returns None
+
     # Write the lowest specificity level first
     for specificity_num, components_by_type in sorted(
         component_types.items(), key=lambda item: item[0]
     ):
-        for i, (smirks, components) in tqdm(
+        # Prepare items for parallel processing
+        items = list(
             enumerate(
                 sorted(
                     components_by_type.items(),
                     key=lambda item: (
-                        # Sort by presence of r<int> pattern (strings without it first)
-                        bool(re.search(r"r\d+", item[0])),
+                        # Sort by number of ";@" patterns (fewer instances first)
+                        item[0].count(";@"),
                         # Secondary sort by number of components (descending)
                         -len(item[1]),
                     ),
                 )
-            ),
-            total=len(components_by_type),
-            desc=f"Adding parameters for specificity {specificity_num}",
-        ):
-            parameter = component_class.get_parameter(
-                smirks, specificity_num, components, i, ff
             )
+        )
+
+        # Prepare arguments for parallel processing
+        args_list = [
+            (i, (smirks, components), component_class, specificity_num, ff)
+            for i, (smirks, components) in items
+        ]
+
+        # Process in parallel
+        with ProcessPoolExecutor(max_workers=n_workers) as executor:
+            parameters = list(
+                tqdm(
+                    executor.map(_process_component_for_ff, args_list),
+                    total=len(args_list),
+                    desc=f"Adding parameters for specificity {specificity_num}",
+                )
+            )
+
+        # Add parameters to handler in order
+        for parameter in parameters:
             handler.parameters.append(parameter)
 
     # Add any extra parameters at the end
@@ -626,3 +590,126 @@ def add_types_to_ff(
     ff_copy.register_parameter_handler(handler)
 
     return ff_copy
+
+
+def create_specificity_factories(
+    config: dict
+) -> tuple[dict[str, SMIRKSFactory], dict[str, SMIRKSFactory]]:
+    """
+    Create SMIRKSFactory objects from configuration dictionary.
+
+    Parameters
+    ----------
+    config : dict
+        Configuration with 'bond_specificities' and 'angle_specificities' keys.
+        Each maps names to factory configuration dictionaries containing:
+
+        **Atom Configuration Options:**
+        - atom_include_ring_info : bool
+            Include ring membership (e.g., ";r6" or ";!r3;!r4;!r5;!r6;!r7;!r8")
+        - atom_bonded_behavior : str
+            "NONE", "CENTRAL_EXPLICIT_ATOMS", "CENTRAL_EXPLICIT_ATOMS_BONDS",
+            "EXPLICIT_ATOMS", or "EXPLICIT_ATOMS_BONDS"
+        - atom_terminal_behavior : str
+            "STANDARD" ([#6X4:1]), "WILDCARD" ([*:1]), or "H_NO_H" ([#1:1]/[!#1:1])
+
+        **Bond Configuration Options:**
+        - bond_include_ring_info : bool
+            Include ring membership (";@" for in-ring bonds)
+        - bond_specificity : str
+            "STANDARD" (explicit: "-", "="), "NON_CENTRAL_WILDCARD" (mixed),
+            or "WILDCARD" (all "~")
+
+    Returns
+    -------
+    tuple[dict[str, SMIRKSFactory], dict[str, SMIRKSFactory]]
+        (bond_specificities, angle_specificities) with factory objects.
+
+    Examples
+    --------
+    >>> config = {
+    ...     "bond_specificities": {
+    ...         "Standard": {
+    ...             "atom_include_ring_info": True,
+    ...             "bond_specificity": "WILDCARD"
+    ...         }
+    ...     },
+    ...     "angle_specificities": {
+    ...         "Terminal": {
+    ...             "atom_terminal_behavior": "WILDCARD",
+    ...             "bond_specificity": "STANDARD"
+    ...         }
+    ...     }
+    ... }
+    >>> bond_specs, angle_specs = create_specificity_factories(config)
+    >>> len(bond_specs)
+    1
+    """
+
+    def config_to_factory(spec_config: dict[str, Any]) -> SMIRKSFactory:
+        """Convert config dict to SMIRKSFactory with proper enum conversion."""
+        factory_args = spec_config.copy()
+
+        # Convert string enums to actual enum objects
+        if "atom_terminal_behavior" in factory_args:
+            factory_args["atom_terminal_behavior"] = getattr(
+                TerminalBehavior, factory_args["atom_terminal_behavior"]
+            )
+
+        if "bond_specificity" in factory_args:
+            factory_args["bond_specificity"] = getattr(
+                BondSpecificity, factory_args["bond_specificity"]
+            )
+
+        return SMIRKSFactory(**factory_args)
+
+    bond_specificities = {
+        name: config_to_factory(spec_config)
+        for name, spec_config in config["bond_specificities"].items()
+    }
+
+    angle_specificities = {
+        name: config_to_factory(spec_config)
+        for name, spec_config in config["angle_specificities"].items()
+    }
+
+    return bond_specificities, angle_specificities
+
+
+def create_specificity_levels(
+    bond_specificities: dict[str, SMIRKSFactory],
+    angle_specificities: dict[str, SMIRKSFactory],
+) -> dict[type[MMComponent], dict[int, SpecificityLevel]]:
+    """
+    Create SPECIFICITY_LEVELS_BY_COMPONENT from specificity dictionaries.
+
+    Parameters
+    ----------
+    bond_specificities : dict[str, SMIRKSFactory]
+        Named bond factory objects.
+    angle_specificities : dict[str, SMIRKSFactory]
+        Named angle factory objects.
+
+    Returns
+    -------
+    dict[type[MMComponent], dict[int, SpecificityLevel]]
+        Structure: {ComponentClass: {level_index: SpecificityLevel}}.
+
+    Examples
+    --------
+    >>> bond_specs = {"Standard": SMIRKSFactory()}
+    >>> angle_specs = {"Terminal": SMIRKSFactory()}
+    >>> levels = create_specificity_levels(bond_specs, angle_specs)
+    >>> levels[Bond][0].name
+    '0:Standard'
+    """
+    return {
+        Bond: {
+            i: factory.create_specificity_level(f"{i}:" + name)
+            for i, (name, factory) in enumerate(bond_specificities.items())
+        },
+        Angle: {
+            i: factory.create_specificity_level(f"{i}:" + name)
+            for i, (name, factory) in enumerate(angle_specificities.items())
+        },
+    }

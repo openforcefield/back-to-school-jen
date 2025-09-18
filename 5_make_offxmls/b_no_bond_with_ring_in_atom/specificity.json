@@ -1,0 +1,40 @@
+{
+  "bond_specificities": {
+    "AtomGeneralized-BondGeneralized": {
+      "atom_include_ring_info": true,
+      "atom_terminal_behavior": "WILDCARD",
+      "bond_specificity": "WILDCARD",
+      "bond_include_ring_info": true
+    },
+    "AtomH_NO_H_-BondGeneralized": {
+      "atom_include_ring_info": true,
+      "atom_terminal_behavior": "H_NO_H",
+      "bond_specificity": "WILDCARD",
+      "bond_include_ring_info": true
+    },
+    "AtomStandard-BondGeneralized": {
+      "atom_include_ring_info": true,
+      "bond_specificity": "WILDCARD",
+      "bond_include_ring_info": true
+    }
+  },
+  "angle_specificities": {
+    "AtomTerminalWildcard-BondGeneralized": {
+      "atom_include_ring_info": true,
+      "atom_terminal_behavior": "WILDCARD",
+      "bond_include_ring_info": true,
+      "bond_specificity": "WILDCARD"
+    },
+    "AtomTerminalHnoH-BondGeneralized": {
+      "atom_include_ring_info": true,
+      "atom_terminal_behavior": "H_NO_H",
+      "bond_include_ring_info": true,
+      "bond_specificity": "WILDCARD"
+    },
+    "AtomStandard-BondGeneralized": {
+      "atom_include_ring_info": true,
+      "bond_include_ring_info": true,
+      "bond_specificity": "WILDCARD"
+    }
+  }
+}

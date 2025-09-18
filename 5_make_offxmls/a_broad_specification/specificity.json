@@ -1,0 +1,50 @@
+{
+  "bond_specificities": {
+    "AtomStandard-BondGeneralized": {
+      "atom_include_ring_info": true,
+      "bond_include_ring_info": true,
+      "bond_specificity": "WILDCARD"
+    },
+    "AtomTerminalHnoH-BondStandard": {
+      "atom_include_ring_info": true,
+      "atom_terminal_behavior": "H_NO_H",
+      "bond_include_ring_info": true,
+      "bond_specificity": "STANDARD"
+    },
+    "AtomStandard-BondStandard": {
+      "atom_include_ring_info": true,
+      "bond_include_ring_info": true,
+      "bond_specificity": "STANDARD"
+    }
+  },
+  "angle_specificities": {
+    "AtomTerminalWildcard-BondGeneralized": {
+      "atom_include_ring_info": true,
+      "atom_terminal_behavior": "WILDCARD",
+      "bond_include_ring_info": true,
+      "bond_specificity": "WILDCARD"
+    },
+    "AtomTerminalHnoH-BondGeneralized": {
+      "atom_include_ring_info": true,
+      "atom_terminal_behavior": "H_NO_H",
+      "bond_include_ring_info": true,
+      "bond_specificity": "WILDCARD"
+    },
+    "AtomStandard-BondGeneralized": {
+      "atom_include_ring_info": true,
+      "bond_include_ring_info": true,
+      "bond_specificity": "WILDCARD"
+    },
+    "AtomTerminalHnoH-BondStandard": {
+      "atom_include_ring_info": true,
+      "atom_terminal_behavior": "H_NO_H",
+      "bond_include_ring_info": true,
+      "bond_specificity": "STANDARD"
+    },
+    "AtomStandard-BondStandard": {
+      "atom_include_ring_info": true,
+      "bond_include_ring_info": true,
+      "bond_specificity": "STANDARD"
+    }
+  }
+}

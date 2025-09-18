@@ -1,69 +1,40 @@
 """
-Force field parameter generation and coverage analysis pipeline.
+Force field parameter generation and coverage validation pipeline.
 
-This module generates SMIRNOFF force field parameters from molecular datasets
-and validates parameter coverage. It processes Bond and Angle components according to
-types that are defined by SMIRKS strings. These types can range in
-specificity level, creating comprehensive parameter definitions.
+Generates SMIRNOFF force field parameters from molecular datasets and validates
+coverage across training, testing, and external datasets. Processes Bond and
+Angle components with configurable SMIRKS specificity levels.
 
-Input Requirements
-------------------
-- Train/Test SMILES JSON file with structure:
-    {
-        "train": ["[C:1][C:2][O:3]", "[C:1][C:2][C:3]", ...],
-        "test": ["[C:1][C:2][N:3]", "[C:1][O:2]", ...]
-    }
-- Template SMIRNOFF OFFXML force field file (.offxml format)
-- QCArchive dataset names for external validation (optional)
-- HuggingFace Dataset Directory containing:
-    - dataset_info.json : Dataset metadata and column schemas
-    - state.json : Dataset state information
-    - data-*.arrow : Apache Arrow files with columns:
-        - smiles (string) : Mapped SMILES representations
-        - coords (float) : Flattened coordinates [x1,y1,z1,x2,y2,z2,...]
-        - energy (float) : Total molecular energies
-        - forces (float) : Force vectors [fx1,fy1,fz1,fx2,fy2,fz2,...]
+Functions
+---------
+load_specificity_config
+    Load SMIRKS factory configuration from JSON.
+get_components_by_type
+    Extract and organize molecular components from dataset.
+write_forcefield_file
+    Generate enhanced force field with new parameters.
+get_qca_smiles_dict
+    Retrieve molecular SMILES from QCArchive datasets.
+get_train_test_smiles_dict
+    Load training/testing molecular splits.
+test_coverage
+    Validate force field coverage across datasets.
+main
+    Execute complete pipeline.
 
-Output Structure
-----------------
-- Enhanced OFFXML force field with additional bond/angle parameters
-- Coverage analysis logs for train/test/external datasets
-
-Workflow
---------
-1. Load molecular SMILES from train/test splits
-2. Extract molecular mechanics components (bonds, angles)
-3. Generate SMIRKS patterns at specified levels
-4. Create enhanced force field with new parameters
-5. Test coverage against training, testing, and external datasets
+Input Data Structure
+--------------------
+- SMILES JSON: {"train": [smiles], "test": [smiles]}
+- HuggingFace Dataset: data-*.arrow files with smiles, coords, energy, forces
+- Template force field: .offxml SMIRNOFF format
+- Specificity config: JSON with bond_specificities, angle_specificities
 
 Examples
 --------
-Command line usage for basic enhancement:
-    python a_make_offxml.py \\
-        --data-dir ./molecular_dataset/ \\
-        --filename-offxml-out enhanced_ff.offxml \\
-        --filename-offxml-in openff-2.2.0.offxml \\
-        --filename-test-train-smiles train_test_splits.json \\
-        --datasets "OpenFF ChEMBL v1.0" "OpenFF Optimization v1.2" \\
-        --datasets-type optimization \\
-        -vv
-
-Processing pipeline with different verbosity:
-    -v   : WARNING level (errors and warnings only)
-    -vv  : INFO level (general progress, recommended)
-    -vvv : DEBUG level (detailed debugging output)
-
-Programmatic usage:
-    from a_make_offxml import main
-    main(
-        data_dir="./dataset/",
-        filename_offxml_out="output.offxml",
-        filename_offxml_in="input.offxml",
-        filename_test_train_smiles="splits.json",
-        datasets=["dataset1"],
-        dataset_type="optimization"
-    )
+>>> # Command line usage
+>>> python make_offxml.py --data-dir ./dataset/ --specificity-json config.json
+...     --filename-offxml-out enhanced.offxml --filename-offxml-in template.offxml
+...     --filename-test-train-smiles splits.json -vv
 """
 
 import json
@@ -80,7 +51,6 @@ from openff.toolkit import ForceField
 
 sys.path.insert(0, str(pathlib.Path(__file__).parent.parent))
 from from_finlay.molecular_classes import (  # noqa: E402
-    SpecificityLevel,
     MMComponent,
     Bond,
     Angle,
@@ -91,67 +61,35 @@ from from_finlay.coverage import check_all_components_fully_covered_parallel_chu
 
 logger.remove()
 
-bond_specificities = {  # Must be in order from least specific to most specific
-    "AtomStandard-BondGeneralized": ffps.SMIRKSFactory(
-        atom_include_ring_info=True,
-        bond_include_ring_info=True,
-        bond_specificity=ffps.BondSpecificity.WILDCARD,
-    ),
-    "AtomTerminalHnoH-BondStandard": ffps.SMIRKSFactory(
-        atom_include_ring_info=True,
-        atom_terminal_behavior=ffps.TerminalBehavior.H_NO_H,
-        bond_include_ring_info=True,
-        bond_specificity=ffps.BondSpecificity.STANDARD,
-    ),
-    "AtomStandard-BondStandard": ffps.SMIRKSFactory(
-        atom_include_ring_info=True,
-        bond_include_ring_info=True,
-        bond_specificity=ffps.BondSpecificity.STANDARD,
-    ),
-}
-angle_specificities = {  # Must be in order from least specific to most specific
-    "AtomTerminalWildcard-BondGeneralized": ffps.SMIRKSFactory(
-        atom_include_ring_info=True,
-        atom_terminal_behavior=ffps.TerminalBehavior.WILDCARD,
-        bond_include_ring_info=True,
-        bond_specificity=ffps.BondSpecificity.WILDCARD,
-    ),
-    "AtomTerminalHnoH-BondGeneralized": ffps.SMIRKSFactory(
-        atom_include_ring_info=True,
-        atom_terminal_behavior=ffps.TerminalBehavior.H_NO_H,
-        bond_include_ring_info=True,
-        bond_specificity=ffps.BondSpecificity.WILDCARD,
-    ),
-    "AtomStandard-BondGeneralized": ffps.SMIRKSFactory(
-        atom_include_ring_info=True,
-        bond_include_ring_info=True,
-        bond_specificity=ffps.BondSpecificity.WILDCARD,
-    ),
-    "AtomTerminalHnoH-BondStandard": ffps.SMIRKSFactory(
-        atom_include_ring_info=True,
-        atom_terminal_behavior=ffps.TerminalBehavior.H_NO_H,
-        bond_include_ring_info=True,
-        bond_specificity=ffps.BondSpecificity.STANDARD,
-    ),
-    "AtomStandard-BondStandard": ffps.SMIRKSFactory(
-        atom_include_ring_info=True,
-        bond_include_ring_info=True,
-        bond_specificity=ffps.BondSpecificity.STANDARD,
-    ),
-}
 
-SPECIFICITY_LEVELS_BY_COMPONENT: dict[
-    type[MMComponent], dict[int, SpecificityLevel]
-] = {
-    Bond: {
-        i: factory.create_specificity_level(f"{i}:" + name)
-        for i, (name, factory) in enumerate(bond_specificities.items())
-    },
-    Angle: {
-        i: factory.create_specificity_level(f"{i}:" + name)
-        for i, (name, factory) in enumerate(angle_specificities.items())
-    },
-}
+def load_specificity_config(config_file: str | pathlib.Path) -> dict:
+    """
+    Load specificity configuration from JSON file.
+
+    Parameters
+    ----------
+    config_file : str | pathlib.Path
+        Path to JSON configuration file.
+
+    Returns
+    -------
+    dict
+        Configuration with *_specificities for keys defining the specificity for bonds, angles, etc..
+
+    Examples
+    --------
+    >>> config = load_specificity_config("config.json")
+    >>> "bond_specificities" in config
+    True
+    """
+    logger.info(f"Configuration file contents from {config_file}:")
+    with open(config_file, "r") as f:
+        content = f.read()
+        logger.info(content)
+    with open(config_file, "r") as f:
+        config = json.load(f)
+
+    return config
 
 
 def summarize_all_types(
@@ -163,7 +101,7 @@ def summarize_all_types(
     Parameters
     ----------
     mm_component_types : dict[int, dict[str, list[MMComponent]]]
-        Structure: {specificity_level: {smirks_pattern: [components]}}.
+        Component organization: {specificity_level: {smirks_pattern: [components]}}.
 
     Examples
     --------
@@ -206,26 +144,34 @@ def summarize_all_types(
 
 def get_components_by_type(
     data_dir: str,
+    specificity_json: str,
 ) -> dict[type[MMComponent], dict[int, dict[str, list[MMComponent]]]]:
     """
-    Extract and organize molecular mechanics components from dataset.
+    Extract and organize molecular components from dataset.
 
     Parameters
     ----------
     data_dir : str
         Path to HuggingFace dataset directory.
+    specificity_json : str
+        Path to JSON configuration file.
 
     Returns
     -------
     dict[type[MMComponent], dict[int, dict[str, list[MMComponent]]]]
-        Structure: {ComponentClass: {level: {smirks: [components]}}}.
+        Component organization: {ComponentClass: {level: {smirks: [components]}}}.
 
     Examples
     --------
-    >>> components = get_components_by_type("./dataset/")
-    >>> len(components[Bond])  # Number of specificity levels for bonds
+    >>> components = get_components_by_type("./dataset/", "config.json")
+    >>> len(components[Bond])  # Number of specificity levels
     2
     """
+    config = load_specificity_config(specificity_json)
+    bond_specs, angle_specs = ffps.create_specificity_factories(config)
+    specificity_levels_by_component = ffps.create_specificity_levels(
+        bond_specs, angle_specs
+    )
 
     logger.info("Getting components by type:")
     dataset = load_from_disk(data_dir)
@@ -240,7 +186,7 @@ def get_components_by_type(
 
         class_components_by_type = ffpmm.get_mm_components_by_specificity_by_type(
             components,
-            SPECIFICITY_LEVELS_BY_COMPONENT[component_class],  # type: ignore[type-abstract]
+            specificity_levels_by_component[component_class],  # type: ignore[type-abstract]
             cutoff_population=10,
         )
 
@@ -267,6 +213,7 @@ def write_forcefield_file(
     ],
     filename_offxml_out: pathlib.Path | str,
     filename_offxml_in: pathlib.Path | str,
+    n_workers: int | None = None,
 ) -> None:
     """
     Generate enhanced force field with additional parameters.
@@ -279,10 +226,12 @@ def write_forcefield_file(
         Output path for enhanced force field (.offxml).
     filename_offxml_in : pathlib.Path | str
         Input template force field path (.offxml).
+    n_workers : int, optional
+        Number of worker processes. If None, uses all CPU cores.
 
     Examples
     --------
-    >>> components = get_components_by_type("dataset/")
+    >>> components = get_components_by_type("dataset/", "config.json")
     >>> write_forcefield_file(components, "out.offxml", "template.offxml")
     """
 
@@ -297,6 +246,7 @@ def write_forcefield_file(
             angles_by_type,
             component_class,
             None,  # None for bonds and angles
+            n_workers=n_workers,
         )
 
     logger.info(f"Writing new force field: {filename_offxml_out.resolve()}")
@@ -307,30 +257,23 @@ def get_qca_smiles_dict(datasets: list[str], dataset_type: str) -> dict[str, lis
     """
     Retrieve molecular SMILES from QCArchive datasets.
 
-    Connects to the QCArchive portal and downloads molecular data from specified
-    datasets, extracting mapped SMILES strings for coverage analysis.
-
     Parameters
     ----------
     datasets : list[str]
-        List of dataset names to retrieve from QCArchive portal.
+        QCArchive dataset names.
     dataset_type : str
-        Type of QCArchive dataset (e.g., "optimization", "torsiondrive", "singlepoint").
+        Dataset type ("optimization", "torsiondrive", "singlepoint").
 
     Returns
     -------
     dict[str, list[str]]
-        Dictionary mapping dataset names to lists of mapped SMILES strings.
-        Structure: {
-            "dataset_name_1": ["[C:1][C:2][O:3]", "[C:1][C:2][C:3]", ...],
-            "dataset_name_2": ["[N:1][C:2][C:3]", "[O:1][C:2]", ...],
-            ...
-        }
+        Mapping: {dataset_name: [mapped_smiles]}.
 
-    Notes
-    -----
-    Extracts "mapped_smiles" from entry extras, providing atom-mapped
-    molecular representations needed for parameter assignment.
+    Examples
+    --------
+    >>> smiles_dict = get_qca_smiles_dict(["OpenFF v1.0"], "optimization")
+    >>> len(smiles_dict["OpenFF v1.0"])
+    1000
     """
 
     client = PortalClient("https://api.qcarchive.molssi.org:443/", cache_dir=".")
@@ -350,28 +293,31 @@ def get_qca_smiles_dict(datasets: list[str], dataset_type: str) -> dict[str, lis
     return smiles_dict
 
 
-def get_train_test_smiles_dict(filename: pathlib.Path | str) -> dict[str, list[str]]:
+def get_train_test_smiles_dict(
+    smiles_file_path: pathlib.Path | str,
+) -> dict[str, list[str]]:
     """
-    Load training and testing molecular data splits from JSON file.
-
-    Reads pre-defined train/test splits for consistent dataset partitioning
-    across experiments.
+    Load train/test split molecular SMILES from JSON file.
 
     Parameters
     ----------
-    filename : pathlib.Path | str
-        Path to JSON file with format: {"train": [smiles], "test": [smiles]}
+    smiles_file_path : str
+        Path to JSON file with train/test SMILES split.
 
     Returns
     -------
     dict[str, list[str]]
-        Dictionary with "train" and "test" keys mapping to SMILES lists.
-        Structure: {
-            "train": ["[C:1][C:2][O:3]", "[C:1][C:2][C:3]", ...],
-            "test": ["[C:1][C:2][N:3]", "[C:1][O:2]", ...]
-        }
+        Mapping: {"train": [smiles], "test": [smiles]}.
+
+    Examples
+    --------
+    >>> smiles_dict = get_train_test_smiles_dict("split.json")
+    >>> len(smiles_dict["train"])
+    8000
     """
-    with open(filename, "r") as f:
+
+    logger.info(f"Reading test/train smiles from {str(smiles_file_path)}")
+    with open(smiles_file_path, "r") as f:
         smiles_data = json.load(f)
     logger.info(
         f"In the training and test sets there are {len(smiles_data['train'])} and {len(smiles_data['test'])} SMILES strings respectively."
@@ -381,32 +327,19 @@ def get_train_test_smiles_dict(filename: pathlib.Path | str) -> dict[str, list[s
 
 def test_coverage(filename_offxml: str, smiles_dict: dict[str, list[str]]) -> None:
     """
-    Test force field parameter coverage across molecular datasets.
-
-    Validates that the generated force field can parameterize molecules from
-    training, testing, and external datasets, identifying any molecules or
-    components that lack necessary parameters.
+    Test force field coverage on molecular datasets.
 
     Parameters
     ----------
     filename_offxml : str
-        Path to the force field file to test.
+        Path to force field XML file.
     smiles_dict : dict[str, list[str]]
-        Dictionary mapping dataset names to SMILES string lists.
-        Structure: {dataset_name: [smiles1, smiles2, ...]}
+        Mapping: {dataset_name: [smiles]}.
 
-    Returns
-    -------
-    None
-        Logs coverage analysis results for each dataset, including
-        uncovered component counts and types.
-
-    Notes
-    -----
-    Components are molecular mechanics elements; this function tests Bond and
-    Angle coverage. Uncovered components indicate molecular environments
-    not present in the force field, suggesting potential parameter gaps
-    or training limitations.
+    Examples
+    --------
+    >>> smiles = {"train": ["CCO", "CCC"], "test": ["CNN"]}
+    >>> test_coverage("ff.offxml", smiles)
     """
 
     new_ff = ForceField(filename_offxml)
@@ -441,38 +374,47 @@ def test_coverage(filename_offxml: str, smiles_dict: dict[str, list[str]]) -> No
 
 def main(
     data_dir: str,
+    specificity_json: str,
     filename_offxml_out: str,
     filename_offxml_in: pathlib.Path | str,
     filename_test_train_smiles: pathlib.Path | str,
     datasets: list[str],
     dataset_type: str,
+    n_workers: int | None = None,
 ) -> None:
     """
-    Execute complete force field parameter generation and validation pipeline.
+    Generate force field with custom parameters and test coverage.
 
     Parameters
     ----------
     data_dir : str
-        Path to HuggingFace dataset directory containing molecular structures.
+        HuggingFace dataset directory path.
+    specificity_json : str
+        JSON file with SMIRKS specificity configuration.
     filename_offxml_out : str
-        Output path for the enhanced force field file (.offxml format).
+        Output force field XML file path.
     filename_offxml_in : pathlib.Path | str
-        Input template force field file path. Should be a valid SMIRNOFF force field.
+        Template force field file path.
     filename_test_train_smiles : pathlib.Path | str
-        JSON file containing train/test molecular splits for validation.
+        Train/test SMILES split JSON file.
     datasets : list[str]
-        List of QCArchive dataset names for coverage testing.
+        QCArchive dataset names for testing.
     dataset_type : str
-        Type of QCArchive datasets (e.g., "optimization").
+        QCArchive dataset type.
+    n_workers : int, optional
+        Number of worker processes.
 
-    Returns
-    -------
-    None
+    Examples
+    --------
+    >>> main("data/", "config.json", "out.offxml", "in.offxml",
+    ...      "split.json", ["OpenFF v1.0"], "optimization")
     """
 
     smiles_dict = get_train_test_smiles_dict(filename_test_train_smiles)
-    components_by_type = get_components_by_type(data_dir)
-    write_forcefield_file(components_by_type, filename_offxml_out, filename_offxml_in)
+    components_by_type = get_components_by_type(data_dir, specificity_json)
+    write_forcefield_file(
+        components_by_type, filename_offxml_out, filename_offxml_in, n_workers=n_workers
+    )
 
     qca_dict = get_qca_smiles_dict(datasets, dataset_type)
     smiles_dict.update(qca_dict)
@@ -481,72 +423,86 @@ def main(
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="Prepare force field and topology information for training",
+        description="Generate force field with custom parameters and test coverage",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-    Basic force field enhancement from local dataset:
-        python a_make_offxml.py \\
-            --data-dir ./molecular_dataset/ \\
-            --filename-offxml-out comprehensive_ff.offxml \\
-            --filename-offxml-in sage-2.1.0.offxml \\
-            --filename-test-train-smiles molecular_splits.json \\
-            --datasets "OpenFF ChEMBL v1.0" "OpenFF Optimization v1.2" \\
-            --datasets-type optimization \\
+    Generate enhanced force field with coverage testing:
+        python make_offxml.py \
+            --data-dir ./dataset/ \
+            --specificity-json config.json \
+            --filename-offxml-out enhanced.offxml \
+            --filename-offxml-in template.offxml \
+            --filename-test-train-smiles splits.json \
+            --datasets "OpenFF v1.0" \
+            --datasets-type optimization \
             -vv
 
-    With different verbosity levels:
-        -v    : Show only warnings
-        -vv   : Show warnings and info messages (recommended)
-        -vvv  : Show all messages including debug output
+    Verbosity levels:
+        -v    : Warnings only
+        -vv   : Info and warnings (recommended)
+        -vvv  : Debug, info, and warnings
 
-Pipeline Overview:
-    1. Loads smiles set from a JSON file containing two lists under the keywords "test" and "train"
-    2. Extracts bonds and angles with SMIRKS pattern generation
-    3. Creates enhanced force field with new parameters
-    4. Validates coverage against train/test/external datasets
-    5. Reports statistics and missing parameter analysis
+Pipeline:
+    1. Load molecular dataset and SMIRKS configuration
+    2. Extract Bond/Angle components with custom specificity
+    3. Generate enhanced force field with new parameters
+    4. Test coverage on train/test/external datasets
+    5. Report coverage statistics and gaps
 
 Output:
-    - Enhanced force field file (.offxml format)
-    - Comprehensive logging of component analysis and coverage statistics
+    - Enhanced force field (.offxml)
+    - Coverage analysis logs
         """,
     )
     parser.add_argument(
         "--data-dir",
         type=str,
         required=True,
-        help="Path to HuggingFace structured dataset directory",
+        help="HuggingFace dataset directory path",
+    )
+    parser.add_argument(
+        "--specificity-json",
+        type=str,
+        required=True,
+        help="JSON file with SMIRKS specificity configuration",
     )
     parser.add_argument(
         "--filename-offxml-out",
         type=str,
         required=True,
-        help="Output filename *.offxml",
+        help="Output force field XML file path",
     )
     parser.add_argument(
         "--filename-offxml-in",
         type=str,
         required=True,
-        help="Input filename *.offxml",
+        help="Template force field file path",
     )
     parser.add_argument(
         "--filename-test-train-smiles",
         type=str,
         required=True,
-        help="Path and filename to test/train smiles .json file",
+        help="Train/test SMILES split JSON file",
     )
     parser.add_argument(
         "--datasets",
         type=str,
         nargs="*",
         default=[],
-        help="List of QCArchive dataset names for additional coverage validation (optional)",
+        help="QCArchive dataset names for coverage testing",
     )
     parser.add_argument(
         "--datasets-type",
         type=str,
-        help="Type of QCArchive dataset (e.g., 'optimization', 'singlepoint'). Required if --datasets is provided.",
+        help="QCArchive dataset type (optimization, singlepoint, etc.)",
+    )
+    parser.add_argument(
+        "-n",
+        "--n-workers",
+        type=int,
+        default=None,
+        help="Number of worker processes",
     )
     parser.add_argument(
         "-v",
@@ -558,6 +514,8 @@ Output:
     args = parser.parse_args()
 
     # Configure logging based on verbosity level
+    # Logger was already cleared of default handlers at import time
+
     if args.verbose == 0:
         # No logging output - keep logger silent
         pass
@@ -570,9 +528,11 @@ Output:
 
     main(
         args.data_dir,
+        args.specificity_json,
         args.filename_offxml_out,
         args.filename_offxml_in,
         args.filename_test_train_smiles,
         args.datasets,
         args.datasets_type,
+        args.n_workers,
     )
