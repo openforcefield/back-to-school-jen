@@ -49,6 +49,7 @@ import pickle
 from typing import Any, Literal
 from datetime import datetime
 from concurrent.futures import ProcessPoolExecutor
+from functools import partial
 
 import argparse
 from loguru import logger
@@ -261,51 +262,21 @@ def prepare_to_train(
         logger.info("Starting parallel processing...")
 
         with ProcessPoolExecutor(max_workers=n_cpus) as executor:
-            with tqdm(total=len(all_smiles), desc="Creating Interchanges") as pbar:
-                maybe_interchanges = []
-                processed_count = 0
-                failed_count = 0
+            map_fn = partial(smiles_to_interchange, offxml=str(offxml))
+            results_iter = executor.map(map_fn, all_smiles)
+            maybe_interchanges = []
+            failed_count = 0
+            for smiles, result in zip(
+                all_smiles,
+                tqdm(results_iter, total=len(all_smiles), desc="Creating Interchanges"),
+            ):
+                maybe_interchanges.append(result)
+                if result is None:
+                    logger.debug(f"Failed to process molecule '{smiles}'")
+                    failed_count += 1
 
-                try:
-                    # Submit all tasks
-                    future_to_smiles = {
-                        executor.submit(
-                            smiles_to_interchange, smiles, str(offxml)
-                        ): smiles
-                        for smiles in all_smiles
-                    }
-
-                    # Process completed tasks as they finish
-                    from concurrent.futures import as_completed
-
-                    for future in as_completed(future_to_smiles):
-                        result = future.result()
-                        maybe_interchanges.append(result)
-                        processed_count += 1
-                        pbar.update(1)
-
-                        # Track failures (None results)
-                        if result is None:
-                            smiles = future_to_smiles[future]
-                            logger.debug(f"Failed to process molecule '{smiles}'")
-                            failed_count += 1
-
-                except KeyboardInterrupt:
-                    logger.warning(
-                        f"Interrupted after processing {processed_count} molecules"
-                    )
-                    executor.shutdown(wait=False)
-                    raise
-                except Exception as e:
-                    logger.error(
-                        f"Error after processing {processed_count} molecules: {e}"
-                    )
-                    executor.shutdown(wait=False)
-                    raise
-
-        # Summary logging after completion
         logger.info(
-            f"Processing completed: {processed_count - failed_count}/{processed_count} molecules successful"
+            f"Processing completed: {len(all_smiles) - failed_count}/{len(all_smiles)} molecules successful"
         )
         if failed_count > 0:
             logger.warning(
@@ -354,7 +325,7 @@ def save_smee_output(
     overwrite: bool = True,
 ) -> None:
     """Save SMEE objects to disk for training pipelines.
-
+                results_iter = executor.map(map_fn, all_smiles)
     Serializes SMEE force field and topology objects. Note that .json output
     is meant for debugging purposes as objects are lost during serialization.
 
