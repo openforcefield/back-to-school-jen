@@ -93,7 +93,7 @@ def split_train_test(
 
     filename_data = pathlib.Path(filename_data)
     logger.info(f"Loading dataset from: {filename_data.resolve()}")
-    input_dataset = datasets.load_from_disk(filename_data)
+    input_dataset = datasets.load_from_disk(str(filename_data))
 
     filename = filename_data / "smiles.json"
     logger.info(f"Loading smiles.json from: {filename.resolve()}")
