@@ -325,7 +325,7 @@ def save_smee_output(
     overwrite: bool = True,
 ) -> None:
     """Save SMEE objects to disk for training pipelines.
-                results_iter = executor.map(map_fn, all_smiles)
+
     Serializes SMEE force field and topology objects. Note that .json output
     is meant for debugging purposes as objects are lost during serialization.
 
