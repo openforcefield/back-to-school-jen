@@ -41,12 +41,15 @@ $ python setup_train_ff_topo.py --data-dir ./data-train --offxml openff-2.2.1.of
     --device cuda --file-format json
 """
 
+import os
 import pathlib
 import dataclasses
 import json
 import pickle
 from typing import Any, Literal
 from datetime import datetime
+from concurrent.futures import ProcessPoolExecutor
+from functools import partial
 
 import argparse
 from loguru import logger
@@ -57,11 +60,19 @@ import datasets
 import torch
 
 from openff.toolkit import Molecule, ForceField
+from openff.interchange import Interchange
+
+# Suppress OpenEye warnings about stereochemistry
+try:
+    from openeye import oechem
+
+    # Suppress OpenEye warnings and errors to stderr
+    oechem.OEThrow.SetLevel(oechem.OEErrorLevel_Error)
+except ImportError:
+    pass
 
 
-def validate_molecular_dataset(
-    dataset: datasets.Dataset, allow_undefined_stereo: bool = True
-) -> datasets.Dataset:
+def validate_molecular_dataset(dataset: datasets.Dataset) -> datasets.Dataset:
     """Validate and filter molecules in a HuggingFace dataset.
 
     Validates each molecule in the dataset by attempting to create OpenFF Molecule
@@ -72,8 +83,6 @@ def validate_molecular_dataset(
     ----------
     dataset : datasets.Dataset
         HuggingFace dataset with 'smiles' column.
-    allow_undefined_stereo : bool, optional
-        Whether to allow undefined stereochemistry. Default is True.
 
     Returns
     -------
@@ -92,9 +101,7 @@ def validate_molecular_dataset(
     for i, entry in enumerate(dataset):
         try:
             smiles: str = entry["smiles"]  # type: ignore[index]
-            mol = Molecule.from_mapped_smiles(
-                smiles, allow_undefined_stereo=allow_undefined_stereo
-            )
+            mol = Molecule.from_mapped_smiles(smiles, allow_undefined_stereo=True)
 
             # Basic validation - check if molecule can be created and has atoms
             if mol.n_atoms > 0:
@@ -119,12 +126,61 @@ def validate_molecular_dataset(
     return filtered_dataset
 
 
+def smiles_to_interchange(smiles: str, offxml: str) -> Interchange | None:
+    """Convert SMILES string to OpenFF Interchange object using force field.
+
+    Creates an OpenFF Interchange object from a SMILES string by generating
+    a molecule and applying the force field parameters.
+
+    Parameters
+    ----------
+    smiles : str
+        SMILES molecular representation string.
+    offxml : str
+        Path to OpenFF force field object for parameterization.
+
+    Returns
+    -------
+    Interchange or None
+        OpenFF Interchange object if successful, None if parameterization fails.
+
+    Notes
+    -----
+    Failed molecules return None. Uses `allow_undefined_stereo=True`
+    for molecule creation to handle molecules with undefined stereochemistry.
+
+    Examples
+    --------
+    >>> interchange = smiles_to_interchange("CCO", "openff-2.2.1.offxml")
+    >>> interchange is not None
+    True
+
+    >>> # Failed case returns None
+    >>> interchange = smiles_to_interchange("invalid_smiles", "openff-2.2.1.offxml")
+    >>> interchange is None
+    True
+    """
+    try:
+        forcefield = ForceField(offxml)
+        mol = Molecule.from_mapped_smiles(smiles, allow_undefined_stereo=True)
+        interchange = forcefield.create_interchange(mol.to_topology())
+        return interchange
+    except Exception as e:
+        # Log the specific error for debugging
+        if "stereochemistry" in str(e).lower():
+            logger.debug(f"Stereochemistry error for '{smiles}': {str(e)}")
+        else:
+            logger.debug(f"Failed to create interchange for '{smiles}': {str(e)}")
+        return None
+
+
 def prepare_to_train(
     dataset: datasets.Dataset,
     offxml: pathlib.Path | str,
     device: str | None = None,
     precision: Literal["single", "double"] = "single",
     validate_molecules: bool = True,
+    n_cpus: int | None = None,
 ) -> tuple[smee.TensorForceField, dict[str, smee.TensorTopology]]:
     """Convert molecular dataset and force field to SMEE format for training.
 
@@ -149,6 +205,9 @@ def prepare_to_train(
     validate_molecules : bool, optional
         Whether to validate molecular structures before processing.
         Default is True.
+    n_cpus : int | None, optional
+        Number of CPUs used for parallel processing of interchange creation.
+        Default is None which will detect the number of cores.
 
     Returns
     -------
@@ -177,40 +236,67 @@ def prepare_to_train(
     # Get starting forcefield
     offxml = pathlib.Path(offxml)
     logger.info(f"Loading force field: {offxml.resolve()}")
-    starting_ff = ForceField(offxml)
 
     # Optional molecule validation
     if validate_molecules:
-        dataset = validate_molecular_dataset(dataset, allow_undefined_stereo=True)
+        dataset = validate_molecular_dataset(dataset)
 
     total_molecules = len(dataset)
     logger.info(f"Processing {total_molecules} molecules.")
 
     # Process molecules and create interchanges
-    logger.info("Creating interchanges...")
-    all_smiles = []
-    all_interchanges = []
-    failed_molecules = 0
+    all_smiles = [entry["smiles"] for entry in dataset]  # type: ignore[index]
+    if n_cpus == 1:
+        maybe_interchanges = [
+            smiles_to_interchange(x, str(offxml))
+            for x in tqdm(all_smiles, desc="Creating Interchanges")
+        ]
+    else:
+        if n_cpus is None:
+            n_cpus = os.cpu_count() or 1
 
-    for entry in tqdm(dataset, desc="Creating interchanges"):
-        smiles: str = ""
-        try:
-            smiles = entry["smiles"]  # type: ignore[index]
-            mol = Molecule.from_mapped_smiles(smiles, allow_undefined_stereo=True)
-            interchange = starting_ff.create_interchange(mol.to_topology())
+        logger.info(f"Found {n_cpus} workers for interchange creation")
+        logger.info("Processing molecules in parallel...")
+        logger.info(f"Total molecules: {len(all_smiles)}")
 
-            all_smiles.append(smiles)
-            all_interchanges.append(interchange)
+        logger.info("Starting parallel processing...")
 
-        except Exception as e:
-            failed_molecules += 1
-            logger.warning(f"Failed to process molecule '{smiles}': {e}")
-            continue
+        with ProcessPoolExecutor(max_workers=n_cpus) as executor:
+            map_fn = partial(smiles_to_interchange, offxml=str(offxml))
+            results_iter = executor.map(map_fn, all_smiles)
+            maybe_interchanges = []
+            failed_count = 0
+            for smiles, result in zip(
+                all_smiles,
+                tqdm(results_iter, total=len(all_smiles), desc="Creating Interchanges"),
+            ):
+                maybe_interchanges.append(result)
+                if result is None:
+                    logger.debug(f"Failed to process molecule '{smiles}'")
+                    failed_count += 1
 
-    if failed_molecules > 0:
-        logger.warning(f"Failed to process {failed_molecules} molecules")
+        logger.info(
+            f"Processing completed: {len(all_smiles) - failed_count}/{len(all_smiles)} molecules successful"
+        )
+        if failed_count > 0:
+            logger.warning(
+                f"Failed to process {failed_count} molecules (see debug logs for details)"
+            )
 
-    logger.info("Prepare SMEE data structures...")
+    if all(x is None for x in maybe_interchanges):
+        raise ValueError("All interchanges failed to be created.")
+
+    filtered_smiles, filtered_interchanges = zip(
+        *[
+            (smiles, interchange)
+            for smiles, interchange in zip(all_smiles, maybe_interchanges)
+            if interchange is not None
+        ]
+    )
+    all_smiles = list(filtered_smiles)
+    all_interchanges = list(filtered_interchanges)
+
+    logger.info("Preparing SMEE data structures...")
     smee_force_field, smee_topologies = smee.converters.convert_interchange(
         all_interchanges
     )
@@ -422,7 +508,7 @@ def load_dataset(data_dir: pathlib.Path | str) -> datasets.Dataset:
     # Get Dataset
     train_filename_data = pathlib.Path(data_dir)
     logger.info(f"Loading dataset: {train_filename_data.resolve()}")
-    dataset = datasets.Dataset.load_from_disk(train_filename_data)
+    dataset = datasets.Dataset.load_from_disk(str(train_filename_data))
     dataset.set_format(
         "torch", columns=["energy", "coords", "forces"], output_all_columns=True
     )
@@ -438,6 +524,7 @@ def main(
     device: Literal["cpu", "cuda"] | None = None,
     file_format: Literal["pkl", "json"] = "pkl",
     output_dir: pathlib.Path | str | None = None,
+    n_cpus: int | None = None,
 ) -> None:
     """Main pipeline for SMEE force field preparation.
 
@@ -457,6 +544,8 @@ def main(
         Output serialization format. Default is 'pkl'.
     output_dir : pathlib.Path, str, or None, optional
         Output directory. Default is None (current directory).
+    n_cpus : int | None, optional
+        Number of CPUs in a calculation. Default is None.
 
     Returns
     -------
@@ -477,7 +566,7 @@ def main(
 
     # Load dataset
     logger.info(f"Loading dataset: {filename_data.resolve()}")
-    dataset = load_dataset(filename_data)
+    dataset = load_dataset(str(filename_data))
     total_molecules = len(dataset)
 
     logger.info(f"Processing all {total_molecules} molecules")
@@ -488,6 +577,7 @@ def main(
         device=device,
         precision=precision,
         validate_molecules=validate_molecules,
+        n_cpus=n_cpus,
     )
 
     save_smee_output(
@@ -563,6 +653,12 @@ Examples:
         default=None,
         help="Directory to save output files (default: current directory)",
     )
+    parser.add_argument(
+        "--n-cpus",
+        type=str,
+        default=None,
+        help="Number of CPUs used for parallel processing",
+    )
     args = parser.parse_args()
     main(
         args.data_dir,
@@ -572,4 +668,5 @@ Examples:
         device=args.device,
         file_format=args.file_format,
         output_dir=args.output_dir,
+        n_cpus=int(args.n_cpus) if args.n_cpus is not None else args.n_cpus,
     )
