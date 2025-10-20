@@ -1,2 +1,0 @@
-slurmstepd: error: *** JOB 43638844 ON hpc3-23-04 CANCELLED AT 2025-09-14T18:34:37 DUE TO TIME LIMIT ***
-slurmstepd: error: Detected 38 oom_kill events in StepId=43638844.batch. Some of the step tasks have been OOM Killed.

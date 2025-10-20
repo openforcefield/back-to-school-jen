@@ -1,3 +1,6 @@
+Fri Sep 19 10:24:01 AM PDT 2025
+Running job on host hpc3-20-21
+32 allocated CPUs
 2025-09-19 10:24:07.261 | INFO     | __main__:get_train_test_smiles_dict:319 - Reading test/train smiles from ../../../back-to-school-jen_step4/3_split_train_test/full_split_uci/smiles_test_train.json
 2025-09-19 10:24:07.415 | INFO     | __main__:get_train_test_smiles_dict:322 - In the training and test sets there are 23109 and 1217 SMILES strings respectively.
 2025-09-19 10:24:07.415 | INFO     | __main__:load_specificity_config:85 - Configuration file contents from specificity.json:
