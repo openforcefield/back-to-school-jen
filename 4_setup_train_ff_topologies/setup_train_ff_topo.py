@@ -42,15 +42,14 @@ $ python setup_train_ff_topo.py --data-dir ./data-train --offxml openff-2.2.1.of
 """
 
 import os
-import sys
 import pathlib
 import dataclasses
 import json
 import pickle
 from typing import Any, Literal
 from datetime import datetime
-import multiprocessing
-import functools
+from concurrent.futures import ProcessPoolExecutor
+from functools import partial
 
 import argparse
 from loguru import logger
@@ -63,10 +62,17 @@ import torch
 from openff.toolkit import Molecule, ForceField
 from openff.interchange import Interchange
 
+# Suppress OpenEye warnings about stereochemistry
+try:
+    from openeye import oechem
 
-def validate_molecular_dataset(
-    dataset: datasets.Dataset, allow_undefined_stereo: bool = True
-) -> datasets.Dataset:
+    # Suppress OpenEye warnings and errors to stderr
+    oechem.OEThrow.SetLevel(oechem.OEErrorLevel_Error)
+except ImportError:
+    pass
+
+
+def validate_molecular_dataset(dataset: datasets.Dataset) -> datasets.Dataset:
     """Validate and filter molecules in a HuggingFace dataset.
 
     Validates each molecule in the dataset by attempting to create OpenFF Molecule
@@ -77,8 +83,6 @@ def validate_molecular_dataset(
     ----------
     dataset : datasets.Dataset
         HuggingFace dataset with 'smiles' column.
-    allow_undefined_stereo : bool, optional
-        Whether to allow undefined stereochemistry. Default is True.
 
     Returns
     -------
@@ -97,9 +101,7 @@ def validate_molecular_dataset(
     for i, entry in enumerate(dataset):
         try:
             smiles: str = entry["smiles"]  # type: ignore[index]
-            mol = Molecule.from_mapped_smiles(
-                smiles, allow_undefined_stereo=allow_undefined_stereo
-            )
+            mol = Molecule.from_mapped_smiles(smiles, allow_undefined_stereo=True)
 
             # Basic validation - check if molecule can be created and has atoms
             if mol.n_atoms > 0:
@@ -144,8 +146,8 @@ def smiles_to_interchange(smiles: str, offxml: str) -> Interchange | None:
 
     Notes
     -----
-    Failed molecules are logged as warnings. Uses `allow_undefined_stereo=True`
-    for molecule creation.
+    Failed molecules return None. Uses `allow_undefined_stereo=True`
+    for molecule creation to handle molecules with undefined stereochemistry.
 
     Examples
     --------
@@ -158,16 +160,17 @@ def smiles_to_interchange(smiles: str, offxml: str) -> Interchange | None:
     >>> interchange is None
     True
     """
-    logger.info(f"Force Field for Interchanges: {offxml}")
-    forcefield = ForceField(offxml)
-    mol = Molecule.from_mapped_smiles(smiles, allow_undefined_stereo=True)
     try:
-        logger.debug(f"Creating interchange for: {smiles}")
+        forcefield = ForceField(offxml)
+        mol = Molecule.from_mapped_smiles(smiles, allow_undefined_stereo=True)
         interchange = forcefield.create_interchange(mol.to_topology())
         return interchange
-
     except Exception as e:
-        logger.warning(f"Failed to process molecule '{smiles}': {str(e)}")
+        # Log the specific error for debugging
+        if "stereochemistry" in str(e).lower():
+            logger.debug(f"Stereochemistry error for '{smiles}': {str(e)}")
+        else:
+            logger.debug(f"Failed to create interchange for '{smiles}': {str(e)}")
         return None
 
 
@@ -203,8 +206,8 @@ def prepare_to_train(
         Whether to validate molecular structures before processing.
         Default is True.
     n_cpus : int | None, optional
-        Number of CPUs used for parallelization of interchange creation.
-        Default is None which will detect the number of core.
+        Number of CPUs used for parallel processing of interchange creation.
+        Default is None which will detect the number of cores.
 
     Returns
     -------
@@ -236,7 +239,7 @@ def prepare_to_train(
 
     # Optional molecule validation
     if validate_molecules:
-        dataset = validate_molecular_dataset(dataset, allow_undefined_stereo=True)
+        dataset = validate_molecular_dataset(dataset)
 
     total_molecules = len(dataset)
     logger.info(f"Processing {total_molecules} molecules.")
@@ -253,63 +256,32 @@ def prepare_to_train(
             n_cpus = os.cpu_count() or 1
 
         logger.info(f"Found {n_cpus} workers for interchange creation")
-        logger.info("Chunk size: 5 molecules per chunk")
-        logger.info(f"Expected chunks: ~{len(all_smiles) // 5}")
+        logger.info("Processing molecules in parallel...")
+        logger.info(f"Total molecules: {len(all_smiles)}")
 
-        logger.info("Starting multiprocessing...")
+        logger.info("Starting parallel processing...")
 
-        # forkserver context does not work with tqdm
-        if sys.platform == "darwin":  # macOS
-            try:
-                ctx = multiprocessing.get_context("fork")
-                logger.info("Using 'fork' context")
-            except Exception:
-                ctx = multiprocessing.get_context("spawn")  # type: ignore[assignment]
-                logger.info("Using 'spawn' context (fork unavailable)")
-        else:
-            ctx = multiprocessing  # type: ignore[assignment]
-            logger.info("Using default context")
+        with ProcessPoolExecutor(max_workers=n_cpus) as executor:
+            map_fn = partial(smiles_to_interchange, offxml=str(offxml))
+            results_iter = executor.map(map_fn, all_smiles)
+            maybe_interchanges = []
+            failed_count = 0
+            for smiles, result in zip(
+                all_smiles,
+                tqdm(results_iter, total=len(all_smiles), desc="Creating Interchanges"),
+            ):
+                maybe_interchanges.append(result)
+                if result is None:
+                    logger.debug(f"Failed to process molecule '{smiles}'")
+                    failed_count += 1
 
-        with ctx.Pool(processes=n_cpus) as pool:
-            with tqdm(total=len(all_smiles), desc="Creating Interchanges") as pbar:
-                maybe_interchanges = []
-                processed_count = 0
-
-                try:
-                    for result in pool.imap(
-                        functools.partial(
-                            smiles_to_interchange,
-                            offxml=str(offxml),
-                        ),
-                        all_smiles,
-                        chunksize=5,
-                    ):
-                        maybe_interchanges.append(result)
-                        processed_count += 1
-                        pbar.update(1)
-
-                        # Debug logging every 5 molecules for better feedback
-                        if processed_count % 5 == 0:
-                            logger.info(
-                                f"Processed {processed_count}/{len(all_smiles)} molecules"
-                            )
-
-                except KeyboardInterrupt:
-                    logger.warning(
-                        f"Interrupted after processing {processed_count} molecules"
-                    )
-                    pool.terminate()
-                    pool.join()
-                    raise
-                except Exception as e:
-                    logger.error(
-                        f"Error after processing {processed_count} molecules: {e}"
-                    )
-                    pool.terminate()
-                    pool.join()
-                    raise
-
-    logger.info("Processing completed")
+        logger.info(
+            f"Processing completed: {len(all_smiles) - failed_count}/{len(all_smiles)} molecules successful"
+        )
+        if failed_count > 0:
+            logger.warning(
+                f"Failed to process {failed_count} molecules (see debug logs for details)"
+            )
 
     if all(x is None for x in maybe_interchanges):
         raise ValueError("All interchanges failed to be created.")
@@ -323,12 +295,8 @@ def prepare_to_train(
     )
     all_smiles = list(filtered_smiles)
     all_interchanges = list(filtered_interchanges)
-    failed_molecules = len(maybe_interchanges) - len(all_interchanges)
 
-    if failed_molecules > 0:
-        logger.warning(f"Failed to process {failed_molecules} molecules")
-
-    logger.info("Prepare SMEE data structures...")
+    logger.info("Preparing SMEE data structures...")
     smee_force_field, smee_topologies = smee.converters.convert_interchange(
         all_interchanges
     )
@@ -689,7 +657,7 @@ Examples:
         "--n-cpus",
         type=str,
         default=None,
-        help="Number of CPUs used in parallelization",
+        help="Number of CPUs used for parallel processing",
     )
     args = parser.parse_args()
     main(
