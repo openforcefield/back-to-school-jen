@@ -1,47 +1,62 @@
 {
   "bond_specificities": {
-    "AtomStandard-BondGeneralized": {
-      "atom_include_ring_info": true,
-      "bond_include_ring_info": true,
-      "bond_specificity": "WILDCARD"
+    "AtomStandardNoRing-BondGeneralizedNoRing": {
+      "atom_include_ring_info": false,
+      "bond_specificity": "WILDCARD",
+      "bond_include_ring_info": false
     },
-    "AtomTerminalHnoH-BondStandard": {
-      "atom_include_ring_info": true,
-      "atom_terminal_behavior": "H_NO_H",
-      "bond_include_ring_info": true,
-      "bond_specificity": "STANDARD"
+    "AtomStandardNoRing_-BondGeneralizedRing": {
+      "atom_include_ring_info": false,
+      "bond_specificity": "WILDCARD",
+      "bond_include_ring_info": true
     },
-    "AtomStandard-BondStandard": {
+    "AtomStandardRing-BondGeneralizedRing": {
+      "atom_include_ring_info": true,
+      "bond_specificity": "WILDCARD",
+      "bond_include_ring_info": true
+    },
+    "AtomStandardRing-BondStandardRing": {
       "atom_include_ring_info": true,
       "bond_include_ring_info": true,
       "bond_specificity": "STANDARD"
     }
   },
   "angle_specificities": {
-    "AtomTerminalWildcard-BondGeneralized": {
-      "atom_include_ring_info": true,
+    "AtomTerminalWildcardNoRing-BondGeneralizedNoRing": {
+      "atom_include_ring_info": false,
       "atom_terminal_behavior": "WILDCARD",
-      "bond_include_ring_info": true,
+      "bond_include_ring_info": false,
       "bond_specificity": "WILDCARD"
     },
-    "AtomTerminalHnoH-BondGeneralized": {
+    "AtomTerminalHnoHRing-BondGeneralizedNoRing": {
+      "atom_include_ring_info": true,
+      "atom_terminal_behavior": "H_NO_H",
+      "bond_include_ring_info": false,
+      "bond_specificity": "WILDCARD"
+    },
+    "AtomStandardRing-BondGeneralizedNoRing": {
+      "atom_include_ring_info": true,
+      "bond_include_ring_info": false,
+      "bond_specificity": "WILDCARD"
+    },
+    "AtomTerminalHnoHRing-BondGeneralizedRing": {
       "atom_include_ring_info": true,
       "atom_terminal_behavior": "H_NO_H",
       "bond_include_ring_info": true,
       "bond_specificity": "WILDCARD"
     },
-    "AtomStandard-BondGeneralized": {
-      "atom_include_ring_info": true,
-      "bond_include_ring_info": true,
-      "bond_specificity": "WILDCARD"
-    },
-    "AtomTerminalHnoH-BondStandard": {
+    "AtomStandardRing-BondStandardNoRing": {
       "atom_include_ring_info": true,
       "atom_terminal_behavior": "H_NO_H",
-      "bond_include_ring_info": true,
+      "bond_include_ring_info": false,
       "bond_specificity": "STANDARD"
     },
-    "AtomStandard-BondStandard": {
+    "AtomStandardRing-BondGeneralizedRing": {
+      "atom_include_ring_info": true,
+      "bond_include_ring_info": true,
+      "bond_specificity": "WILDCARD"
+    },
+    "AtomStandardRing-BondStandardRing": {
       "atom_include_ring_info": true,
       "bond_include_ring_info": true,
       "bond_specificity": "STANDARD"
