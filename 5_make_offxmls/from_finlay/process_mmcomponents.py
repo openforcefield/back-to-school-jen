@@ -53,14 +53,13 @@ Hierarchical organization by specificity:
 """
 
 import os
-import math
+from functools import partial
 from typing import Iterable
 from collections import Counter, defaultdict
-from concurrent.futures import ProcessPoolExecutor, as_completed
+from concurrent.futures import ProcessPoolExecutor
 
 from loguru import logger
 import numpy as np
-from tqdm import tqdm
 from datasets import Dataset
 from rdkit import Chem
 from rdkit.Geometry import Point3D
@@ -157,18 +156,81 @@ def get_mm_components_from_huggingface(
         for idxs in component_type.getter_fn(mol)
     ]
     if not components:
-        raise ValueError(f"The following SMILES string produces no components: {ds_row["smiles"]}")
+        raise ValueError(
+            f"The following SMILES string produces no components: {ds_row["smiles"]}"
+        )
 
     return components
+
+
+def is_unwanted_smirks(component: MMComponent, unwanted_smirks: list[str]) -> bool:
+    """
+    Check if component matches any unwanted SMIRKS pattern.
+
+    Parameters
+    ----------
+    component : MMComponent
+        Component to check.
+    unwanted_smirks : list[str]
+        SMIRKS patterns to match against.
+
+    Returns
+    -------
+    bool
+        True if component matches any pattern, False otherwise.
+
+    Examples
+    --------
+    >>> unwanted = ["[#6:1]-[#8:2]"]
+    >>> is_unwanted_smirks(bond, unwanted)
+    True
+    """
+    return any(component.matches_smirks(smirks) for smirks in unwanted_smirks)
+
+
+def _process_dataset_row(row, component_type, unwanted_smirks):
+    """
+    Process a single dataset row to extract and filter components.
+
+    Helper function for parallel processing in get_all_mm_components.
+
+    Parameters
+    ----------
+    row : dict
+        Dataset row with 'smiles' and optional 'coords' fields.
+    component_type : type[MMComponent]
+        Component class to extract.
+    unwanted_smirks : list[str] | None
+        SMIRKS patterns to exclude.
+
+    Returns
+    -------
+    tuple[list[MMComponent], int, int]
+        Tuple of (filtered_components, n_total, n_filtered) where:
+        - filtered_components: Components that passed filtering
+        - n_total: Total components extracted before filtering
+        - n_filtered: Number of components after filtering
+    """
+    components = get_mm_components_from_huggingface(row, component_type)
+    if unwanted_smirks is None or len(unwanted_smirks) == 0:
+        return components, len(components), len(components)
+
+    filtered_components = [
+        x
+        for x in components
+        if not is_unwanted_smirks(x, unwanted_smirks=unwanted_smirks)
+    ]
+    return filtered_components, len(components), len(filtered_components)
 
 
 def get_all_mm_components(
     dataset: Dataset,
     component_type: type[MMComponent],
     unwanted_smirks: list[str] | None = None,
+    n_workers: int | None = None,
 ) -> list[MMComponent]:
     """
-    Extract components from HuggingFace dataset with filtering.
+    Extract components from HuggingFace dataset with filtering using parallel processing.
 
     Parameters
     ----------
@@ -178,6 +240,8 @@ def get_all_mm_components(
         Component class to extract (Bond, Angle, ProperTorsion, ImproperTorsion).
     unwanted_smirks : list[str], optional
         SMIRKS patterns to exclude from results.
+    n_workers : int, optional
+        Number of worker processes. If None, uses all available CPU cores.
 
     Returns
     -------
@@ -201,26 +265,44 @@ def get_all_mm_components(
     >>> print(f"Filtered bonds: {len(filtered_bonds)}")
     Filtered bonds: 3
     """
-    all_components = []
-    lx = len(dataset)
-    for row in tqdm(dataset, desc=f"Processing HuggingFace Dataset with {lx} molecules"):
-        all_components.extend(get_mm_components_from_huggingface(row, component_type))
+    if n_workers is None:
+        n_workers = os.cpu_count()
+    n_workers = n_workers or 1
+    logger.info(f"Unwanted SMIRKS to filter: {unwanted_smirks}")
+    logger.info(f"Using {n_workers} workers for parallel processing")
 
-    if unwanted_smirks:
-        all_components_filtered = []
-        logger.info(f"Filtering out unwanted SMIRKS: {unwanted_smirks}")
-        for component in tqdm(all_components, desc="Filtering unwanted components"):
-            matched = False
-            for smirks in unwanted_smirks:
-                if component.matches_smirks(smirks):
-                    matched = True
-                    break
-            if not matched:
-                all_components_filtered.append(component)
-        logger.info(
-            f"Filtered out {len(all_components) - len(all_components_filtered)} unwanted components."
-        )
-        all_components = all_components_filtered
+    all_components = []
+    n_components, n_filtered = 0, 0
+    lx = len(dataset)
+
+    process_row = partial(
+        _process_dataset_row,
+        component_type=component_type,
+        unwanted_smirks=unwanted_smirks,
+    )
+
+    logger.info(f"Processing {lx} molecules from HuggingFace Dataset")
+
+    with ProcessPoolExecutor(max_workers=n_workers) as executor:
+        # Use executor.map for ordered results with automatic distribution
+        results_iter = executor.map(process_row, dataset)
+
+        # Track progress at 5% intervals
+        next_log_threshold = 0.05
+        for idx, (filtered_components, n_total, n_filt) in enumerate(
+            results_iter, start=1
+        ):
+            all_components.extend(filtered_components)
+            n_components += n_total
+            n_filtered += n_filt
+
+            # Log at 5% intervals
+            progress = idx / lx
+            if progress >= next_log_threshold:
+                logger.info(f"Progress: {idx}/{lx} molecules ({progress*100:.1f}%)")
+                next_log_threshold += 0.05
+
+    logger.info(f"Filtered out {n_components - n_filtered} unwanted components.")
 
     return all_components
 
@@ -254,74 +336,44 @@ def get_all_mm_components_by_type(
     [#6:1]-[#8:2]: 75 components
     """
     all_component_types = defaultdict(list)
-    for component in tqdm(mm_components, desc="Processing Components"):
+    mm_components = list(mm_components)
+    total = len(mm_components)
+
+    logger.info(f"Processing {total} components")
+    next_log_threshold = 0.05
+
+    for idx, component in enumerate(mm_components, start=1):
         smirks = component.get_smirks(specificity_level)
         all_component_types[smirks].append(component)
+
+        # Log at 5% intervals
+        progress = idx / total
+        if progress >= next_log_threshold:
+            logger.info(f"Progress: {idx}/{total} components ({progress*100:.1f}%)")
+            next_log_threshold += 0.05
 
     return all_component_types
 
 
-def process_mm_component_chunk(component_chunk, specificity_level):
+def _get_component_smirks(component, specificity_level):
     """
-    Process a chunk of components for parallel execution.
+    Extract SMIRKS pattern for a single component.
 
-    Worker function for parallel processing that groups a subset of components
-    by their SMIRKS patterns at the specified specificity level.
+    Helper function for parallel processing in get_all_mm_components_by_type_parallel.
 
     Parameters
     ----------
-    component_chunk : list[MMComponent]
-        Subset of components to process in this worker.
+    component : MMComponent
+        Component to extract SMIRKS from.
     specificity_level : SpecificityLevel
-        Defines the specificity level for SMIRKS generation.
+        Determines SMIRKS pattern specificity.
 
     Returns
     -------
-    dict[str, list[MMComponent]]
-        Dictionary mapping SMIRKS patterns to component lists for this chunk.
-
-    Notes
-    -----
-    This function is designed for use with ProcessPoolExecutor and should
-    not be called directly. Use get_all_mm_components_by_type_parallel instead.
+    tuple[str, MMComponent]
+        Tuple of (smirks_pattern, component).
     """
-    chunk_dict = defaultdict(list)
-    for component in component_chunk:
-        smirks = component.get_smirks(specificity_level)
-        chunk_dict[smirks].append(component)
-    return chunk_dict
-
-
-def merge_dicts(dicts):
-    """
-    Merge multiple dictionaries with list values.
-
-    Combines dictionaries from parallel processing workers by extending
-    lists for matching keys.
-
-    Parameters
-    ----------
-    dicts : list[dict[str, list]]
-        List of dictionaries to merge, each mapping strings to lists.
-
-    Returns
-    -------
-    dict[str, list]
-        Merged dictionary with all lists combined for each key.
-
-    Examples
-    --------
-    >>> dict1 = {"A": [1, 2], "B": [3]}
-    >>> dict2 = {"A": [4], "C": [5, 6]}
-    >>> merged = merge_dicts([dict1, dict2])
-    >>> print(merged)
-    {"A": [1, 2, 4], "B": [3], "C": [5, 6]}
-    """
-    merged = defaultdict(list)
-    for d in dicts:
-        for k, v in d.items():
-            merged[k].extend(v)
-    return merged
+    return component.get_smirks(specificity_level), component
 
 
 def get_all_mm_components_by_type_parallel(
@@ -362,33 +414,64 @@ def get_all_mm_components_by_type_parallel(
     ... )
     """
     mm_components = list(mm_components)
+    total = len(mm_components)
     if n_workers is None:
         n_workers = os.cpu_count()
-
-    # Ensure n_workers is not None for the division
     n_workers = n_workers or 1
-    chunk_size = math.ceil(len(mm_components) / n_workers)
-    component_chunks = [
-        mm_components[i : i + chunk_size]
-        for i in range(0, len(mm_components), chunk_size)
-    ]
+
+    logger.info(f"Processing {total} components with {n_workers} workers")
+
+    # Use partial to avoid lambda pickling issues
+    get_smirks_fn = partial(_get_component_smirks, specificity_level=specificity_level)
+
+    all_component_types = defaultdict(list)
+    next_log_threshold = 0.05
 
     with ProcessPoolExecutor(max_workers=n_workers) as executor:
-        futures = [
-            executor.submit(process_mm_component_chunk, chunk, specificity_level)
-            for chunk in component_chunks
-        ]
-        results = []
-        for f in as_completed(futures):
-            results.append(f.result())
+        # executor.map preserves order and handles distribution automatically
+        for idx, (smirks, component) in enumerate(
+            executor.map(get_smirks_fn, mm_components), start=1
+        ):
+            all_component_types[smirks].append(component)
 
-    return merge_dicts(results)
+            # Log at 5% intervals
+            progress = idx / total
+            if progress >= next_log_threshold:
+                logger.info(f"Progress: {idx}/{total} components ({progress*100:.1f}%)")
+                next_log_threshold += 0.05
+
+    return all_component_types
+
+
+def _filter_too_specific(smirks_and_components, cutoff_population):
+    """
+    Filter component types that fall below the population cutoff.
+
+    Helper function for parallel processing in get_mm_components_by_specificity_by_type.
+
+    Parameters
+    ----------
+    smirks_and_components : tuple[str, list[MMComponent]]
+        Tuple of (smirks_pattern, component_list).
+    cutoff_population : int
+        Minimum number of components required.
+
+    Returns
+    -------
+    tuple[str, list[MMComponent]] | None
+        Returns the input tuple if below cutoff, None otherwise.
+    """
+    smirks, component_list = smirks_and_components
+    if len(component_list) < cutoff_population:
+        return smirks, component_list
+    return None
 
 
 def get_mm_components_by_specificity_by_type(
     mm_components: Iterable[MMComponent],
     specificity_levels: dict[int, SpecificityLevel],
     cutoff_population: int = 10,
+    n_workers: int | None = None,
 ) -> dict[int, dict[str, list[MMComponent]]]:
     """
     Organize components hierarchically by specificity level.
@@ -403,8 +486,11 @@ def get_mm_components_by_specificity_by_type(
         Components to organize.
     specificity_levels : dict[int, SpecificityLevel]
         Specificity level mapping (higher numbers = more specific).
-    cutoff_population : int, default 10
+    cutoff_population : int, default=10
         Minimum components required to stay at current specificity level.
+    n_workers : int, default=None
+        Number of worker processes. If None, uses all available CPU cores.
+        If os.cpu_count() returns None, defaults to 1 worker.
 
     Returns
     -------
@@ -449,25 +535,32 @@ def get_mm_components_by_specificity_by_type(
             f"Getting Components by Type with Specificity {specificity_num}: {specificity_level.name}"
         )
         components_by_type = get_all_mm_components_by_type_parallel(
-            components_to_process, specificity_level
+            components_to_process,
+            specificity_level,
+            n_workers=n_workers,
         )
         components_by_specificity[specificity_num] = components_by_type
 
         logger.info("Finding component types that are too specific...")
         # Prepare for next (less specific) level
         if i < len(specificity_order) - 1:
-            # Find component types below cutoff
-            too_specific = [
-                component
-                for component_list in components_by_type.values()
-                if len(component_list) < cutoff_population
-                for component in component_list
-            ]
-            # Remove these from current level
-            for smirks in [
-                s for s, cs in components_by_type.items() if len(cs) < cutoff_population
-            ]:
-                del components_by_specificity[specificity_num][smirks]
+            # Find component types below cutoff in parallel
+            # Use partial to avoid lambda pickling issues
+            filter_fn = partial(
+                _filter_too_specific, cutoff_population=cutoff_population
+            )
+
+            with ProcessPoolExecutor(max_workers=n_workers) as executor:
+                results = list(executor.map(filter_fn, components_by_type.items()))
+
+            # Separate too specific components and remove from current level
+            too_specific = []
+            for result in results:
+                if result is not None:
+                    smirks, component_list = result
+                    too_specific.extend(component_list)
+                    del components_by_specificity[specificity_num][smirks]
+
             components_to_process = too_specific
 
     return components_by_specificity
