@@ -5,6 +5,7 @@
 #SBATCH -t 3-00:00:00
 #SBATCH --nodes=1            ## use 1 node, don't ask for multiple
 #SBATCH --ntasks 1
+#SBATCH --cpus-per-task=16
 #SBATCH --mem-per-cpu=4GB
 #SBATCH --constraint=fastscratch
 #SBATCH --account DMOBLEY_LAB
@@ -16,6 +17,10 @@ hn=`hostname`
 echo "Running job on host $hn"
 ncpus=$SLURM_CPUS_ON_NODE
 echo "$ncpus allocated CPUs"
+
+export OMP_NUM_THREADS=1
+export OPENBLAS_NUM_THREADS=1
+export MKL_NUM_THREADS=1
 
 source ~/.bashrc
 micromamba activate bts
