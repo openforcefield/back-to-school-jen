@@ -145,6 +145,7 @@ def summarize_all_types(
 def get_components_by_type(
     data_dir: str,
     specificity_json: str,
+    n_workers: int | None = None,
 ) -> dict[type[MMComponent], dict[int, dict[str, list[MMComponent]]]]:
     """
     Extract and organize molecular components from dataset.
@@ -155,6 +156,8 @@ def get_components_by_type(
         Path to HuggingFace dataset directory.
     specificity_json : str
         Path to JSON configuration file.
+    n_workers : int
+        Number of workers to parallelize processing
 
     Returns
     -------
@@ -181,13 +184,18 @@ def get_components_by_type(
     for component_class in [Bond, Angle]:
         logger.info(f"\n{'=' * 20}\nProcessing {component_class.__name__}\n{'=' * 20}")
 
-        components = ffpmm.get_all_mm_components(dataset, component_class)  # type: ignore[type-abstract]
+        components = ffpmm.get_all_mm_components(
+            dataset,  # type: ignore[type-abstract]
+            component_class,  # type: ignore[type-abstract]
+            n_workers=n_workers,
+        )
         logger.info(f"Found {len(components)} {component_class.__name__}s.")
 
         class_components_by_type = ffpmm.get_mm_components_by_specificity_by_type(
             components,
             specificity_levels_by_component[component_class],  # type: ignore[type-abstract]
             cutoff_population=10,
+            n_workers=n_workers,
         )
 
         if len(components) != sum(
@@ -411,7 +419,9 @@ def main(
     """
 
     smiles_dict = get_train_test_smiles_dict(filename_test_train_smiles)
-    components_by_type = get_components_by_type(data_dir, specificity_json)
+    components_by_type = get_components_by_type(
+        data_dir, specificity_json, n_workers=n_workers
+    )
     write_forcefield_file(
         components_by_type, filename_offxml_out, filename_offxml_in, n_workers=n_workers
     )

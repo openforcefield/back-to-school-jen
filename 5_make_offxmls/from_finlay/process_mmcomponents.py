@@ -72,6 +72,7 @@ from .molecular_classes import MMComponent, SpecificityLevel
 def get_mm_components_from_huggingface(
     ds_row,
     component_type: type[MMComponent],
+    load_coords=False,
 ) -> list[MMComponent]:
     """
     Extract molecular mechanics components from HuggingFace dataset row.
@@ -85,6 +86,8 @@ def get_mm_components_from_huggingface(
         [x1,y1,z1, x2,y2,z2, ..., xN,yN,zN] for each conformer sequentially.
     component_type : type[MMComponent]
         Component class (Bond, Angle, ProperTorsion, ImproperTorsion).
+    load_coords : bool, optional
+        If true and input has coordinates, the conformer is created in the RDKit molecule
 
     Returns
     -------
@@ -122,11 +125,11 @@ def get_mm_components_from_huggingface(
     """
     mol = Molecule.from_mapped_smiles(ds_row["smiles"], allow_undefined_stereo=True)
     if mol is None:
-        raise ValueError(f"Invalid mapped SMILES: {ds_row["smiles"]}")
+        raise ValueError(f"Invalid mapped SMILES: {ds_row['smiles']}")
 
     rdkit_mol = mol.to_rdkit()
     coords = ds_row.get("coords")
-    if coords is not None:
+    if coords is not None and load_coords:
         arr = np.array(coords, dtype=float).reshape(-1, 3)
         num_atoms = rdkit_mol.GetNumAtoms()
         num_conformers = len(arr) // (num_atoms)
@@ -157,7 +160,7 @@ def get_mm_components_from_huggingface(
     ]
     if not components:
         raise ValueError(
-            f"The following SMILES string produces no components: {ds_row["smiles"]}"
+            f"The following SMILES string produces no components: {ds_row['smiles']}"
         )
 
     return components
