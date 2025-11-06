@@ -48,9 +48,11 @@ import json
 import pickle
 from typing import Any, Literal
 from datetime import datetime
-from multiprocessing import get_context
+from concurrent.futures import ProcessPoolExecutor
+from functools import partial
 
 import argparse
+from tqdm import tqdm
 from loguru import logger
 import smee
 import smee.converters
@@ -172,30 +174,6 @@ def smiles_to_interchange(smiles: str, offxml: str) -> Interchange | None:
         return None
 
 
-def _smiles_to_interchange_wrapped(
-    args: tuple[str, str]
-) -> tuple[str, Interchange | None]:
-    """Wrapper for smiles_to_interchange that preserves ordering index.
-
-    This function is used for parallel processing where we need to maintain
-    the original order of SMILES strings even when using unordered parallel
-    processing methods.
-
-    Parameters
-    ----------
-    args : tuple[str, str]
-        Tuple of (smiles, offxml_path)
-
-    Returns
-    -------
-    tuple[str, Interchange | None]
-        Tuple of (smiles, interchange_result)
-    """
-    smiles, offxml = args
-    intchng = smiles_to_interchange(smiles, offxml)
-    return smiles, intchng
-
-
 def prepare_to_train(
     dataset: datasets.Dataset,
     offxml: pathlib.Path | str,
@@ -269,29 +247,10 @@ def prepare_to_train(
     # Process molecules and create interchanges
     all_smiles = [entry["smiles"] for entry in dataset]  # type: ignore[index]
     if n_cpus == 1:
-        logger.info("Processing molecules sequentially...")
-        results = []
-        next_log_threshold = 0.05
-        failed_count = 0
-        for idx, smiles in enumerate(all_smiles, start=1):
-            intchng = smiles_to_interchange(smiles, str(offxml))
-            if intchng is None:
-                logger.debug(f"Failed to process molecule '{smiles}'")
-                failed_count += 1
-            else:
-                results.append((smiles, intchng))
-
-            progress = idx / len(all_smiles)
-            if progress >= next_log_threshold:
-                logger.info(
-                    f"Progress: {idx}/{len(all_smiles)} molecules ({progress*100:.1f}%)"
-                )
-                next_log_threshold += 0.05
-
-        if failed_count > 0:
-            logger.warning(
-                f"Failed to process {failed_count} molecules (see debug logs for details)"
-            )
+        maybe_interchanges = [
+            smiles_to_interchange(x, str(offxml))
+            for x in tqdm(all_smiles, desc="Creating Interchanges")
+        ]
     else:
         if n_cpus is None:
             n_cpus = os.cpu_count() or 1
@@ -302,37 +261,19 @@ def prepare_to_train(
 
         logger.info("Starting parallel processing...")
 
-        # Prepare arguments with indices to preserve order
-        args_list = [(smiles, str(offxml)) for smiles in all_smiles]
-
-        # Use spawn context for HPC compatibility
-        ctx = get_context("spawn")
-        with ctx.Pool(processes=n_cpus) as pool:
-            # Use imap_unordered for better performance, but track indices
-            results_iter = pool.imap_unordered(
-                _smiles_to_interchange_wrapped, args_list, chunksize=10
-            )
-
-            # Collect results with their indices
-            results = []
+        with ProcessPoolExecutor(max_workers=n_cpus) as executor:
+            map_fn = partial(smiles_to_interchange, offxml=str(offxml))
+            results_iter = executor.map(map_fn, all_smiles)
+            maybe_interchanges = []
             failed_count = 0
-            next_log_threshold = 0.05
-            processed = 0
-
-            for smiles, intchng in results_iter:
-                if intchng is None:
+            for smiles, result in zip(
+                all_smiles,
+                tqdm(results_iter, total=len(all_smiles), desc="Creating Interchanges"),
+            ):
+                maybe_interchanges.append(result)
+                if result is None:
                     logger.debug(f"Failed to process molecule '{smiles}'")
                     failed_count += 1
-                else:
-                    results.append((smiles, intchng))
-
-                processed += 1
-                progress = processed / len(all_smiles)
-                if progress >= next_log_threshold:
-                    logger.info(
-                        f"Progress: {processed}/{len(all_smiles)} molecules ({progress*100:.1f}%)"
-                    )
-                    next_log_threshold += 0.05
 
         logger.info(
             f"Processing completed: {len(all_smiles) - failed_count}/{len(all_smiles)} molecules successful"
@@ -342,10 +283,16 @@ def prepare_to_train(
                 f"Failed to process {failed_count} molecules (see debug logs for details)"
             )
 
-    if not results:
+    if all(x is None for x in maybe_interchanges):
         raise ValueError("All interchanges failed to be created.")
 
-    filtered_smiles, filtered_interchanges = zip(*results)
+    filtered_smiles, filtered_interchanges = zip(
+        *[
+            (smiles, interchange)
+            for smiles, interchange in zip(all_smiles, maybe_interchanges)
+            if interchange is not None
+        ]
+    )
     all_smiles = list(filtered_smiles)
     all_interchanges = list(filtered_interchanges)
 
