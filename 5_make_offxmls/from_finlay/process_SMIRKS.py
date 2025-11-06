@@ -40,7 +40,7 @@ Examples
 """
 
 import os
-from concurrent.futures import ProcessPoolExecutor
+from multiprocessing import get_context
 from copy import deepcopy
 from enum import Enum
 from typing import Any
@@ -48,7 +48,6 @@ from typing import Any
 from loguru import logger
 from dataclasses import dataclass
 from rdkit import Chem
-from tqdm import tqdm
 
 from openff.toolkit import ForceField
 from openff.toolkit.typing.engines.smirnoff.parameters import ParameterType
@@ -565,15 +564,27 @@ def add_types_to_ff(
             for i, (smirks, components) in items
         ]
 
-        # Process in parallel
-        with ProcessPoolExecutor(max_workers=n_workers) as executor:
-            parameters = list(
-                tqdm(
-                    executor.map(_process_component_for_ff, args_list),
-                    total=len(args_list),
-                    desc=f"Adding parameters for specificity {specificity_num}",
-                )
-            )
+        # Process in parallel using Pool with spawn context for HPC compatibility
+        ctx = get_context("spawn")
+        with ctx.Pool(processes=n_workers) as pool:
+            results_iter = pool.imap(_process_component_for_ff, args_list, chunksize=10)
+
+            parameters = []
+            next_log_threshold = 0.05
+            processed = 0
+            total_items = len(args_list)
+
+            logger.info(f"Adding parameters for specificity {specificity_num}...")
+            for parameter in results_iter:
+                parameters.append(parameter)
+                processed += 1
+
+                progress = processed / total_items
+                if progress >= next_log_threshold:
+                    logger.info(
+                        f"Progress: {processed}/{total_items} parameters ({progress*100:.1f}%)"
+                    )
+                    next_log_threshold += 0.05
 
         # Add parameters to handler in order
         for parameter in parameters:

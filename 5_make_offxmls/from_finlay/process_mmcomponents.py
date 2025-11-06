@@ -56,7 +56,7 @@ import os
 from functools import partial
 from typing import Iterable
 from collections import Counter, defaultdict
-from concurrent.futures import ProcessPoolExecutor
+from multiprocessing import get_context
 
 from loguru import logger
 import numpy as np
@@ -286,23 +286,31 @@ def get_all_mm_components(
 
     logger.info(f"Processing {lx} molecules from HuggingFace Dataset")
 
-    with ProcessPoolExecutor(max_workers=n_workers) as executor:
-        # Use executor.map for ordered results with automatic distribution
-        results_iter = executor.map(process_row, dataset)
+    # Use 'spawn' context for better compatibility on HPC systems
+    # 'spawn' avoids fork-safety issues with scientific libraries
+    ctx = get_context("spawn")
+
+    with ctx.Pool(processes=n_workers) as pool:
+        # Use imap_unordered for lazy iteration and better memory efficiency
+        # Results are yielded as they complete (unordered for better performance)
+        results_iter = pool.imap_unordered(process_row, dataset, chunksize=10)
 
         # Track progress at 5% intervals
         next_log_threshold = 0.05
-        for idx, (filtered_components, n_total, n_filt) in enumerate(
-            results_iter, start=1
-        ):
+        processed = 0
+
+        for filtered_components, n_total, n_filt in results_iter:
             all_components.extend(filtered_components)
             n_components += n_total
             n_filtered += n_filt
+            processed += 1
 
             # Log at 5% intervals
-            progress = idx / lx
+            progress = processed / lx
             if progress >= next_log_threshold:
-                logger.info(f"Progress: {idx}/{lx} molecules ({progress*100:.1f}%)")
+                logger.info(
+                    f"Progress: {processed}/{lx} molecules ({progress*100:.1f}%)"
+                )
                 next_log_threshold += 0.05
 
     logger.info(f"Filtered out {n_components - n_filtered} unwanted components.")
@@ -430,17 +438,24 @@ def get_all_mm_components_by_type_parallel(
     all_component_types = defaultdict(list)
     next_log_threshold = 0.05
 
-    with ProcessPoolExecutor(max_workers=n_workers) as executor:
-        # executor.map preserves order and handles distribution automatically
-        for idx, (smirks, component) in enumerate(
-            executor.map(get_smirks_fn, mm_components), start=1
+    # Use 'spawn' context for better HPC compatibility
+    ctx = get_context("spawn")
+
+    with ctx.Pool(processes=n_workers) as pool:
+        # imap_unordered for lazy iteration and better performance
+        processed = 0
+        for smirks, component in pool.imap_unordered(
+            get_smirks_fn, mm_components, chunksize=100
         ):
             all_component_types[smirks].append(component)
+            processed += 1
 
             # Log at 5% intervals
-            progress = idx / total
+            progress = processed / total
             if progress >= next_log_threshold:
-                logger.info(f"Progress: {idx}/{total} components ({progress*100:.1f}%)")
+                logger.info(
+                    f"Progress: {processed}/{total} components ({progress*100:.1f}%)"
+                )
                 next_log_threshold += 0.05
 
     return all_component_types
@@ -553,8 +568,15 @@ def get_mm_components_by_specificity_by_type(
                 _filter_too_specific, cutoff_population=cutoff_population
             )
 
-            with ProcessPoolExecutor(max_workers=n_workers) as executor:
-                results = list(executor.map(filter_fn, components_by_type.items()))
+            # Use 'spawn' context for better HPC compatibility
+            ctx = get_context("spawn")
+
+            with ctx.Pool(processes=n_workers) as pool:
+                results = list(
+                    pool.imap_unordered(
+                        filter_fn, components_by_type.items(), chunksize=10
+                    )
+                )
 
             # Separate too specific components and remove from current level
             too_specific = []

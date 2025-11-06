@@ -48,7 +48,7 @@ Check specific torsion coverage:
 
 import os
 import math
-from concurrent.futures import ProcessPoolExecutor, as_completed
+from multiprocessing import get_context
 
 from tqdm import tqdm
 from loguru import logger
@@ -135,7 +135,7 @@ def check_molecules_fully_covered_chunk(smiles_chunk, ff):
 
     Notes
     -----
-    This function is designed for use with ProcessPoolExecutor and should
+    This function is designed for parallelize and should
     not be called directly. Use check_all_molecules_parameterisable_parallel_chunks
     instead.
     """
@@ -189,64 +189,6 @@ def chunked_iterable(iterable, chunk_size):
             break
         if chunk:
             yield chunk
-
-
-def check_all_molecules_parameterisable_parallel_chunks(
-    mapped_smiles_list, ff, n_workers: int | None = None
-):
-    """
-    Test parameterization capability for multiple molecules using parallel processing.
-
-    Distributes parameterization testing across multiple processes for efficient
-    analysis of large molecular datasets.
-
-    Parameters
-    ----------
-    mapped_smiles_list : list[str]
-        List of mapped SMILES strings to test.
-    ff : openff.toolkit.ForceField
-        Force field to test parameterization against.
-    n_workers : int, optional
-        Number of worker processes to use. If None, uses all available CPU cores.
-
-    Returns
-    -------
-    list[tuple[str, bool]]
-        List of tuples containing (smiles, can_parameterize) for each molecule.
-
-    Notes
-    -----
-    This function automatically determines optimal chunk sizes based on the
-    number of workers to ensure balanced workload distribution.
-
-    Examples
-    --------
-    >>> from openff.toolkit import ForceField
-    >>> ff = ForceField("openff-2.0.0.offxml")
-    >>> smiles_list = ["[C:1][C:2]", "[C:1][O:2]", "[N:1][C:2]"]
-    >>> results = check_all_molecules_parameterisable_parallel_chunks(smiles_list, ff)
-    >>> parameterizable = [smiles for smiles, can_param in results if can_param]
-    >>> print(f"{len(parameterizable)}/{len(smiles_list)} molecules parameterizable")
-    3/3 molecules parameterizable
-    """
-    results = []
-    if n_workers is None:
-        n_workers = os.cpu_count() or 1  # Fallback to 1 if cpu_count() returns None
-    # Calculate the chunk size to be the maximum possible while still having at least one chunk per worker
-    chunk_size = math.ceil(len(mapped_smiles_list) / n_workers)
-    chunks = list(chunked_iterable(mapped_smiles_list, chunk_size))
-    with ProcessPoolExecutor(max_workers=n_workers) as executor:
-        futures = [
-            executor.submit(check_molecules_fully_covered_chunk, chunk, ff)
-            for chunk in chunks
-        ]
-        for f in tqdm(
-            as_completed(futures),
-            total=len(futures),
-            desc="Checking Parameterisability (parallel chunks)",
-        ):
-            results.extend(f.result())
-    return results
 
 
 def check_all_components_fully_covered(
@@ -387,17 +329,23 @@ def check_all_components_fully_covered_parallel_chunks(
     # Calculate the chunk size to be the maximum possible while still having at least one chunk per worker
     chunk_size = math.ceil(len(mapped_smiles_list) / n_workers)
     chunks = list(chunked_iterable(mapped_smiles_list, chunk_size))
-    with ProcessPoolExecutor(max_workers=n_workers) as executor:
-        futures = [
-            executor.submit(check_all_components_fully_covered, chunk, ff)
-            for chunk in chunks
-        ]
-        for f in tqdm(
-            as_completed(futures),
-            total=len(futures),
-            desc="Checking Component Coverage (parallel chunks)",
-        ):
-            results.update(f.result())
+
+    # Prepare arguments for multiprocessing
+    args_list = [(chunk, ff) for chunk in chunks]
+
+    # Use spawn context for HPC compatibility
+    ctx = get_context("spawn")
+    with ctx.Pool(processes=n_workers) as pool:
+        # Use starmap for multiple arguments
+        chunk_results = list(
+            tqdm(
+                pool.starmap(check_all_components_fully_covered, args_list),
+                total=len(args_list),
+                desc="Checking Component Coverage (parallel chunks)",
+            )
+        )
+        for chunk_result in chunk_results:
+            results.update(chunk_result)
     return results
 
 
