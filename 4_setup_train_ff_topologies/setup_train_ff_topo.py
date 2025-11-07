@@ -52,8 +52,8 @@ from concurrent.futures import ProcessPoolExecutor
 from functools import partial
 
 import argparse
-from tqdm import tqdm
 from loguru import logger
+from tqdm import tqdm
 import smee
 import smee.converters
 import datasets
