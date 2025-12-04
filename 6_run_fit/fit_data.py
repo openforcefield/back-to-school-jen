@@ -300,7 +300,12 @@ def train_forcefield(
     directory.mkdir(exist_ok=True, parents=True)
 
     trainable_parameters = trainable.to_values()
-    device = trainable_parameters.device.type
+    device = trainable_parameters.device
+
+    # Ensure topologies are on the same device as the trainable parameters
+    topologies = {
+        smiles: topology.to(device) for smiles, topology in topologies.items()
+    }
 
     logger.info("Start training...")
     with tensorboardX.SummaryWriter(str(directory)) as writer:
@@ -369,7 +374,7 @@ def train_forcefield(
                     directory / f"force-field-epoch-{i}.pt",
                 )
 
-        logger.info(f"Saving {directory / "final-force-field.pt"}")
+        logger.info(f'Saving {directory / "final-force-field.pt"}')
         torch.save(
             trainable.to_force_field(trainable_parameters),
             directory / "final-force-field.pt",
