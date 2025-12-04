@@ -330,6 +330,38 @@ def train_forcefield(
     logger.info(f"Loading dataset from: {train_filename_data.resolve()}")
     dataset = datasets.Dataset.load_from_disk(train_filename_data)
 
+    # Validate that all SMILES in the dataset have corresponding topologies
+    dataset_smiles = set(entry["smiles"] for entry in dataset)
+    topology_smiles = set(topologies.keys())
+    missing_smiles = dataset_smiles - topology_smiles
+
+    if missing_smiles:
+        logger.warning(
+            f"Found {len(missing_smiles)} SMILES in dataset without matching topologies. "
+            f"These molecules will be excluded from training."
+        )
+        for smiles in list(missing_smiles)[:5]:  # Log first 5 missing
+            logger.debug(f"Missing topology for SMILES: {smiles}")
+        if len(missing_smiles) > 5:
+            logger.debug(f"... and {len(missing_smiles) - 5} more missing SMILES")
+
+        # Filter dataset to only include molecules with topologies
+        original_size = len(dataset)
+        dataset = dataset.filter(
+            lambda example: example["smiles"] in topology_smiles,
+            desc="Filtering molecules with topologies",
+        )
+        logger.info(
+            f"Dataset filtered: {original_size} -> {len(dataset)} molecules "
+            f"({len(dataset)/original_size*100:.1f}% retained)"
+        )
+
+        if len(dataset) == 0:
+            raise ValueError(
+                "No molecules remaining after filtering! Check that the topology "
+                "dictionary was generated from the same dataset."
+            )
+
     # Determine target device - use CPU by default for consistency
     # The trainable will create parameters on the same device as the force field
     # Use string device specifier for compatibility with smee's .to() method
