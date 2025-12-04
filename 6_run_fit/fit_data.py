@@ -92,11 +92,11 @@ PARAMETERS = {
         # include=[], <-- bonds to train. Not specifying trains all
         # exclude=[], <-- bonds NOT to train
     ),
-    #    "Angles": descent.train.ParameterConfig(
-    #        cols=["k", "angle"],
-    #        scales={"k": 1e-2, "angle": 1.0},
-    #        limits={"k": [0.0, None], "angle": [0.0, math.pi]},
-    #    ),
+    "Angles": descent.train.ParameterConfig(
+        cols=["k", "angle"],
+        scales={"k": 1e-2, "angle": 1.0},
+        limits={"k": [0.0, None], "angle": [0.0, math.pi]},
+    ),
 }
 
 
@@ -238,6 +238,7 @@ def train_forcefield(
     n_epochs: int = 1000,
     learning_rate: float = 0.001,
     batch_size: int = 500,
+    to_cuda: bool = False,
 ) -> None:
     """Train force field parameters using molecular energy and force data.
 
@@ -261,6 +262,8 @@ def train_forcefield(
         Learning rate for Adam optimizer (default: 0.001).
     batch_size : int, optional
         Number of molecular configurations per batch (default: 500).
+    to_cuda : bool, optional
+        If True, run training on GPU. If False, use CPU (default: False).
 
     Returns
     -------
@@ -292,6 +295,16 @@ def train_forcefield(
     logger.info(f"Loading dataset from: {train_filename_data.resolve()}")
     dataset = datasets.Dataset.load_from_disk(train_filename_data)
 
+    # Determine target device - use CPU by default for consistency
+    # The trainable will create parameters on the same device as the force field
+    device = torch.device("cuda" if to_cuda else "cpu")
+
+    # Ensure force field and topologies are on the target device before creating Trainable
+    smee_force_field = smee_force_field.to(device)
+    topologies = {
+        smiles: topology.to(device) for smiles, topology in topologies.items()
+    }
+
     trainable = descent.train.Trainable(
         force_field=smee_force_field, parameters=PARAMETERS, attributes={}
     )
@@ -300,12 +313,6 @@ def train_forcefield(
     directory.mkdir(exist_ok=True, parents=True)
 
     trainable_parameters = trainable.to_values()
-    device = trainable_parameters.device
-
-    # Ensure topologies are on the same device as the trainable parameters
-    topologies = {
-        smiles: topology.to(device) for smiles, topology in topologies.items()
-    }
 
     logger.info("Start training...")
     with tensorboardX.SummaryWriter(str(directory)) as writer:
@@ -315,7 +322,7 @@ def train_forcefield(
         dataset_indices = list(range(len(dataset)))
 
         for i in range(n_epochs):
-            ff = trainable.to_force_field(trainable_parameters)
+            ff = trainable.to_force_field(trainable_parameters).to(device)
             epoch_loss = torch.zeros(size=(1,), device=device)
             energy_loss = torch.zeros(size=(1,), device=device)
             force_loss = torch.zeros(size=(1,), device=device)
@@ -557,6 +564,7 @@ def main(
         n_epochs=n_epochs,
         learning_rate=learning_rate,
         batch_size=batch_size,
+        to_cuda=to_cuda,
     )
     write_new_offxml(smee_force_field, offxml)
 
