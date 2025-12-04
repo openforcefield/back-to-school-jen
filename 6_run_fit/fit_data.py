@@ -167,11 +167,13 @@ def load_smee_outputs(
             f"Unsupported file format for topologies: {filename_topo.suffix}"
         )
 
-    if to_cuda:
-        smee_ff = smee_ff.to("cuda")
-        topologies = {
-            smiles: topology.to("cuda") for smiles, topology in topologies.items()
-        }
+    # Always explicitly move to the target device to ensure consistency
+    # This handles cases where .pkl files were saved with tensors on a different device
+    target_device = "cuda" if to_cuda else "cpu"
+    smee_ff = smee_ff.to(target_device)
+    topologies = {
+        smiles: topology.to(target_device) for smiles, topology in topologies.items()
+    }
 
     return smee_ff, topologies
 
@@ -297,13 +299,31 @@ def train_forcefield(
 
     # Determine target device - use CPU by default for consistency
     # The trainable will create parameters on the same device as the force field
-    device = torch.device("cuda" if to_cuda else "cpu")
+    # Use string device specifier for compatibility with smee's .to() method
+    device_str = "cuda" if to_cuda else "cpu"
+    device = torch.device(device_str)
 
     # Ensure force field and topologies are on the target device before creating Trainable
-    smee_force_field = smee_force_field.to(device)
+    smee_force_field = smee_force_field.to(device_str)
     topologies = {
-        smiles: topology.to(device) for smiles, topology in topologies.items()
+        smiles: topology.to(device_str) for smiles, topology in topologies.items()
     }
+
+    logger.info(f"Using device: {device_str}")
+
+    # Verify topologies are on the correct device
+    for smiles, topo in list(topologies.items())[:1]:  # Check first topology
+        for potential in smee_force_field.potentials:
+            handler = potential.parameter_keys[0].associated_handler
+            if hasattr(topo, "parameters") and handler in topo.parameters:
+                param_map = topo.parameters[handler]
+                if (
+                    hasattr(param_map, "particle_idxs")
+                    and param_map.particle_idxs is not None
+                ):
+                    logger.info(
+                        f"Topology {handler} particle_idxs device: {param_map.particle_idxs.device}"
+                    )
 
     trainable = descent.train.Trainable(
         force_field=smee_force_field, parameters=PARAMETERS, attributes={}
@@ -322,7 +342,8 @@ def train_forcefield(
         dataset_indices = list(range(len(dataset)))
 
         for i in range(n_epochs):
-            ff = trainable.to_force_field(trainable_parameters).to(device)
+            ff = trainable.to_force_field(trainable_parameters).to(device_str)
+
             epoch_loss = torch.zeros(size=(1,), device=device)
             energy_loss = torch.zeros(size=(1,), device=device)
             force_loss = torch.zeros(size=(1,), device=device)
