@@ -100,6 +100,39 @@ PARAMETERS = {
 }
 
 
+def prepare_batch_for_device(batch: datasets.Dataset, device_str: str) -> list:
+    """Prepare a batch for the target device (CPU or CUDA).
+
+    Converts coordinate, energy, and force tensors to the specified device
+    before passing to descent.targets.energy.predict().
+
+    Parameters
+    ----------
+    batch : datasets.Dataset
+        Batch of molecular data from HuggingFace dataset.
+    device_str : str
+        Target device string ("cpu" or "cuda").
+
+    Returns
+    -------
+    list
+        List of entries with tensors moved to the target device.
+    """
+    device_batch = []
+    for entry in batch:
+        entry_copy = {}
+        for key, value in entry.items():
+            if key in ["coords", "energy", "forces"]:
+                if isinstance(value, torch.Tensor):
+                    entry_copy[key] = value.to(device_str)
+                else:
+                    entry_copy[key] = torch.tensor(value, device=device_str)
+            else:
+                entry_copy[key] = value
+        device_batch.append(entry_copy)
+    return device_batch
+
+
 def load_smee_outputs(
     filename_ff: pathlib.Path | str,
     filename_topo: pathlib.Path | str,
@@ -356,11 +389,13 @@ def train_forcefield(
                 total=math.ceil(len(dataset) / batch_size),
             ):
                 batch = dataset.select(indices=batch_ids)
+                # Prepare batch for the target device (CPU or CUDA)
+                device_batch = prepare_batch_for_device(batch, device_str)
                 true_batch_size = len(
                     dataset
                 )  # because loss between batches are combined
                 e_ref, e_pred, f_ref, f_pred = descent.targets.energy.predict(
-                    batch, ff, topologies, "mean"
+                    device_batch, ff, topologies, "mean"
                 )
                 # L2 loss
                 batch_loss_energy = ((e_pred - e_ref) ** 2).sum() / true_batch_size
