@@ -1,9 +1,7 @@
 """Force field parameter optimization using molecular datasets.
 
 This module prepares data for use in parametrization with SMEE. The workflow includes
-loading pre-prepared SMEE force fields and topologies, and exporting them as .pkl files.
-
-Note that for improper torsions we only fit the v2 terms
+loading pre-prepared SMEE force fields and topologies that have been exported as .pkl files.
 
 Command-line Arguments
 ----------------------
@@ -105,6 +103,7 @@ PARAMETERS = {
 def load_smee_outputs(
     filename_ff: pathlib.Path | str,
     filename_topo: pathlib.Path | str,
+    to_cuda: bool = False,
 ) -> tuple[smee.TensorForceField, dict[str, smee.TensorTopology]]:
     """Load SMEE force field and topologies from pickle files.
 
@@ -114,6 +113,9 @@ def load_smee_outputs(
         Path to saved SMEE force field .pkl file.
     filename_topo : pathlib.Path | str
         Path to saved SMEE topologies .pkl file.
+    to_cuda : bool
+        If true, the pytorch objects for the force field and topology objects are
+        converted to be GPU compatible (default: False).
 
     Returns
     -------
@@ -164,6 +166,12 @@ def load_smee_outputs(
         raise ValueError(
             f"Unsupported file format for topologies: {filename_topo.suffix}"
         )
+
+    if to_cuda:
+        smee_ff = smee_ff.to("cuda")
+        topologies = {
+            smiles: topology.to("cuda") for smiles, topology in topologies.items()
+        }
 
     return smee_ff, topologies
 
@@ -467,6 +475,7 @@ def main(
     n_epochs: int = 1000,
     learning_rate: float = 0.001,
     batch_size: int = 500,
+    to_cuda: bool = False,
 ) -> None:
     """Main workflow for force field parameter optimization.
 
@@ -492,6 +501,9 @@ def main(
         (default: 0.001).
     batch_size : int, optional
         Batch size for training (default: 500).
+    to_cuda : bool
+        If true, the pytorch objects for the force field and topology objects are
+        converted to be GPU compatible (default: False).
 
     Returns
     -------
@@ -530,7 +542,9 @@ def main(
     """
     filename_data = pathlib.Path(filename_data)
     offxml = pathlib.Path(offxml)
-    smee_force_field, topologies = load_smee_outputs(filename_ff, filename_topo)
+    smee_force_field, topologies = load_smee_outputs(
+        filename_ff, filename_topo, to_cuda=to_cuda
+    )
     train_forcefield(
         filename_data,
         smee_force_field,
@@ -593,6 +607,12 @@ Examples:
         default=500,
         help="Batch size",
     )
+    parser.add_argument(
+        "--to-cuda",
+        type=bool,
+        default=False,
+        help="Whether to convert pytorch data to be formatted for GPUs",
+    )
     args = parser.parse_args()
     main(
         args.data_dir,
@@ -602,4 +622,5 @@ Examples:
         n_epochs=args.n_epochs,
         learning_rate=args.learning_rate,
         batch_size=args.batch_size,
+        to_cuda=args.to_cuda,
     )

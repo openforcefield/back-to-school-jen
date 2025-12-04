@@ -27,7 +27,13 @@
 2) Install with:
 ```bash
 	srun -c 2 -p free --pty /bin/bash -i
-	cd back-to-school-jen; micromamba create -f environment.yaml
+	cd back-to-school-jen
+        CONDA_OVERRIDE_CUDA=11.8 mamba create -f environment.yaml --channel-priority flexible
+```
+Test that cuda is enabled with:
+```
+        mamba activate bts
+        python -c "import torch; print(torch.cuda.is_available())"
 ```
 3) From the `1_data` directory get data from zenodo and reformat
 4) From the `2_filtered_results` directory filter out high energy conformations and any SMILES strings that cannot be parsed

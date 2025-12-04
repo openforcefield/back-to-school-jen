@@ -1,0 +1,56 @@
+Thu Dec  4 10:33:20 AM PST 2025
+Running job on host hpc3-gpu-24-07
+2 allocated CPUs
+Thu Dec  4 10:33:20 2025
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 580.82.07              Driver Version: 580.82.07      CUDA Version: 13.0     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA A30                     On  |   00000000:E3:00.0 Off |                    0 |
+| N/A   34C    P0             32W /  165W |       0MiB /  24576MiB |      0%      Default |
+|                                         |                        |             Disabled |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|  No running processes found                                                             |
++-----------------------------------------------------------------------------------------+
+/data/homezvol2/jclark9/miniforge3/envs/bts/bin/python
+CUDA available: True
+CUDA version: 11.8
+Number of GPUs: 1
+2025-12-04 10:33:29.204 | INFO     | __main__:load_smee_outputs:151 - Loading SMEE force field from: ../../4_setup_train_ff_topologies/2025_09_11_uci_full_split/smee_force_field.pkl
+2025-12-04 10:33:33.905 | INFO     | __main__:load_smee_outputs:161 - Loading dict with SMILES and SMEE topologies from: ../../4_setup_train_ff_topologies/2025_09_11_uci_full_split/smee_topology_dict.pkl
+2025-12-04 10:34:26.320 | INFO     | __main__:train_forcefield:292 - Loading dataset from: /dfs9/dmobley-lab/jclark9/descent/back-to-school-jen/3_split_train_test/full_split_uci/data-train
+2025-12-04 10:34:27.107 | INFO     | __main__:train_forcefield:305 - Start training...
+Calculating energies:   0%|                              | 0/47 [00:00<?, ?it/s]Calculating energies:   0%|                              | 0/47 [00:00<?, ?it/s]
+Traceback (most recent call last):
+  File "/dfs9/dmobley-lab/jclark9/descent/back-to-school-jen/6_run_fit/a_broad_specification/../fit_data.py", line 615, in <module>
+    main(
+  File "/dfs9/dmobley-lab/jclark9/descent/back-to-school-jen/6_run_fit/a_broad_specification/../fit_data.py", line 546, in main
+    train_forcefield(
+  File "/dfs9/dmobley-lab/jclark9/descent/back-to-school-jen/6_run_fit/a_broad_specification/../fit_data.py", line 329, in train_forcefield
+    e_ref, e_pred, f_ref, f_pred = descent.targets.energy.predict(
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/homezvol2/jclark9/miniforge3/envs/bts/lib/python3.12/site-packages/descent/targets/energy.py", line 121, in predict
+    energy_pred = smee.compute_energy(topology, force_field, coords)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/homezvol2/jclark9/miniforge3/envs/bts/lib/python3.12/site-packages/smee/potentials/_potentials.py", line 364, in compute_energy
+    energy += compute_energy_potential(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/homezvol2/jclark9/miniforge3/envs/bts/lib/python3.12/site-packages/smee/potentials/_potentials.py", line 328, in compute_energy_potential
+    return energy_fn(system, potential, conformer, **energy_fn_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/homezvol2/jclark9/miniforge3/envs/bts/lib/python3.12/site-packages/smee/potentials/valence.py", line 66, in compute_harmonic_angle_energy
+    theta = smee.geometry.compute_angles(conformer, particle_idxs)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/homezvol2/jclark9/miniforge3/envs/bts/lib/python3.12/site-packages/smee/geometry.py", line 93, in compute_angles
+    vector_ab = conformer[:, atom_indices[:, 1]] - conformer[:, atom_indices[:, 0]]
+                ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: indices should be either on cpu or on the same device as the indexed tensor (cpu)
