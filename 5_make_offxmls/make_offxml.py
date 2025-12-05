@@ -40,6 +40,7 @@ Examples
 import json
 import pathlib
 import sys
+from collections import defaultdict
 
 import argparse
 from loguru import logger
@@ -333,7 +334,9 @@ def get_train_test_smiles_dict(
     return {"train": smiles_data["train"], "test": smiles_data["test"]}
 
 
-def test_coverage(filename_offxml: str, smiles_dict: dict[str, list[str]]) -> None:
+def test_coverage(
+    filename_offxml: str, smiles_dict: dict[str, list[str]]
+) -> dict[str, dict[str, dict[str, list]]]:
     """
     Test force field coverage on molecular datasets.
 
@@ -344,14 +347,28 @@ def test_coverage(filename_offxml: str, smiles_dict: dict[str, list[str]]) -> No
     smiles_dict : dict[str, list[str]]
         Mapping: {dataset_name: [smiles]}.
 
+    Returns
+    -------
+    dict[str, dict[str, dict[str, list]]]
+        Nested mapping of uncovered components:
+        {dataset_name: {component_type: {smiles: [uncovered_indices]}}}.
+        - dataset_name: Name of the dataset (e.g., "train", "test")
+        - component_type: Type of component (e.g., "Bonds", "Angles")
+        - smiles: SMILES string of the molecule with uncovered components
+        - uncovered_indices: List of atom indices for uncovered components
+
     Examples
     --------
     >>> smiles = {"train": ["CCO", "CCC"], "test": ["CNN"]}
-    >>> test_coverage("ff.offxml", smiles)
+    >>> uncovered = test_coverage("ff.offxml", smiles)
+    >>> uncovered["train"]["Bonds"]  # Get uncovered bonds in training set
+    {"CCO": [(0, 1)]}
     """
 
     new_ff = ForceField(filename_offxml)
-
+    uncovered_components: dict[str, dict[str, dict[str, list]]] = defaultdict(
+        lambda: defaultdict()
+    )
     for dataset_name, smiles in smiles_dict.items():
         logger.info(
             f"\nChecking coverage for {dataset_name} dataset with {len(smiles)} SMILES strings..."
@@ -376,8 +393,9 @@ def test_coverage(filename_offxml: str, smiles_dict: dict[str, list[str]]) -> No
                     for mol, indices in comp_uncovered.items():
                         logger.debug(f"    {mol}: {indices}")
 
+                uncovered_components[dataset_name][comp_typ] = comp_uncovered
 
-#                        logger.debug(component_class.getter_fn(mol))
+    return dict(uncovered_components)
 
 
 def main(
@@ -428,7 +446,7 @@ def main(
 
     qca_dict = get_qca_smiles_dict(datasets, dataset_type)
     smiles_dict.update(qca_dict)
-    test_coverage(filename_offxml_out, smiles_dict)
+    _ = test_coverage(filename_offxml_out, smiles_dict)
 
 
 if __name__ == "__main__":
