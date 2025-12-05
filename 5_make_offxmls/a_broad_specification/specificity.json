@@ -1,0 +1,65 @@
+{
+  "bond_specificities": {
+    "AtomStandardNoRing-BondGeneralizedNoRing": {
+      "atom_include_ring_info": false,
+      "bond_specificity": "WILDCARD",
+      "bond_include_ring_info": false
+    },
+    "AtomStandardNoRing_-BondGeneralizedRing": {
+      "atom_include_ring_info": false,
+      "bond_specificity": "WILDCARD",
+      "bond_include_ring_info": true
+    },
+    "AtomStandardRing-BondGeneralizedRing": {
+      "atom_include_ring_info": true,
+      "bond_specificity": "WILDCARD",
+      "bond_include_ring_info": true
+    },
+    "AtomStandardRing-BondStandardRing": {
+      "atom_include_ring_info": true,
+      "bond_include_ring_info": true,
+      "bond_specificity": "STANDARD"
+    }
+  },
+  "angle_specificities": {
+    "AtomTerminalWildcardNoRing-BondGeneralizedNoRing": {
+      "atom_include_ring_info": false,
+      "atom_terminal_behavior": "WILDCARD",
+      "bond_include_ring_info": false,
+      "bond_specificity": "WILDCARD"
+    },
+    "AtomTerminalHnoHRing-BondGeneralizedNoRing": {
+      "atom_include_ring_info": true,
+      "atom_terminal_behavior": "H_NO_H",
+      "bond_include_ring_info": false,
+      "bond_specificity": "WILDCARD"
+    },
+    "AtomStandardRing-BondGeneralizedNoRing": {
+      "atom_include_ring_info": true,
+      "bond_include_ring_info": false,
+      "bond_specificity": "WILDCARD"
+    },
+    "AtomTerminalHnoHRing-BondGeneralizedRing": {
+      "atom_include_ring_info": true,
+      "atom_terminal_behavior": "H_NO_H",
+      "bond_include_ring_info": true,
+      "bond_specificity": "WILDCARD"
+    },
+    "AtomStandardRing-BondStandardNoRing": {
+      "atom_include_ring_info": true,
+      "atom_terminal_behavior": "H_NO_H",
+      "bond_include_ring_info": false,
+      "bond_specificity": "STANDARD"
+    },
+    "AtomStandardRing-BondGeneralizedRing": {
+      "atom_include_ring_info": true,
+      "bond_include_ring_info": true,
+      "bond_specificity": "WILDCARD"
+    },
+    "AtomStandardRing-BondStandardRing": {
+      "atom_include_ring_info": true,
+      "bond_include_ring_info": true,
+      "bond_specificity": "STANDARD"
+    }
+  }
+}
