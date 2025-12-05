@@ -1,0 +1,569 @@
+2025-11-06 07:12:47.366 | INFO     | __main__:get_train_test_smiles_dict:327 - Reading test/train smiles from ../../3_split_train_test/full_split_uci/smiles_test_train.json
+2025-11-06 07:12:47.395 | INFO     | __main__:get_train_test_smiles_dict:330 - In the training and test sets there are 23109 and 1217 SMILES strings respectively.
+2025-11-06 07:12:47.396 | INFO     | __main__:load_specificity_config:85 - Configuration file contents from specificity.json:
+2025-11-06 07:12:47.433 | INFO     | __main__:load_specificity_config:88 - {
+  "bond_specificities": {
+    "AtomStandardNoRing-BondGeneralizedNoRing": {
+      "atom_include_ring_info": false,
+      "bond_specificity": "WILDCARD",
+      "bond_include_ring_info": false
+    },
+    "AtomStandardNoRing_-BondGeneralizedRing": {
+      "atom_include_ring_info": false,
+      "bond_specificity": "WILDCARD",
+      "bond_include_ring_info": true
+    },
+    "AtomStandardRing-BondGeneralizedRing": {
+      "atom_include_ring_info": true,
+      "bond_specificity": "WILDCARD",
+      "bond_include_ring_info": true
+    }
+  },
+  "angle_specificities": {
+    "AtomTerminalWildcardNoRing-BondGeneralizedNoRing": {
+      "atom_include_ring_info": false,
+      "atom_terminal_behavior": "WILDCARD",
+      "bond_include_ring_info": false,
+      "bond_specificity": "WILDCARD"
+    },
+    "AtomTerminalHnoHRing-BondGeneralizedNoRing": {
+      "atom_include_ring_info": true,
+      "atom_terminal_behavior": "H_NO_H",
+      "bond_include_ring_info": false,
+      "bond_specificity": "WILDCARD"
+    },
+    "AtomStandardRing-BondGeneralizedNoRing": {
+      "atom_include_ring_info": true,
+      "bond_include_ring_info": false,
+      "bond_specificity": "WILDCARD"
+    },
+    "AtomTerminalHnoHRing-BondGeneralizedRing": {
+      "atom_include_ring_info": true,
+      "atom_terminal_behavior": "H_NO_H",
+      "bond_include_ring_info": true,
+      "bond_specificity": "WILDCARD"
+    },
+    "AtomStandardRing-BondGeneralizedRing": {
+      "atom_include_ring_info": true,
+      "bond_include_ring_info": true,
+      "bond_specificity": "WILDCARD"
+    }
+  }
+}
+
+2025-11-06 07:12:47.434 | INFO     | __main__:get_components_by_type:179 - Getting components by type:
+2025-11-06 07:12:47.464 | INFO     | __main__:get_components_by_type:185 - 
+====================
+Processing Bond
+====================
+2025-11-06 07:12:47.464 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:274 - Unwanted SMIRKS to filter: None
+2025-11-06 07:12:47.464 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:275 - Using 16 workers for parallel processing
+2025-11-06 07:12:47.464 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:287 - Processing 23109 molecules from HuggingFace Dataset
+2025-11-06 07:12:55.752 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 1156/23109 molecules (5.0%)
+2025-11-06 07:12:58.370 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 2311/23109 molecules (10.0%)
+2025-11-06 07:13:00.786 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 3467/23109 molecules (15.0%)
+2025-11-06 07:13:02.999 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 4622/23109 molecules (20.0%)
+2025-11-06 07:13:05.459 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 5778/23109 molecules (25.0%)
+2025-11-06 07:13:07.745 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 6933/23109 molecules (30.0%)
+2025-11-06 07:13:09.579 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 8089/23109 molecules (35.0%)
+2025-11-06 07:13:12.335 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 9244/23109 molecules (40.0%)
+2025-11-06 07:13:14.111 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 10400/23109 molecules (45.0%)
+2025-11-06 07:13:17.384 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 11555/23109 molecules (50.0%)
+2025-11-06 07:13:19.394 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 12710/23109 molecules (55.0%)
+2025-11-06 07:13:22.870 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 13866/23109 molecules (60.0%)
+2025-11-06 07:13:24.873 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 15021/23109 molecules (65.0%)
+2025-11-06 07:13:27.078 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 16177/23109 molecules (70.0%)
+2025-11-06 07:13:30.906 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 17332/23109 molecules (75.0%)
+2025-11-06 07:13:32.951 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 18488/23109 molecules (80.0%)
+2025-11-06 07:13:35.055 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 19643/23109 molecules (85.0%)
+2025-11-06 07:13:39.250 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 20799/23109 molecules (90.0%)
+2025-11-06 07:13:41.490 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 21954/23109 molecules (95.0%)
+2025-11-06 07:13:43.302 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:316 - Filtered out 0 unwanted components.
+2025-11-06 07:13:43.303 | INFO     | __main__:get_components_by_type:192 - Found 917178 Bonds.
+2025-11-06 07:13:43.355 | INFO     | from_finlay.process_mmcomponents:get_mm_components_by_specificity_by_type:552 - Getting Components by Type with Specificity 2: 2:AtomStandardRing-BondGeneralizedRing
+2025-11-06 07:13:43.366 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:433 - Processing 917178 components with 16 workers
+2025-11-06 07:13:50.977 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 45859/917178 components (5.0%)
+2025-11-06 07:13:55.273 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 91718/917178 components (10.0%)
+2025-11-06 07:13:56.893 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 137577/917178 components (15.0%)
+2025-11-06 07:13:58.424 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 183436/917178 components (20.0%)
+2025-11-06 07:13:59.933 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 229295/917178 components (25.0%)
+2025-11-06 07:14:04.777 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 275154/917178 components (30.0%)
+2025-11-06 07:14:06.284 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 321013/917178 components (35.0%)
+2025-11-06 07:14:07.845 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 366872/917178 components (40.0%)
+2025-11-06 07:14:09.368 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 412731/917178 components (45.0%)
+2025-11-06 07:14:10.951 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 458589/917178 components (50.0%)
+2025-11-06 07:14:16.520 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 504448/917178 components (55.0%)
+2025-11-06 07:14:18.211 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 550307/917178 components (60.0%)
+2025-11-06 07:14:19.775 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 596166/917178 components (65.0%)
+2025-11-06 07:14:21.356 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 642025/917178 components (70.0%)
+2025-11-06 07:14:22.924 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 687884/917178 components (75.0%)
+2025-11-06 07:14:24.525 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 733743/917178 components (80.0%)
+2025-11-06 07:14:30.996 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 779602/917178 components (85.0%)
+2025-11-06 07:14:32.542 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 825461/917178 components (90.0%)
+2025-11-06 07:14:34.112 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 871320/917178 components (95.0%)
+2025-11-06 07:14:35.808 | INFO     | from_finlay.process_mmcomponents:get_mm_components_by_specificity_by_type:562 - Finding component types that are too specific...
+2025-11-06 07:16:18.303 | INFO     | from_finlay.process_mmcomponents:get_mm_components_by_specificity_by_type:552 - Getting Components by Type with Specificity 1: 1:AtomStandardNoRing_-BondGeneralizedRing
+2025-11-06 07:16:18.303 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:433 - Processing 1238 components with 16 workers
+2025-11-06 07:16:24.410 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 62/1238 components (5.0%)
+2025-11-06 07:16:24.459 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 124/1238 components (10.0%)
+2025-11-06 07:16:24.459 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 186/1238 components (15.0%)
+2025-11-06 07:16:24.495 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 248/1238 components (20.0%)
+2025-11-06 07:16:24.545 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 310/1238 components (25.0%)
+2025-11-06 07:16:24.546 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 372/1238 components (30.0%)
+2025-11-06 07:16:24.585 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 434/1238 components (35.1%)
+2025-11-06 07:16:24.585 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 496/1238 components (40.1%)
+2025-11-06 07:16:24.709 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 558/1238 components (45.1%)
+2025-11-06 07:16:24.739 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 619/1238 components (50.0%)
+2025-11-06 07:16:24.739 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 681/1238 components (55.0%)
+2025-11-06 07:16:24.767 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 743/1238 components (60.0%)
+2025-11-06 07:16:24.814 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 805/1238 components (65.0%)
+2025-11-06 07:16:24.814 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 867/1238 components (70.0%)
+2025-11-06 07:16:24.852 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 929/1238 components (75.0%)
+2025-11-06 07:16:24.852 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 991/1238 components (80.0%)
+2025-11-06 07:16:24.889 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1053/1238 components (85.1%)
+2025-11-06 07:16:24.980 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1115/1238 components (90.1%)
+2025-11-06 07:16:25.036 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1177/1238 components (95.1%)
+2025-11-06 07:16:25.164 | INFO     | from_finlay.process_mmcomponents:get_mm_components_by_specificity_by_type:562 - Finding component types that are too specific...
+2025-11-06 07:16:31.125 | INFO     | from_finlay.process_mmcomponents:get_mm_components_by_specificity_by_type:552 - Getting Components by Type with Specificity 0: 0:AtomStandardNoRing-BondGeneralizedNoRing
+2025-11-06 07:16:31.125 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:433 - Processing 525 components with 16 workers
+2025-11-06 07:16:36.557 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 27/525 components (5.1%)
+2025-11-06 07:16:36.557 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 53/525 components (10.1%)
+2025-11-06 07:16:36.557 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 79/525 components (15.0%)
+2025-11-06 07:16:36.612 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 105/525 components (20.0%)
+2025-11-06 07:16:36.613 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 132/525 components (25.1%)
+2025-11-06 07:16:36.613 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 158/525 components (30.1%)
+2025-11-06 07:16:36.613 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 184/525 components (35.0%)
+2025-11-06 07:16:36.690 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 210/525 components (40.0%)
+2025-11-06 07:16:36.690 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 237/525 components (45.1%)
+2025-11-06 07:16:36.690 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 263/525 components (50.1%)
+2025-11-06 07:16:36.690 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 289/525 components (55.0%)
+2025-11-06 07:16:36.718 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 315/525 components (60.0%)
+2025-11-06 07:16:36.718 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 342/525 components (65.1%)
+2025-11-06 07:16:36.718 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 368/525 components (70.1%)
+2025-11-06 07:16:36.718 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 394/525 components (75.0%)
+2025-11-06 07:16:36.755 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 421/525 components (80.2%)
+2025-11-06 07:16:36.797 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 447/525 components (85.1%)
+2025-11-06 07:16:36.798 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 473/525 components (90.1%)
+2025-11-06 07:16:36.798 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 499/525 components (95.0%)
+2025-11-06 07:16:36.919 | INFO     | from_finlay.process_mmcomponents:get_mm_components_by_specificity_by_type:562 - Finding component types that are too specific...
+2025-11-06 07:16:36.925 | INFO     | __main__:summarize_all_types:114 - Total unique component types at specificity level 2: 416
+2025-11-06 07:16:36.925 | INFO     | __main__:summarize_all_types:117 - Most common component types:
+2025-11-06 07:16:36.925 | INFO     | __main__:summarize_all_types:121 - [#1X1;!r3;!r4;!r5;!r6;!r7;!r8:1]~[#6X4;!r3;!r4;!r5;!r6;!r7;!r8:2]: 152763
+2025-11-06 07:16:36.925 | INFO     | __main__:summarize_all_types:121 - [#6X3;r6:1]~;@[#6X3;r6:2]: 141168
+2025-11-06 07:16:36.925 | INFO     | __main__:summarize_all_types:121 - [#1X1;!r3;!r4;!r5;!r6;!r7;!r8:1]~[#6X3;r6:2]: 92961
+2025-11-06 07:16:36.926 | INFO     | __main__:summarize_all_types:121 - [#1X1;!r3;!r4;!r5;!r6;!r7;!r8:1]~[#6X4;r6:2]: 46371
+2025-11-06 07:16:36.926 | INFO     | __main__:summarize_all_types:121 - [#6X3;r5:1]~;@[#6X3;r5:2]: 26530
+2025-11-06 07:16:36.926 | INFO     | __main__:summarize_all_types:121 - [#6X4;!r3;!r4;!r5;!r6;!r7;!r8:1]~[#6X4;!r3;!r4;!r5;!r6;!r7;!r8:2]: 23716
+2025-11-06 07:16:36.926 | INFO     | __main__:summarize_all_types:121 - [#1X1;!r3;!r4;!r5;!r6;!r7;!r8:1]~[#6X4;r5:2]: 22533
+2025-11-06 07:16:36.926 | INFO     | __main__:summarize_all_types:121 - [#6X4;r6:1]~;@[#6X4;r6:2]: 19618
+2025-11-06 07:16:36.926 | INFO     | __main__:summarize_all_types:121 - [#6X3;r6:1]~;@[#7X2;r6:2]: 18291
+2025-11-06 07:16:36.926 | INFO     | __main__:summarize_all_types:121 - [#1X1;!r3;!r4;!r5;!r6;!r7;!r8:1]~[#7X3;!r3;!r4;!r5;!r6;!r7;!r8:2]: 17994
+2025-11-06 07:16:36.926 | INFO     | __main__:summarize_all_types:114 - Total unique component types at specificity level 1: 39
+2025-11-06 07:16:36.926 | INFO     | __main__:summarize_all_types:117 - Most common component types:
+2025-11-06 07:16:36.926 | INFO     | __main__:summarize_all_types:121 - [#6X4:1]~;@[#7X3:2]: 52
+2025-11-06 07:16:36.926 | INFO     | __main__:summarize_all_types:121 - [#6X4:1]~;@[#6X4:2]: 40
+2025-11-06 07:16:36.926 | INFO     | __main__:summarize_all_types:121 - [#6X4:1]~;@[#8X2:2]: 36
+2025-11-06 07:16:36.926 | INFO     | __main__:summarize_all_types:121 - [#6X4:1]~[#7X3:2]: 33
+2025-11-06 07:16:36.926 | INFO     | __main__:summarize_all_types:121 - [#6X4:1]~[#6X4:2]: 33
+2025-11-06 07:16:36.926 | INFO     | __main__:summarize_all_types:121 - [#6X3:1]~;@[#6X3:2]: 26
+2025-11-06 07:16:36.926 | INFO     | __main__:summarize_all_types:121 - [#6X3:1]~[#7X3:2]: 23
+2025-11-06 07:16:36.926 | INFO     | __main__:summarize_all_types:121 - [#6X3:1]~;@[#7X3:2]: 21
+2025-11-06 07:16:36.926 | INFO     | __main__:summarize_all_types:121 - [#16X2:1]~;@[#6X4:2]: 21
+2025-11-06 07:16:36.926 | INFO     | __main__:summarize_all_types:121 - [#15X4:1]~[#6X4:2]: 21
+2025-11-06 07:16:36.926 | INFO     | __main__:summarize_all_types:114 - Total unique component types at specificity level 0: 99
+2025-11-06 07:16:36.926 | INFO     | __main__:summarize_all_types:117 - Most common component types:
+2025-11-06 07:16:36.926 | INFO     | __main__:summarize_all_types:121 - [#15X4:1]~[#8X2:2]: 18
+2025-11-06 07:16:36.926 | INFO     | __main__:summarize_all_types:121 - [#15X3:1]~[#8X2:2]: 17
+2025-11-06 07:16:36.926 | INFO     | __main__:summarize_all_types:121 - [#6X2:1]~[#6X3:2]: 14
+2025-11-06 07:16:36.926 | INFO     | __main__:summarize_all_types:121 - [#16X2:1]~[#7X3:2]: 12
+2025-11-06 07:16:36.926 | INFO     | __main__:summarize_all_types:121 - [#15X5:1]~[#7X3:2]: 12
+2025-11-06 07:16:36.926 | INFO     | __main__:summarize_all_types:121 - [#16X3:1]~[#7X2:2]: 11
+2025-11-06 07:16:36.926 | INFO     | __main__:summarize_all_types:121 - [#6X2:1]~[#6X4:2]: 11
+2025-11-06 07:16:36.926 | INFO     | __main__:summarize_all_types:121 - [#16X2:1]~[#8X2:2]: 11
+2025-11-06 07:16:36.926 | INFO     | __main__:summarize_all_types:121 - [#16X2:1]~[#16X3:2]: 10
+2025-11-06 07:16:36.926 | INFO     | __main__:summarize_all_types:121 - [#15X4:1]~[#7X3:2]: 10
+2025-11-06 07:16:36.926 | INFO     | __main__:summarize_all_types:125 - % of component types with count < 5: 8.21%
+2025-11-06 07:16:36.927 | INFO     | __main__:summarize_all_types:128 - % of component types with count = 1: 3.28%
+2025-11-06 07:16:36.927 | INFO     | __main__:summarize_all_types:138 - 
+==================================================
+Total unique component types, Bond, across all specificity levels: 548
+==================================================
+2025-11-06 07:16:36.927 | INFO     | __main__:get_components_by_type:185 - 
+====================
+Processing Angle
+====================
+2025-11-06 07:16:36.927 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:274 - Unwanted SMIRKS to filter: None
+2025-11-06 07:16:36.927 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:275 - Using 16 workers for parallel processing
+2025-11-06 07:16:36.927 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:287 - Processing 23109 molecules from HuggingFace Dataset
+2025-11-06 07:16:44.502 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 1156/23109 molecules (5.0%)
+2025-11-06 07:16:54.392 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 2311/23109 molecules (10.0%)
+2025-11-06 07:16:56.774 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 3467/23109 molecules (15.0%)
+2025-11-06 07:16:58.635 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 4622/23109 molecules (20.0%)
+2025-11-06 07:17:00.540 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 5778/23109 molecules (25.0%)
+2025-11-06 07:17:02.453 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 6933/23109 molecules (30.0%)
+2025-11-06 07:17:04.505 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 8089/23109 molecules (35.0%)
+2025-11-06 07:17:06.445 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 9244/23109 molecules (40.0%)
+2025-11-06 07:17:08.411 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 10400/23109 molecules (45.0%)
+2025-11-06 07:17:10.625 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 11555/23109 molecules (50.0%)
+2025-11-06 07:17:21.844 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 12710/23109 molecules (55.0%)
+2025-11-06 07:17:24.047 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 13866/23109 molecules (60.0%)
+2025-11-06 07:17:26.197 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 15021/23109 molecules (65.0%)
+2025-11-06 07:17:28.497 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 16177/23109 molecules (70.0%)
+2025-11-06 07:17:30.834 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 17332/23109 molecules (75.0%)
+2025-11-06 07:17:33.018 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 18488/23109 molecules (80.0%)
+2025-11-06 07:17:35.259 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 19643/23109 molecules (85.0%)
+2025-11-06 07:17:37.465 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 20799/23109 molecules (90.0%)
+2025-11-06 07:17:39.851 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 21954/23109 molecules (95.0%)
+2025-11-06 07:17:41.710 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:316 - Filtered out 0 unwanted components.
+2025-11-06 07:17:42.295 | INFO     | __main__:get_components_by_type:192 - Found 1587714 Angles.
+2025-11-06 07:17:42.364 | INFO     | from_finlay.process_mmcomponents:get_mm_components_by_specificity_by_type:552 - Getting Components by Type with Specificity 4: 4:AtomStandardRing-BondGeneralizedRing
+2025-11-06 07:17:42.378 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:433 - Processing 1587714 components with 16 workers
+2025-11-06 07:18:05.232 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 79386/1587714 components (5.0%)
+2025-11-06 07:18:07.991 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 158772/1587714 components (10.0%)
+2025-11-06 07:18:10.724 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 238158/1587714 components (15.0%)
+2025-11-06 07:18:13.289 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 317543/1587714 components (20.0%)
+2025-11-06 07:18:15.708 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 396929/1587714 components (25.0%)
+2025-11-06 07:18:18.125 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 476315/1587714 components (30.0%)
+2025-11-06 07:18:20.643 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 555700/1587714 components (35.0%)
+2025-11-06 07:18:34.559 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 635086/1587714 components (40.0%)
+2025-11-06 07:18:37.021 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 714472/1587714 components (45.0%)
+2025-11-06 07:18:39.868 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 793857/1587714 components (50.0%)
+2025-11-06 07:18:42.745 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 873243/1587714 components (55.0%)
+2025-11-06 07:18:45.495 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 952629/1587714 components (60.0%)
+2025-11-06 07:18:48.140 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1032015/1587714 components (65.0%)
+2025-11-06 07:18:50.869 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1111400/1587714 components (70.0%)
+2025-11-06 07:18:53.677 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1190786/1587714 components (75.0%)
+2025-11-06 07:19:10.749 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1270172/1587714 components (80.0%)
+2025-11-06 07:19:13.608 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1349557/1587714 components (85.0%)
+2025-11-06 07:19:16.383 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1428943/1587714 components (90.0%)
+2025-11-06 07:19:19.159 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1508329/1587714 components (95.0%)
+2025-11-06 07:19:21.789 | INFO     | from_finlay.process_mmcomponents:get_mm_components_by_specificity_by_type:562 - Finding component types that are too specific...
+2025-11-06 07:24:20.538 | INFO     | from_finlay.process_mmcomponents:get_mm_components_by_specificity_by_type:552 - Getting Components by Type with Specificity 3: 3:AtomTerminalHnoHRing-BondGeneralizedRing
+2025-11-06 07:24:20.538 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:433 - Processing 10048 components with 16 workers
+2025-11-06 07:24:27.077 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 503/10048 components (5.0%)
+2025-11-06 07:24:27.429 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1005/10048 components (10.0%)
+2025-11-06 07:24:27.767 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1508/10048 components (15.0%)
+2025-11-06 07:24:28.083 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 2010/10048 components (20.0%)
+2025-11-06 07:24:28.463 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 2512/10048 components (25.0%)
+2025-11-06 07:24:28.836 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 3015/10048 components (30.0%)
+2025-11-06 07:24:29.100 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 3517/10048 components (35.0%)
+2025-11-06 07:24:29.386 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 4020/10048 components (40.0%)
+2025-11-06 07:24:29.542 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 4522/10048 components (45.0%)
+2025-11-06 07:24:29.814 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 5024/10048 components (50.0%)
+2025-11-06 07:24:30.076 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 5527/10048 components (55.0%)
+2025-11-06 07:24:30.274 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 6029/10048 components (60.0%)
+2025-11-06 07:24:30.493 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 6532/10048 components (65.0%)
+2025-11-06 07:24:30.794 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 7034/10048 components (70.0%)
+2025-11-06 07:24:31.036 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 7537/10048 components (75.0%)
+2025-11-06 07:24:31.341 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 8039/10048 components (80.0%)
+2025-11-06 07:24:31.716 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 8541/10048 components (85.0%)
+2025-11-06 07:24:31.909 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 9044/10048 components (90.0%)
+2025-11-06 07:24:32.139 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 9546/10048 components (95.0%)
+2025-11-06 07:24:32.860 | INFO     | from_finlay.process_mmcomponents:get_mm_components_by_specificity_by_type:562 - Finding component types that are too specific...
+2025-11-06 07:24:41.731 | INFO     | from_finlay.process_mmcomponents:get_mm_components_by_specificity_by_type:552 - Getting Components by Type with Specificity 2: 2:AtomStandardRing-BondGeneralizedNoRing
+2025-11-06 07:24:41.731 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:433 - Processing 1871 components with 16 workers
+2025-11-06 07:24:47.366 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 94/1871 components (5.0%)
+2025-11-06 07:24:47.445 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 188/1871 components (10.0%)
+2025-11-06 07:24:47.511 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 281/1871 components (15.0%)
+2025-11-06 07:24:47.658 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 375/1871 components (20.0%)
+2025-11-06 07:24:47.714 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 468/1871 components (25.0%)
+2025-11-06 07:24:47.768 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 562/1871 components (30.0%)
+2025-11-06 07:24:47.817 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 655/1871 components (35.0%)
+2025-11-06 07:24:47.911 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 749/1871 components (40.0%)
+2025-11-06 07:24:47.997 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 842/1871 components (45.0%)
+2025-11-06 07:24:48.033 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 936/1871 components (50.0%)
+2025-11-06 07:24:48.071 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1030/1871 components (55.1%)
+2025-11-06 07:24:48.108 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1123/1871 components (60.0%)
+2025-11-06 07:24:48.264 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1217/1871 components (65.0%)
+2025-11-06 07:24:48.309 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1310/1871 components (70.0%)
+2025-11-06 07:24:48.350 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1404/1871 components (75.0%)
+2025-11-06 07:24:48.350 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1497/1871 components (80.0%)
+2025-11-06 07:24:48.395 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1591/1871 components (85.0%)
+2025-11-06 07:24:48.435 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1684/1871 components (90.0%)
+2025-11-06 07:24:48.492 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1778/1871 components (95.0%)
+2025-11-06 07:24:48.733 | INFO     | from_finlay.process_mmcomponents:get_mm_components_by_specificity_by_type:562 - Finding component types that are too specific...
+2025-11-06 07:24:55.719 | INFO     | from_finlay.process_mmcomponents:get_mm_components_by_specificity_by_type:552 - Getting Components by Type with Specificity 1: 1:AtomTerminalHnoHRing-BondGeneralizedNoRing
+2025-11-06 07:24:55.720 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:433 - Processing 1850 components with 16 workers
+2025-11-06 07:25:01.195 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 93/1850 components (5.0%)
+2025-11-06 07:25:01.260 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 185/1850 components (10.0%)
+2025-11-06 07:25:01.321 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 278/1850 components (15.0%)
+2025-11-06 07:25:01.543 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 370/1850 components (20.0%)
+2025-11-06 07:25:01.599 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 463/1850 components (25.0%)
+2025-11-06 07:25:01.649 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 555/1850 components (30.0%)
+2025-11-06 07:25:01.703 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 648/1850 components (35.0%)
+2025-11-06 07:25:01.747 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 740/1850 components (40.0%)
+2025-11-06 07:25:01.811 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 833/1850 components (45.0%)
+2025-11-06 07:25:01.896 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 925/1850 components (50.0%)
+2025-11-06 07:25:01.958 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1018/1850 components (55.0%)
+2025-11-06 07:25:01.999 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1110/1850 components (60.0%)
+2025-11-06 07:25:02.051 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1203/1850 components (65.0%)
+2025-11-06 07:25:02.051 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1296/1850 components (70.1%)
+2025-11-06 07:25:02.134 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1388/1850 components (75.0%)
+2025-11-06 07:25:02.226 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1481/1850 components (80.1%)
+2025-11-06 07:25:02.268 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1573/1850 components (85.0%)
+2025-11-06 07:25:02.307 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1666/1850 components (90.1%)
+2025-11-06 07:25:02.356 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1758/1850 components (95.0%)
+2025-11-06 07:25:02.508 | INFO     | from_finlay.process_mmcomponents:get_mm_components_by_specificity_by_type:562 - Finding component types that are too specific...
+2025-11-06 07:25:09.228 | INFO     | from_finlay.process_mmcomponents:get_mm_components_by_specificity_by_type:552 - Getting Components by Type with Specificity 0: 0:AtomTerminalWildcardNoRing-BondGeneralizedNoRing
+2025-11-06 07:25:09.228 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:433 - Processing 1641 components with 16 workers
+2025-11-06 07:25:14.703 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 83/1641 components (5.1%)
+2025-11-06 07:25:14.786 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 165/1641 components (10.1%)
+2025-11-06 07:25:14.895 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 247/1641 components (15.1%)
+2025-11-06 07:25:14.952 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 329/1641 components (20.0%)
+2025-11-06 07:25:15.004 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 411/1641 components (25.0%)
+2025-11-06 07:25:15.004 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 493/1641 components (30.0%)
+2025-11-06 07:25:15.110 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 575/1641 components (35.0%)
+2025-11-06 07:25:15.178 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 657/1641 components (40.0%)
+2025-11-06 07:25:15.289 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 739/1641 components (45.0%)
+2025-11-06 07:25:15.329 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 821/1641 components (50.0%)
+2025-11-06 07:25:15.378 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 903/1641 components (55.0%)
+2025-11-06 07:25:15.379 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 985/1641 components (60.0%)
+2025-11-06 07:25:15.418 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1067/1641 components (65.0%)
+2025-11-06 07:25:15.465 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1149/1641 components (70.0%)
+2025-11-06 07:25:15.627 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1231/1641 components (75.0%)
+2025-11-06 07:25:15.667 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1313/1641 components (80.0%)
+2025-11-06 07:25:15.667 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1395/1641 components (85.0%)
+2025-11-06 07:25:15.706 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1477/1641 components (90.0%)
+2025-11-06 07:25:15.775 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1559/1641 components (95.0%)
+2025-11-06 07:25:15.917 | INFO     | from_finlay.process_mmcomponents:get_mm_components_by_specificity_by_type:562 - Finding component types that are too specific...
+2025-11-06 07:25:15.934 | INFO     | __main__:summarize_all_types:114 - Total unique component types at specificity level 4: 2069
+2025-11-06 07:25:15.934 | INFO     | __main__:summarize_all_types:117 - Most common component types:
+2025-11-06 07:25:15.936 | INFO     | __main__:summarize_all_types:121 - [#1X1;!r3;!r4;!r5;!r6;!r7;!r8:1]~[#6X3;r6:2]~;@[#6X3;r6:3]: 169678
+2025-11-06 07:25:15.936 | INFO     | __main__:summarize_all_types:121 - [#6X3;r6:1]~;@[#6X3;r6:2]~;@[#6X3;r6:3]: 133956
+2025-11-06 07:25:15.936 | INFO     | __main__:summarize_all_types:121 - [#1X1;!r3;!r4;!r5;!r6;!r7;!r8:1]~[#6X4;!r3;!r4;!r5;!r6;!r7;!r8:2]~[#1X1;!r3;!r4;!r5;!r6;!r7;!r8:3]: 120962
+2025-11-06 07:25:15.936 | INFO     | __main__:summarize_all_types:121 - [#1X1;!r3;!r4;!r5;!r6;!r7;!r8:1]~[#6X4;!r3;!r4;!r5;!r6;!r7;!r8:2]~[#6X4;!r3;!r4;!r5;!r6;!r7;!r8:3]: 88339
+2025-11-06 07:25:15.936 | INFO     | __main__:summarize_all_types:121 - [#1X1;!r3;!r4;!r5;!r6;!r7;!r8:1]~[#6X4;r6:2]~;@[#6X4;r6:3]: 63833
+2025-11-06 07:25:15.936 | INFO     | __main__:summarize_all_types:121 - [#1X1;!r3;!r4;!r5;!r6;!r7;!r8:1]~[#6X4;r5:2]~;@[#6X4;r5:3]: 29984
+2025-11-06 07:25:15.936 | INFO     | __main__:summarize_all_types:121 - [#1X1;!r3;!r4;!r5;!r6;!r7;!r8:1]~[#6X4;!r3;!r4;!r5;!r6;!r7;!r8:2]~[#7X3;!r3;!r4;!r5;!r6;!r7;!r8:3]: 21272
+2025-11-06 07:25:15.936 | INFO     | __main__:summarize_all_types:121 - [#1X1;!r3;!r4;!r5;!r6;!r7;!r8:1]~[#6X4;r6:2]~[#1X1;!r3;!r4;!r5;!r6;!r7;!r8:3]: 20038
+2025-11-06 07:25:15.936 | INFO     | __main__:summarize_all_types:121 - [#1X1;!r3;!r4;!r5;!r6;!r7;!r8:1]~[#6X4;!r3;!r4;!r5;!r6;!r7;!r8:2]~[#8X2;!r3;!r4;!r5;!r6;!r7;!r8:3]: 19833
+2025-11-06 07:25:15.936 | INFO     | __main__:summarize_all_types:121 - [#1X1;!r3;!r4;!r5;!r6;!r7;!r8:1]~[#6X4;!r3;!r4;!r5;!r6;!r7;!r8:2]~[#6X3;!r3;!r4;!r5;!r6;!r7;!r8:3]: 17987
+2025-11-06 07:25:15.936 | INFO     | __main__:summarize_all_types:114 - Total unique component types at specificity level 3: 290
+2025-11-06 07:25:15.936 | INFO     | __main__:summarize_all_types:117 - Most common component types:
+2025-11-06 07:25:15.937 | INFO     | __main__:summarize_all_types:121 - [!#1;!r3;!r4;!r5;!r6;!r7;!r8:1]~[#6X4;!r3;!r4;!r5;!r6;!r7;!r8:2]~[!#1;!r3;!r4;!r5;!r6;!r7;!r8:3]: 165
+2025-11-06 07:25:15.937 | INFO     | __main__:summarize_all_types:121 - [!#1;!r3;!r4;!r5;!r6;!r7;!r8:1]~[#6X4;r5:2]~;@[!#1;r5:3]: 144
+2025-11-06 07:25:15.937 | INFO     | __main__:summarize_all_types:121 - [!#1;!r3;!r4;!r5;!r6;!r7;!r8:1]~[#6X3;!r3;!r4;!r5;!r6;!r7;!r8:2]~[!#1;!r3;!r4;!r5;!r6;!r7;!r8:3]: 119
+2025-11-06 07:25:15.937 | INFO     | __main__:summarize_all_types:121 - [!#1;!r3;!r4;!r5;!r6;!r7;!r8:1]~[#7X3;!r3;!r4;!r5;!r6;!r7;!r8:2]~[!#1;!r3;!r4;!r5;!r6;!r7;!r8:3]: 109
+2025-11-06 07:25:15.937 | INFO     | __main__:summarize_all_types:121 - [!#1;!r3;!r4;!r5;!r6;!r7;!r8:1]~[#6X4;r6:2]~;@[!#1;r6:3]: 106
+2025-11-06 07:25:15.937 | INFO     | __main__:summarize_all_types:121 - [!#1;!r3;!r4;!r5;!r6;!r7;!r8:1]~[#6X3;r5:2]~;@[!#1;r5:3]: 106
+2025-11-06 07:25:15.937 | INFO     | __main__:summarize_all_types:121 - [!#1;!r3;!r4;!r5;!r6;!r7;!r8:1]~[#7X3;r5:2]~;@[!#1;r5:3]: 98
+2025-11-06 07:25:15.937 | INFO     | __main__:summarize_all_types:121 - [!#1;!r3;!r4;!r5;!r6;!r7;!r8:1]~[#15X4;!r3;!r4;!r5;!r6;!r7;!r8:2]~[!#1;!r3;!r4;!r5;!r6;!r7;!r8:3]: 97
+2025-11-06 07:25:15.937 | INFO     | __main__:summarize_all_types:121 - [!#1;!r3;!r4;!r5;!r6;!r7;!r8:1]~[#6X4;r4:2]~;@[!#1;r4:3]: 85
+2025-11-06 07:25:15.937 | INFO     | __main__:summarize_all_types:121 - [!#1;!r3;!r4;!r5;!r6;!r7;!r8:1]~[#6X3;r7:2]~;@[!#1;r7:3]: 81
+2025-11-06 07:25:15.937 | INFO     | __main__:summarize_all_types:114 - Total unique component types at specificity level 2: 2
+2025-11-06 07:25:15.937 | INFO     | __main__:summarize_all_types:117 - Most common component types:
+2025-11-06 07:25:15.937 | INFO     | __main__:summarize_all_types:121 - [#6X3;r5:1]~[#6X3;r6:2]~[#6X4;r3:3]: 11
+2025-11-06 07:25:15.937 | INFO     | __main__:summarize_all_types:121 - [#6X3;r5:1]~[#6X3;r7:2]~[#6X3;r5:3]: 10
+2025-11-06 07:25:15.937 | INFO     | __main__:summarize_all_types:114 - Total unique component types at specificity level 1: 17
+2025-11-06 07:25:15.937 | INFO     | __main__:summarize_all_types:117 - Most common component types:
+2025-11-06 07:25:15.937 | INFO     | __main__:summarize_all_types:121 - [!#1;r3:1]~[#7X3;r5:2]~[!#1;r5:3]: 17
+2025-11-06 07:25:15.937 | INFO     | __main__:summarize_all_types:121 - [!#1;r4:1]~[#6X3;r6:2]~[!#1;r6:3]: 16
+2025-11-06 07:25:15.937 | INFO     | __main__:summarize_all_types:121 - [!#1;r3:1]~[#6X4;r5:2]~[!#1;r6:3]: 15
+2025-11-06 07:25:15.937 | INFO     | __main__:summarize_all_types:121 - [!#1;r3:1]~[#6X4;r5:2]~[!#1;r5:3]: 14
+2025-11-06 07:25:15.937 | INFO     | __main__:summarize_all_types:121 - [!#1;r5:1]~[#6X4;r3:2]~[!#1;r5:3]: 13
+2025-11-06 07:25:15.937 | INFO     | __main__:summarize_all_types:121 - [!#1;r5:1]~[#6X4;r3:2]~[!#1;r6:3]: 13
+2025-11-06 07:25:15.937 | INFO     | __main__:summarize_all_types:121 - [!#1;r3:1]~[#6X4;r6:2]~[!#1;r6:3]: 13
+2025-11-06 07:25:15.937 | INFO     | __main__:summarize_all_types:121 - [!#1;r5:1]~[#6X3;r7:2]~[!#1;r6:3]: 12
+2025-11-06 07:25:15.937 | INFO     | __main__:summarize_all_types:121 - [!#1;r6:1]~[#7X4;r6:2]~[!#1;r6:3]: 12
+2025-11-06 07:25:15.937 | INFO     | __main__:summarize_all_types:121 - [!#1;r5:1]~[#7X3;r7:2]~[!#1;r7:3]: 12
+2025-11-06 07:25:15.937 | INFO     | __main__:summarize_all_types:114 - Total unique component types at specificity level 0: 14
+2025-11-06 07:25:15.937 | INFO     | __main__:summarize_all_types:117 - Most common component types:
+2025-11-06 07:25:15.937 | INFO     | __main__:summarize_all_types:121 - [*:1]~[#6X4:2]~[*:3]: 473
+2025-11-06 07:25:15.937 | INFO     | __main__:summarize_all_types:121 - [*:1]~[#7X3:2]~[*:3]: 224
+2025-11-06 07:25:15.937 | INFO     | __main__:summarize_all_types:121 - [*:1]~[#6X3:2]~[*:3]: 213
+2025-11-06 07:25:15.937 | INFO     | __main__:summarize_all_types:121 - [*:1]~[#16X4:2]~[*:3]: 115
+2025-11-06 07:25:15.937 | INFO     | __main__:summarize_all_types:121 - [*:1]~[#8X2:2]~[*:3]: 109
+2025-11-06 07:25:15.937 | INFO     | __main__:summarize_all_types:121 - [*:1]~[#7X4:2]~[*:3]: 101
+2025-11-06 07:25:15.937 | INFO     | __main__:summarize_all_types:121 - [*:1]~[#16X2:2]~[*:3]: 83
+2025-11-06 07:25:15.937 | INFO     | __main__:summarize_all_types:121 - [*:1]~[#15X4:2]~[*:3]: 80
+2025-11-06 07:25:15.937 | INFO     | __main__:summarize_all_types:121 - [*:1]~[#7X2:2]~[*:3]: 71
+2025-11-06 07:25:15.937 | INFO     | __main__:summarize_all_types:121 - [*:1]~[#16X3:2]~[*:3]: 63
+2025-11-06 07:25:15.938 | INFO     | __main__:summarize_all_types:125 - % of component types with count < 5: 0.04%
+2025-11-06 07:25:15.938 | INFO     | __main__:summarize_all_types:128 - % of component types with count = 1: 0.04%
+2025-11-06 07:25:15.938 | INFO     | __main__:summarize_all_types:138 - 
+==================================================
+Total unique component types, Angle, across all specificity levels: 2392
+==================================================
+2025-11-06 07:25:16.934 | INFO     | __main__:write_forcefield_file:248 - Reading template force field: /dfs9/dmobley-lab/jclark9/descent/back-to-school-jen/forcefields/openff_unconstrained-2.3.0-rc2.offxml
+/data/homezvol2/jclark9/micromamba/envs/bts/lib/python3.13/site-packages/openff/amber_ff_ports/amber_ff_ports.py:8: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  from pkg_resources import resource_filename
+2025-11-06 07:25:17.315 | INFO     | __main__:write_forcefield_file:251 - 
+Adding Bond parameters to force field...
+2025-11-06 07:25:17.370 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:538 - Using 16 workers to assemble the force field.
+2025-11-06 07:25:17.394 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:577 - Adding parameters for specificity 0...
+2025-11-06 07:25:25.557 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 5/99 parameters (5.1%)
+2025-11-06 07:25:25.557 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 10/99 parameters (10.1%)
+2025-11-06 07:25:25.557 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 15/99 parameters (15.2%)
+2025-11-06 07:25:25.557 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 20/99 parameters (20.2%)
+2025-11-06 07:25:25.557 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 25/99 parameters (25.3%)
+2025-11-06 07:25:25.557 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 30/99 parameters (30.3%)
+2025-11-06 07:25:25.557 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 35/99 parameters (35.4%)
+2025-11-06 07:25:25.557 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 40/99 parameters (40.4%)
+2025-11-06 07:25:25.557 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 45/99 parameters (45.5%)
+2025-11-06 07:25:25.557 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 50/99 parameters (50.5%)
+2025-11-06 07:25:25.557 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 55/99 parameters (55.6%)
+2025-11-06 07:25:25.557 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 60/99 parameters (60.6%)
+2025-11-06 07:25:25.557 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 65/99 parameters (65.7%)
+2025-11-06 07:25:25.557 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 70/99 parameters (70.7%)
+2025-11-06 07:25:25.557 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 75/99 parameters (75.8%)
+2025-11-06 07:25:25.557 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 80/99 parameters (80.8%)
+2025-11-06 07:25:25.557 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 85/99 parameters (85.9%)
+2025-11-06 07:25:25.557 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 90/99 parameters (90.9%)
+2025-11-06 07:25:25.557 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 95/99 parameters (96.0%)
+2025-11-06 07:25:25.708 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:577 - Adding parameters for specificity 1...
+2025-11-06 07:25:34.575 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 2/39 parameters (5.1%)
+2025-11-06 07:25:34.575 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 4/39 parameters (10.3%)
+2025-11-06 07:25:34.576 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 6/39 parameters (15.4%)
+2025-11-06 07:25:34.576 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 8/39 parameters (20.5%)
+2025-11-06 07:25:34.576 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 10/39 parameters (25.6%)
+2025-11-06 07:25:34.594 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 12/39 parameters (30.8%)
+2025-11-06 07:25:34.594 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 14/39 parameters (35.9%)
+2025-11-06 07:25:34.594 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 16/39 parameters (41.0%)
+2025-11-06 07:25:34.594 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 18/39 parameters (46.2%)
+2025-11-06 07:25:34.594 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 20/39 parameters (51.3%)
+2025-11-06 07:25:34.664 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 22/39 parameters (56.4%)
+2025-11-06 07:25:34.664 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 24/39 parameters (61.5%)
+2025-11-06 07:25:34.664 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 26/39 parameters (66.7%)
+2025-11-06 07:25:34.664 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 28/39 parameters (71.8%)
+2025-11-06 07:25:34.664 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 30/39 parameters (76.9%)
+2025-11-06 07:25:34.664 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 32/39 parameters (82.1%)
+2025-11-06 07:25:34.664 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 34/39 parameters (87.2%)
+2025-11-06 07:25:34.664 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 36/39 parameters (92.3%)
+2025-11-06 07:25:34.664 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 38/39 parameters (97.4%)
+2025-11-06 07:25:34.812 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:577 - Adding parameters for specificity 2...
+2025-11-06 07:26:55.330 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 21/416 parameters (5.0%)
+2025-11-06 07:26:57.633 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 42/416 parameters (10.1%)
+2025-11-06 07:26:57.633 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 63/416 parameters (15.1%)
+2025-11-06 07:26:57.634 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 84/416 parameters (20.2%)
+2025-11-06 07:26:57.634 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 104/416 parameters (25.0%)
+2025-11-06 07:26:57.634 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 125/416 parameters (30.0%)
+2025-11-06 07:26:57.634 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 146/416 parameters (35.1%)
+2025-11-06 07:26:57.634 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 167/416 parameters (40.1%)
+2025-11-06 07:26:58.435 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 188/416 parameters (45.2%)
+2025-11-06 07:26:59.121 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 208/416 parameters (50.0%)
+2025-11-06 07:26:59.540 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 229/416 parameters (55.0%)
+2025-11-06 07:26:59.541 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 250/416 parameters (60.1%)
+2025-11-06 07:27:40.893 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 271/416 parameters (65.1%)
+2025-11-06 07:27:42.046 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 292/416 parameters (70.2%)
+2025-11-06 07:27:42.046 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 313/416 parameters (75.2%)
+2025-11-06 07:27:42.046 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 333/416 parameters (80.0%)
+2025-11-06 07:27:42.046 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 354/416 parameters (85.1%)
+2025-11-06 07:27:42.046 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 375/416 parameters (90.1%)
+2025-11-06 07:27:42.046 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 396/416 parameters (95.2%)
+2025-11-06 07:27:42.514 | INFO     | __main__:write_forcefield_file:251 - 
+Adding Angle parameters to force field...
+2025-11-06 07:27:42.603 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:538 - Using 16 workers to assemble the force field.
+2025-11-06 07:27:42.623 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:577 - Adding parameters for specificity 0...
+2025-11-06 07:27:54.834 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 1/14 parameters (7.1%)
+2025-11-06 07:27:54.834 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 2/14 parameters (14.3%)
+2025-11-06 07:27:54.834 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 3/14 parameters (21.4%)
+2025-11-06 07:27:54.834 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 4/14 parameters (28.6%)
+2025-11-06 07:27:54.834 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 5/14 parameters (35.7%)
+2025-11-06 07:27:54.834 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 6/14 parameters (42.9%)
+2025-11-06 07:27:54.834 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 7/14 parameters (50.0%)
+2025-11-06 07:27:54.834 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 8/14 parameters (57.1%)
+2025-11-06 07:27:54.834 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 9/14 parameters (64.3%)
+2025-11-06 07:27:54.834 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 10/14 parameters (71.4%)
+2025-11-06 07:27:54.834 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 11/14 parameters (78.6%)
+2025-11-06 07:27:54.834 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 12/14 parameters (85.7%)
+2025-11-06 07:27:54.834 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 13/14 parameters (92.9%)
+2025-11-06 07:27:54.834 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 14/14 parameters (100.0%)
+2025-11-06 07:27:54.992 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:577 - Adding parameters for specificity 1...
+2025-11-06 07:28:05.433 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 1/17 parameters (5.9%)
+2025-11-06 07:28:05.433 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 2/17 parameters (11.8%)
+2025-11-06 07:28:05.433 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 3/17 parameters (17.6%)
+2025-11-06 07:28:05.433 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 4/17 parameters (23.5%)
+2025-11-06 07:28:05.433 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 5/17 parameters (29.4%)
+2025-11-06 07:28:05.433 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 6/17 parameters (35.3%)
+2025-11-06 07:28:05.433 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 7/17 parameters (41.2%)
+2025-11-06 07:28:05.433 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 8/17 parameters (47.1%)
+2025-11-06 07:28:05.433 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 9/17 parameters (52.9%)
+2025-11-06 07:28:05.433 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 10/17 parameters (58.8%)
+2025-11-06 07:28:05.433 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 11/17 parameters (64.7%)
+2025-11-06 07:28:05.433 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 12/17 parameters (70.6%)
+2025-11-06 07:28:05.433 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 13/17 parameters (76.5%)
+2025-11-06 07:28:05.433 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 14/17 parameters (82.4%)
+2025-11-06 07:28:05.433 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 15/17 parameters (88.2%)
+2025-11-06 07:28:05.433 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 16/17 parameters (94.1%)
+2025-11-06 07:28:05.433 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 17/17 parameters (100.0%)
+2025-11-06 07:28:05.583 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:577 - Adding parameters for specificity 2...
+2025-11-06 07:28:11.810 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 1/2 parameters (50.0%)
+2025-11-06 07:28:11.810 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 2/2 parameters (100.0%)
+2025-11-06 07:28:11.934 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:577 - Adding parameters for specificity 3...
+2025-11-06 07:28:22.854 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 15/290 parameters (5.2%)
+2025-11-06 07:28:22.854 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 29/290 parameters (10.0%)
+2025-11-06 07:28:23.075 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 44/290 parameters (15.2%)
+2025-11-06 07:28:23.081 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 58/290 parameters (20.0%)
+2025-11-06 07:28:23.209 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 73/290 parameters (25.2%)
+2025-11-06 07:28:23.457 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 87/290 parameters (30.0%)
+2025-11-06 07:28:23.948 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 102/290 parameters (35.2%)
+2025-11-06 07:28:24.170 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 116/290 parameters (40.0%)
+2025-11-06 07:28:24.421 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 131/290 parameters (45.2%)
+2025-11-06 07:28:24.564 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 145/290 parameters (50.0%)
+2025-11-06 07:28:24.588 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 160/290 parameters (55.2%)
+2025-11-06 07:28:27.781 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 174/290 parameters (60.0%)
+2025-11-06 07:28:27.887 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 189/290 parameters (65.2%)
+2025-11-06 07:28:28.495 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 204/290 parameters (70.3%)
+2025-11-06 07:28:28.622 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 218/290 parameters (75.2%)
+2025-11-06 07:28:28.722 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 233/290 parameters (80.3%)
+2025-11-06 07:28:28.766 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 247/290 parameters (85.2%)
+2025-11-06 07:28:28.982 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 262/290 parameters (90.3%)
+2025-11-06 07:28:29.032 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 276/290 parameters (95.2%)
+2025-11-06 07:28:29.196 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:577 - Adding parameters for specificity 4...
+2025-11-06 07:30:00.564 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 104/2069 parameters (5.0%)
+2025-11-06 07:30:11.244 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 207/2069 parameters (10.0%)
+2025-11-06 07:30:14.333 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 311/2069 parameters (15.0%)
+2025-11-06 07:30:18.278 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 414/2069 parameters (20.0%)
+2025-11-06 07:30:21.986 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 518/2069 parameters (25.0%)
+2025-11-06 07:30:24.734 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 621/2069 parameters (30.0%)
+2025-11-06 07:30:28.466 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 725/2069 parameters (35.0%)
+2025-11-06 07:31:45.719 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 828/2069 parameters (40.0%)
+2025-11-06 07:32:00.909 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 932/2069 parameters (45.0%)
+2025-11-06 07:32:08.240 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 1035/2069 parameters (50.0%)
+2025-11-06 07:32:10.589 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 1138/2069 parameters (55.0%)
+2025-11-06 07:32:14.908 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 1242/2069 parameters (60.0%)
+2025-11-06 07:32:19.784 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 1345/2069 parameters (65.0%)
+2025-11-06 07:32:23.616 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 1449/2069 parameters (70.0%)
+2025-11-06 07:32:25.105 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 1552/2069 parameters (75.0%)
+2025-11-06 07:33:46.655 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 1656/2069 parameters (80.0%)
+2025-11-06 07:33:49.886 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 1759/2069 parameters (85.0%)
+2025-11-06 07:33:55.376 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 1863/2069 parameters (90.0%)
+2025-11-06 07:33:55.571 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 1966/2069 parameters (95.0%)
+2025-11-06 07:34:00.348 | INFO     | __main__:write_forcefield_file:260 - Writing new force field: /dfs9/dmobley-lab/jclark9/descent/back-to-school-jen/5_make_offxmls/b_no_bond_with_ring_in_atom/openff-2.2.1-ring-no-bond.offxml
+2025-11-06 07:34:38.409 | INFO     | __main__:test_coverage:356 - 
+Checking coverage for train dataset with 23109 SMILES strings...
+Checking Component Coverage (parallel chunks):   0%|          | 0/48 [00:00<?, ?it/s]Checking Component Coverage (parallel chunks): 100%|██████████| 48/48 [00:00<00:00, 765500.35it/s]
+2025-11-06 07:39:09.217 | INFO     | __main__:test_coverage:371 - Uncovered Bonds: 0 in 0 molecules
+2025-11-06 07:39:09.223 | INFO     | __main__:test_coverage:371 - Uncovered Angles: 0 in 0 molecules
+2025-11-06 07:39:09.223 | INFO     | __main__:test_coverage:356 - 
+Checking coverage for test dataset with 1217 SMILES strings...
+Checking Component Coverage (parallel chunks):   0%|          | 0/47 [00:00<?, ?it/s]Checking Component Coverage (parallel chunks): 100%|██████████| 47/47 [00:00<00:00, 722096.29it/s]
+2025-11-06 07:39:41.057 | INFO     | __main__:test_coverage:371 - Uncovered Bonds: 19 in 11 molecules
+2025-11-06 07:39:41.057 | DEBUG    | __main__:test_coverage:375 -     Uncovered Bonds
+2025-11-06 07:39:41.058 | DEBUG    | __main__:test_coverage:377 -     [H:11][C:4]([H:12])([H:13])[S:7]([C:5]([H:14])([H:15])[H:16])([C:6]([H:17])([H:18])[C:3]([H:9])([H:10])[O:2][H:8])[I:1]: [(0, 6)]
+2025-11-06 07:39:41.058 | DEBUG    | __main__:test_coverage:377 -     [O-:3][S:5](=[O:1])(=[O:2])[S-:4]: [(3, 4)]
+2025-11-06 07:39:41.058 | DEBUG    | __main__:test_coverage:377 -     [P:6]([Br:1])([Br:2])([Br:3])([Br:4])[Br:5]: [(1, 5), (4, 5), (0, 5), (2, 5), (3, 5)]
+2025-11-06 07:39:41.058 | DEBUG    | __main__:test_coverage:377 -     [F:1][S:3][S:4][F:2]: [(0, 2), (1, 3)]
+2025-11-06 07:39:41.058 | DEBUG    | __main__:test_coverage:377 -     [H:8][C:2]#[C:3][S:4](=[O:1])[C:6]([H:12])([H:13])[C:7]([H:14])([H:15])[C:5]([H:9])([H:10])[H:11]: [(2, 3)]
+2025-11-06 07:39:41.058 | DEBUG    | __main__:test_coverage:377 -     [H:22][c:8]1[c:7]([c:9]([c:11]([n+:12]([c:10]1[H:23])[C:14]([H:27])([H:28])[H:29])/[C:6](=[N:3]/[O:4][P:20]([H:42])([C:19]([H:40])([H:41])[C:17]([H:36])([H:37])[H:38])([O-:1])[O:5][C:18]([H:39])([C:15]([H:30])([H:31])[H:32])[C:16]([H:33])([H:34])[H:35])/[C:13]([H:24])([H:25])[H:26])[I:2])[H:21]: [(0, 19)]
+2025-11-06 07:39:41.058 | DEBUG    | __main__:test_coverage:377 -     [H:13][C-:5]([S:11](=[O:1])(=[O:2])[C:9]([H:23])([H:24])[H:25])[S:12](=[O:3])(=[O:4])[N+:10]([C:6]([H:14])([H:15])[H:16])([C:7]([H:17])([H:18])[H:19])[C:8]([H:20])([H:21])[H:22]: [(9, 11)]
+2025-11-06 07:39:41.058 | DEBUG    | __main__:test_coverage:377 -     [H:24][c:5]1[c:7]2[c:9]([c:6]([c:4]([c:8]1[C:19]([C:14]([H:37])([H:38])[H:39])([C:15]([H:40])([H:41])[H:42])[C:16]([H:43])([H:44])[H:45])[H:23])[C:17]([C:10]([H:25])([H:26])[H:27])([C:11]([H:28])([H:29])[H:30])[O:2][H:22])[S:21]([O:3][C:18]2([C:12]([H:31])([H:32])[H:33])[C:13]([H:34])([H:35])[H:36])([C:20]([H:46])([H:47])[H:48])[Cl:1]: [(0, 20)]
+2025-11-06 07:39:41.058 | DEBUG    | __main__:test_coverage:377 -     [S-:1][S:3][S-:2]: [(0, 2), (1, 2)]
+2025-11-06 07:39:41.058 | DEBUG    | __main__:test_coverage:377 -     [H:15][C@@:8]([C:7]([H:13])([H:14])[N:5]([H:9])[H:10])([C:6]([H:11])([H:12])[O:3][P:4]=[O:1])[F:2]: [(0, 3), (2, 3)]
+2025-11-06 07:39:41.058 | DEBUG    | __main__:test_coverage:377 -     [S:3]([S:4][I:2])[I:1]: [(0, 2), (1, 3)]
+2025-11-06 07:39:41.058 | INFO     | __main__:test_coverage:371 - Uncovered Angles: 0 in 0 molecules
+2025-11-06 07:39:41.058 | INFO     | __main__:test_coverage:356 - 
+Checking coverage for OpenFF Industry Benchmark Season 1 v1.2 dataset with 9835 SMILES strings...
+Checking Component Coverage (parallel chunks):   0%|          | 0/48 [00:00<?, ?it/s]Checking Component Coverage (parallel chunks): 100%|██████████| 48/48 [00:00<00:00, 1094166.26it/s]
+2025-11-06 07:41:51.542 | INFO     | __main__:test_coverage:371 - Uncovered Bonds: 20 in 5 molecules
+2025-11-06 07:41:51.542 | DEBUG    | __main__:test_coverage:375 -     Uncovered Bonds
+2025-11-06 07:41:51.542 | DEBUG    | __main__:test_coverage:377 -     [F:1][S:2]([F:3])([F:4])([F:5])([F:6])[c:7]1[c:8]([H:24])[c:9]([C:13]2=[C:14]([H:28])[N:15]([C:16]([C:17]3=[N:18][N:19]([H:31])[C:20]([H:32])=[C:21]3[H:33])([H:29])[H:30])[N:22]=[C:23]2[H:34])[c:10]([H:25])[c:11]([H:26])[c:12]1[H:27]: [(1, 6), (1, 3), (0, 1), (1, 2), (1, 5), (1, 4)]
+2025-11-06 07:41:51.543 | DEBUG    | __main__:test_coverage:377 -     [C:1]([C:2]([C:3]([H:28])([H:29])[H:30])([C@@:4]([C@:5]([H:6])([N:7]([C:8]([H:32])([H:33])[H:34])[C:9](=[O:10])[O:11][C:12]([C:13]([H:35])([H:36])[H:37])([C:14]([H:38])([H:39])[H:40])[C:15]([H:41])([H:42])[H:43])[C:16](=[O:17])[O:18][F:19])([C:20]([C:21]([H:44])([H:45])[H:46])([C:22]([H:47])([H:48])[H:49])[O:23][H:50])[H:31])[H:27])([H:24])([H:25])[H:26]: [(17, 18)]
+2025-11-06 07:41:51.543 | DEBUG    | __main__:test_coverage:377 -     [C:1]([C@:2]1([H:37])[C:3]([H:38])([H:39])[N:4]([c:5]2[c:6]([H:40])[c:7]([H:41])[c:8]([S:11]([F:12])([F:13])([F:14])([F:15])[F:16])[c:9]([H:42])[c:10]2[H:43])[C:17](=[O:18])[C:19]2=[C:20]([N:21]([C:22](=[O:23])[c:24]3[c:25]([H:45])[c:26]([H:46])[c:27]([H:47])[n:28][c:29]3[N:30]([H:48])[H:49])[H:44])[C:31]([H:50])=[N:32][N:33]12)([H:34])([H:35])[H:36]: [(10, 12), (10, 15), (7, 10), (10, 11), (10, 14), (10, 13)]
+2025-11-06 07:41:51.543 | DEBUG    | __main__:test_coverage:377 -     [c:1]1([H:29])[c:3]([H:31])[c:7]([H:35])[c:19]2[c:15]([c:5]1[H:33])[C:13]([H:41])([H:42])[N:21]([c:17]1[c:9]([H:37])[c:11]([H:39])[c:18]([N:22]3[C:14]([H:43])([H:44])[c:16]4[c:6]([H:34])[c:2]([H:30])[c:4]([H:32])[c:8]([H:36])[c:20]4[O:24][P@@:26]3(=[S:28])[H:46])[c:12]([H:40])[c:10]1[H:38])[P@@:25](=[S:27])([H:45])[O:23]2: [(24, 44), (25, 45)]
+2025-11-06 07:41:51.543 | DEBUG    | __main__:test_coverage:377 -     [C:1]([O:2][c:3]1[c:4]([C:5]([C:6]([S:7]([C:8]([H:49])([H:50])[H:51])([C:9]([H:52])([H:53])[H:54])(=[O:10])[H:48])([H:46])[H:47])([H:44])[H:45])[c:11]([H:55])[c:12]2[c:38]([c:39]1[Cl:40])[C:17]([N:18]([c:19]1[c:20]([H:61])[c:21]([H:62])[c:22]([F:23])[c:24]([H:63])[c:25]1[O:26][C@:27]([H:28])([C:29]([H:64])([H:65])[H:66])[C:30](=[O:31])[N:32]([C:33]([C:34]([F:35])([F:36])[F:37])([H:68])[H:69])[H:67])[H:60])=[N:16][C:15]([H:59])=[C:14]([H:58])[C:13]2([H:56])[H:57])([H:41])([H:42])[H:43]: [(6, 8), (5, 6), (6, 47), (6, 7), (6, 9)]
+2025-11-06 07:41:51.545 | INFO     | __main__:test_coverage:371 - Uncovered Angles: 40 in 3 molecules
+2025-11-06 07:41:51.545 | DEBUG    | __main__:test_coverage:375 -     Uncovered Angles
+2025-11-06 07:41:51.545 | DEBUG    | __main__:test_coverage:377 -     [F:1][S:2]([F:3])([F:4])([F:5])([F:6])[c:7]1[c:8]([H:24])[c:9]([C:13]2=[C:14]([H:28])[N:15]([C:16]([C:17]3=[N:18][N:19]([H:31])[C:20]([H:32])=[C:21]3[H:33])([H:29])[H:30])[N:22]=[C:23]2[H:34])[c:10]([H:25])[c:11]([H:26])[c:12]1[H:27]: [(5, 1, 6), (2, 1, 6), (0, 1, 3), (2, 1, 3), (0, 1, 6), (3, 1, 5), (4, 1, 5), (0, 1, 5), (2, 1, 5), (0, 1, 2), (3, 1, 4), (2, 1, 4), (0, 1, 4), (3, 1, 6), (4, 1, 6)]
+2025-11-06 07:41:51.545 | DEBUG    | __main__:test_coverage:377 -     [C:1]([C@:2]1([H:37])[C:3]([H:38])([H:39])[N:4]([c:5]2[c:6]([H:40])[c:7]([H:41])[c:8]([S:11]([F:12])([F:13])([F:14])([F:15])[F:16])[c:9]([H:42])[c:10]2[H:43])[C:17](=[O:18])[C:19]2=[C:20]([N:21]([C:22](=[O:23])[c:24]3[c:25]([H:45])[c:26]([H:46])[c:27]([H:47])[n:28][c:29]3[N:30]([H:48])[H:49])[H:44])[C:31]([H:50])=[N:32][N:33]12)([H:34])([H:35])[H:36]: [(7, 10, 11), (13, 10, 14), (14, 10, 15), (7, 10, 13), (7, 10, 15), (11, 10, 13), (11, 10, 15), (7, 10, 12), (13, 10, 15), (12, 10, 13), (7, 10, 14), (12, 10, 15), (12, 10, 14), (11, 10, 12), (11, 10, 14)]
+2025-11-06 07:41:51.545 | DEBUG    | __main__:test_coverage:377 -     [C:1]([O:2][c:3]1[c:4]([C:5]([C:6]([S:7]([C:8]([H:49])([H:50])[H:51])([C:9]([H:52])([H:53])[H:54])(=[O:10])[H:48])([H:46])[H:47])([H:44])[H:45])[c:11]([H:55])[c:12]2[c:38]([c:39]1[Cl:40])[C:17]([N:18]([c:19]1[c:20]([H:61])[c:21]([H:62])[c:22]([F:23])[c:24]([H:63])[c:25]1[O:26][C@:27]([H:28])([C:29]([H:64])([H:65])[H:66])[C:30](=[O:31])[N:32]([C:33]([C:34]([F:35])([F:36])[F:37])([H:68])[H:69])[H:67])[H:60])=[N:16][C:15]([H:59])=[C:14]([H:58])[C:13]2([H:56])[H:57])([H:41])([H:42])[H:43]: [(8, 6, 9), (5, 6, 8), (5, 6, 47), (9, 6, 47), (7, 6, 47), (5, 6, 7), (8, 6, 47), (7, 6, 8), (5, 6, 9), (7, 6, 9)]
