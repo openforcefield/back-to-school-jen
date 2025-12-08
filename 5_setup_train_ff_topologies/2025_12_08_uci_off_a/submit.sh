@@ -17,7 +17,7 @@ hn=`hostname`
 echo "Running job on host $hn"
 
 source ~/.bashrc
-micromamba activate descent-workflow
+mamba activate bts
 
 # Setup and save topologies for fitting
 python -u ../setup_train_ff_topo.py --data-dir "../../3_split_train_test/full_split_uci/data-train" \

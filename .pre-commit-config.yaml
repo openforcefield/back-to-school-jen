@@ -11,7 +11,6 @@ repos:
     -   id: ruff
         name: Lint python code
         args: [--fix]
-        exclude: '\.(txt|offxml)$'
     -   id: ruff-format
         name: Format python code
 
