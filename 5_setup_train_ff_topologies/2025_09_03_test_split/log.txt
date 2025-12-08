@@ -1,0 +1,62 @@
+2025-09-29 17:27:42.252 | INFO     | __main__:main:565 - Loading dataset: /Users/jenniferclark/bin/back-to-school-jen/3_split_train_test/test_split/data-train
+2025-09-29 17:27:42.253 | INFO     | __main__:load_dataset:507 - Loading dataset: /Users/jenniferclark/bin/back-to-school-jen/3_split_train_test/test_split/data-train
+2025-09-29 17:27:42.265 | INFO     | __main__:main:569 - Processing all 95 molecules
+2025-09-29 17:27:42.265 | INFO     | __main__:prepare_to_train:238 - Loading force field: /Users/jenniferclark/bin/back-to-school-jen/forcefields/openff_unconstrained-2.2.1.offxml
+2025-09-29 17:27:42.265 | INFO     | __main__:validate_molecular_dataset:97 - Validating molecules...
+2025-09-29 17:27:42.490 | INFO     | __main__:validate_molecular_dataset:123 - All molecules passed validation
+2025-09-29 17:27:42.490 | INFO     | __main__:prepare_to_train:245 - Processing 95 molecules.
+2025-09-29 17:27:42.499 | INFO     | __main__:prepare_to_train:258 - Found 3 workers for interchange creation
+2025-09-29 17:27:42.499 | INFO     | __main__:prepare_to_train:259 - Processing molecules in parallel...
+2025-09-29 17:27:42.499 | INFO     | __main__:prepare_to_train:260 - Total molecules: 95
+2025-09-29 17:27:42.499 | INFO     | __main__:prepare_to_train:262 - Starting parallel processing...
+
+Creating Interchanges:   0%|          | 0/95 [00:00<?, ?it/s]/Users/jenniferclark/mamba/envs/bts/lib/python3.12/site-packages/openff/amber_ff_ports/amber_ff_ports.py:8: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  from pkg_resources import resource_filename
+/Users/jenniferclark/mamba/envs/bts/lib/python3.12/site-packages/openff/amber_ff_ports/amber_ff_ports.py:8: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  from pkg_resources import resource_filename
+/Users/jenniferclark/mamba/envs/bts/lib/python3.12/site-packages/openff/amber_ff_ports/amber_ff_ports.py:8: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  from pkg_resources import resource_filename
+
+Creating Interchanges:   1%|          | 1/95 [01:59<3:06:49, 119.25s/it]
+Creating Interchanges:   7%|▋         | 7/95 [02:50<29:31, 20.13s/it]
+Creating Interchanges:   8%|▊         | 8/95 [02:59<26:12, 18.07s/it]
+Creating Interchanges:   9%|▉         | 9/95 [03:35<31:04, 21.68s/it]
+Creating Interchanges:  11%|█         | 10/95 [03:51<29:00, 20.48s/it]
+Creating Interchanges:  13%|█▎        | 12/95 [04:01<20:05, 14.52s/it]
+Creating Interchanges:  17%|█▋        | 16/95 [04:32<14:28, 10.99s/it]
+Creating Interchanges:  21%|██        | 20/95 [04:38<08:38,  6.91s/it]
+Creating Interchanges:  22%|██▏       | 21/95 [05:13<13:07, 10.64s/it]
+Creating Interchanges:  28%|██▊       | 27/95 [05:17<06:01,  5.32s/it]
+Creating Interchanges:  29%|██▉       | 28/95 [05:55<09:57,  8.91s/it]
+Creating Interchanges:  34%|███▎      | 32/95 [06:00<06:15,  5.96s/it]
+Creating Interchanges:  35%|███▍      | 33/95 [06:43<10:47, 10.44s/it]
+Creating Interchanges:  42%|████▏     | 40/95 [07:59<09:48, 10.71s/it]
+Creating Interchanges:  51%|█████     | 48/95 [08:05<04:42,  6.00s/it]
+Creating Interchanges:  52%|█████▏    | 49/95 [08:56<07:15,  9.46s/it]
+Creating Interchanges:  57%|█████▋    | 54/95 [09:08<04:45,  6.97s/it]
+Creating Interchanges:  58%|█████▊    | 55/95 [09:47<06:36,  9.92s/it]
+Creating Interchanges:  61%|██████    | 58/95 [09:59<05:06,  8.28s/it]
+Creating Interchanges:  63%|██████▎   | 60/95 [10:38<06:14, 10.69s/it]
+Creating Interchanges:  65%|██████▌   | 62/95 [10:40<04:35,  8.35s/it]
+Creating Interchanges:  66%|██████▋   | 63/95 [11:21<06:59, 13.10s/it]
+Creating Interchanges:  69%|██████▉   | 66/95 [11:46<05:26, 11.24s/it]
+Creating Interchanges:  71%|███████   | 67/95 [12:55<09:23, 20.13s/it]
+Creating Interchanges:  75%|███████▍  | 71/95 [13:09<04:54, 12.28s/it]
+Creating Interchanges:  77%|███████▋  | 73/95 [13:10<03:26,  9.37s/it]
+Creating Interchanges:  78%|███████▊  | 74/95 [14:26<06:48, 19.44s/it]
+Creating Interchanges:  82%|████████▏ | 78/95 [15:44<05:31, 19.50s/it]
+Creating Interchanges:  85%|████████▌ | 81/95 [16:16<03:52, 16.57s/it]
+Creating Interchanges:  87%|████████▋ | 83/95 [16:17<02:32, 12.70s/it]
+Creating Interchanges:  89%|████████▉ | 85/95 [17:28<03:05, 18.56s/it]
+Creating Interchanges:  93%|█████████▎| 88/95 [19:28<03:03, 26.14s/it]
+Creating Interchanges:  98%|█████████▊| 93/95 [19:32<00:29, 14.55s/it]
+Creating Interchanges:  99%|█████████▉| 94/95 [19:32<00:12, 12.47s/it]
+2025-09-29 17:47:15.851 | INFO     | __main__:prepare_to_train:275 - Processing completed: 95/95 molecules successful
+2025-09-29 17:47:15.851 | INFO     | __main__:prepare_to_train:296 - Preparing SMEE data structures...
+2025-09-29 17:47:16.186 | INFO     | __main__:prepare_to_train:302 - Converting to device=cpu, precision=single
+2025-09-29 17:47:16.201 | INFO     | __main__:save_smee_output:401 - Saving SMEE force field...
+2025-09-29 17:47:16.207 | INFO     | __main__:save_smee_output:425 - Saved /Users/jenniferclark/bin/back-to-school-jen/5_setup_train_ff_topologies/2025_09_03_test_split/smee_force_field.pkl
+2025-09-29 17:47:16.207 | INFO     | __main__:save_smee_output:428 - Saving SMEE topologies...
+2025-09-29 17:47:16.245 | INFO     | __main__:save_smee_output:455 - Saved /Users/jenniferclark/bin/back-to-school-jen/5_setup_train_ff_topologies/2025_09_03_test_split/smee_topology_dict.pkl
+2025-09-29 17:47:16.247 | INFO     | __main__:save_smee_output:471 - Saved /Users/jenniferclark/bin/back-to-school-jen/5_setup_train_ff_topologies/2025_09_03_test_split/smee_metadata.json
+2025-09-29 17:47:16.247 | INFO     | __main__:save_smee_output:473 - Successfully saved SMEE objects for 95 molecules
