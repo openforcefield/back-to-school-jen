@@ -3,7 +3,7 @@
 #SBATCH --job-name=a_ff  ## job name
 #SBATCH --account DMOBLEY_LAB_GPU
 #SBATCH -p gpu              ## use free partition
-#SBATCH -t 2-00:00:00
+#SBATCH -t 4-00:00:00
 #SBATCH --nodes=1            ## use 1 node, don't ask for multiple
 #SBATCH --cpus-per-task=1
 #SBATCH --gres=gpu:1
