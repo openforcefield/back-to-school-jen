@@ -1,6 +1,3 @@
-Thu Nov  6 07:12:31 AM PST 2025
-Running job on host hpc3-23-00
-16 allocated CPUs
 2025-11-06 07:12:39.030 | INFO     | __main__:get_train_test_smiles_dict:327 - Reading test/train smiles from ../../3_split_train_test/full_split_uci/smiles_test_train.json
 2025-11-06 07:12:39.205 | INFO     | __main__:get_train_test_smiles_dict:330 - In the training and test sets there are 23109 and 1217 SMILES strings respectively.
 2025-11-06 07:12:39.205 | INFO     | __main__:load_specificity_config:85 - Configuration file contents from specificity.json:
@@ -71,7 +68,7 @@ Running job on host hpc3-23-00
 }
 
 2025-11-06 07:12:39.221 | INFO     | __main__:get_components_by_type:179 - Getting components by type:
-2025-11-06 07:12:39.699 | INFO     | __main__:get_components_by_type:185 - 
+2025-11-06 07:12:39.699 | INFO     | __main__:get_components_by_type:185 -
 ====================
 Processing Bond
 ====================
@@ -232,11 +229,11 @@ Processing Bond
 2025-11-06 07:16:31.310 | INFO     | __main__:summarize_all_types:121 - [#16X2:1]~[#16X3:2]: 10
 2025-11-06 07:16:31.310 | INFO     | __main__:summarize_all_types:125 - % of component types with count < 5: 7.91%
 2025-11-06 07:16:31.310 | INFO     | __main__:summarize_all_types:128 - % of component types with count = 1: 2.97%
-2025-11-06 07:16:31.310 | INFO     | __main__:summarize_all_types:138 - 
+2025-11-06 07:16:31.310 | INFO     | __main__:summarize_all_types:138 -
 ==================================================
 Total unique component types, Bond, across all specificity levels: 607
 ==================================================
-2025-11-06 07:16:31.310 | INFO     | __main__:get_components_by_type:185 - 
+2025-11-06 07:16:31.310 | INFO     | __main__:get_components_by_type:185 -
 ====================
 Processing Angle
 ====================
@@ -490,14 +487,14 @@ Processing Angle
 2025-11-06 07:26:14.439 | INFO     | __main__:summarize_all_types:121 - [*:1]~[#16X3:2]~[*:3]: 72
 2025-11-06 07:26:14.440 | INFO     | __main__:summarize_all_types:125 - % of component types with count < 5: 0.03%
 2025-11-06 07:26:14.440 | INFO     | __main__:summarize_all_types:128 - % of component types with count = 1: 0.03%
-2025-11-06 07:26:14.440 | INFO     | __main__:summarize_all_types:138 - 
+2025-11-06 07:26:14.440 | INFO     | __main__:summarize_all_types:138 -
 ==================================================
 Total unique component types, Angle, across all specificity levels: 2872
 ==================================================
 2025-11-06 07:26:15.303 | INFO     | __main__:write_forcefield_file:248 - Reading template force field: /dfs9/dmobley-lab/jclark9/descent/back-to-school-jen/forcefields/openff_unconstrained-2.3.0-rc2.offxml
 /data/homezvol2/jclark9/micromamba/envs/bts/lib/python3.13/site-packages/openff/amber_ff_ports/amber_ff_ports.py:8: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
   from pkg_resources import resource_filename
-2025-11-06 07:26:15.600 | INFO     | __main__:write_forcefield_file:251 - 
+2025-11-06 07:26:15.600 | INFO     | __main__:write_forcefield_file:251 -
 Adding Bond parameters to force field...
 2025-11-06 07:26:15.649 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:538 - Using 16 workers to assemble the force field.
 2025-11-06 07:26:15.676 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:577 - Adding parameters for specificity 0...
@@ -566,7 +563,7 @@ Adding Bond parameters to force field...
 2025-11-06 07:28:44.370 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 397/466 parameters (85.2%)
 2025-11-06 07:28:44.370 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 420/466 parameters (90.1%)
 2025-11-06 07:28:44.370 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 443/466 parameters (95.1%)
-2025-11-06 07:28:44.816 | INFO     | __main__:write_forcefield_file:251 - 
+2025-11-06 07:28:44.816 | INFO     | __main__:write_forcefield_file:251 -
 Adding Angle parameters to force field...
 2025-11-06 07:28:44.907 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:538 - Using 16 workers to assemble the force field.
 2025-11-06 07:28:44.923 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:577 - Adding parameters for specificity 0...
@@ -672,15 +669,19 @@ Adding Angle parameters to force field...
 2025-11-06 07:35:19.081 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 2069/2433 parameters (85.0%)
 2025-11-06 07:35:25.300 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 2190/2433 parameters (90.0%)
 2025-11-06 07:35:27.715 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 2312/2433 parameters (95.0%)
-2025-11-06 07:35:35.147 | INFO     | __main__:write_forcefield_file:260 - Writing new force field: /dfs9/dmobley-lab/jclark9/descent/back-to-school-jen/5_make_offxmls/a_broad_specification/openff-2.2.1-ring-no-bond.offxml
-2025-11-06 07:36:07.234 | INFO     | __main__:test_coverage:356 - 
+2025-11-06 07:35:35.147 | INFO     | __main__:write_forcefield_file:260 - Writing new force field: /dfs9/dmobley-lab/jclark9/descent/back-to-school-jen/4_make_offxmls/a_broad_specification/openff-2.2.1-ring-no-bond.offxml
+2025-11-06 07:36:07.234 | INFO     | __main__:test_coverage:356 -
 Checking coverage for train dataset with 23109 SMILES strings...
-Checking Component Coverage (parallel chunks):   0%|          | 0/48 [00:00<?, ?it/s]Checking Component Coverage (parallel chunks): 100%|██████████| 48/48 [00:00<00:00, 597408.28it/s]
+
+Checking Component Coverage (parallel chunks):   0%|          | 0/48 [00:00<?, ?it/s]
+Checking Component Coverage (parallel chunks): 100%|██████████| 48/48 [00:00<00:00, 597408.28it/s]
 2025-11-06 07:40:55.752 | INFO     | __main__:test_coverage:371 - Uncovered Bonds: 0 in 0 molecules
 2025-11-06 07:40:55.757 | INFO     | __main__:test_coverage:371 - Uncovered Angles: 0 in 0 molecules
-2025-11-06 07:40:55.758 | INFO     | __main__:test_coverage:356 - 
+2025-11-06 07:40:55.758 | INFO     | __main__:test_coverage:356 -
 Checking coverage for test dataset with 1217 SMILES strings...
-Checking Component Coverage (parallel chunks):   0%|          | 0/47 [00:00<?, ?it/s]Checking Component Coverage (parallel chunks): 100%|██████████| 47/47 [00:00<00:00, 1059851.01it/s]
+
+Checking Component Coverage (parallel chunks):   0%|          | 0/47 [00:00<?, ?it/s]
+Checking Component Coverage (parallel chunks): 100%|██████████| 47/47 [00:00<00:00, 1059851.01it/s]
 2025-11-06 07:41:26.867 | INFO     | __main__:test_coverage:371 - Uncovered Bonds: 19 in 11 molecules
 2025-11-06 07:41:26.867 | DEBUG    | __main__:test_coverage:375 -     Uncovered Bonds
 2025-11-06 07:41:26.867 | DEBUG    | __main__:test_coverage:377 -     [H:11][C:4]([H:12])([H:13])[S:7]([C:5]([H:14])([H:15])[H:16])([C:6]([H:17])([H:18])[C:3]([H:9])([H:10])[O:2][H:8])[I:1]: [(0, 6)]
@@ -695,9 +696,11 @@ Checking coverage for test dataset with 1217 SMILES strings...
 2025-11-06 07:41:26.867 | DEBUG    | __main__:test_coverage:377 -     [H:15][C@@:8]([C:7]([H:13])([H:14])[N:5]([H:9])[H:10])([C:6]([H:11])([H:12])[O:3][P:4]=[O:1])[F:2]: [(0, 3), (2, 3)]
 2025-11-06 07:41:26.867 | DEBUG    | __main__:test_coverage:377 -     [S:3]([S:4][I:2])[I:1]: [(0, 2), (1, 3)]
 2025-11-06 07:41:26.868 | INFO     | __main__:test_coverage:371 - Uncovered Angles: 0 in 0 molecules
-2025-11-06 07:41:26.868 | INFO     | __main__:test_coverage:356 - 
+2025-11-06 07:41:26.868 | INFO     | __main__:test_coverage:356 -
 Checking coverage for OpenFF Industry Benchmark Season 1 v1.2 dataset with 9835 SMILES strings...
-Checking Component Coverage (parallel chunks):   0%|          | 0/48 [00:00<?, ?it/s]Checking Component Coverage (parallel chunks): 100%|██████████| 48/48 [00:00<00:00, 1100145.31it/s]
+
+Checking Component Coverage (parallel chunks):   0%|          | 0/48 [00:00<?, ?it/s]
+Checking Component Coverage (parallel chunks): 100%|██████████| 48/48 [00:00<00:00, 1100145.31it/s]
 2025-11-06 07:43:40.772 | INFO     | __main__:test_coverage:371 - Uncovered Bonds: 20 in 5 molecules
 2025-11-06 07:43:40.772 | DEBUG    | __main__:test_coverage:375 -     Uncovered Bonds
 2025-11-06 07:43:40.772 | DEBUG    | __main__:test_coverage:377 -     [C:1]([C:2]([C:3]([H:28])([H:29])[H:30])([C@@:4]([C@:5]([H:6])([N:7]([C:8]([H:32])([H:33])[H:34])[C:9](=[O:10])[O:11][C:12]([C:13]([H:35])([H:36])[H:37])([C:14]([H:38])([H:39])[H:40])[C:15]([H:41])([H:42])[H:43])[C:16](=[O:17])[O:18][F:19])([C:20]([C:21]([H:44])([H:45])[H:46])([C:22]([H:47])([H:48])[H:49])[O:23][H:50])[H:31])[H:27])([H:24])([H:25])[H:26]: [(17, 18)]
