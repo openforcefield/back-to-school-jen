@@ -3,7 +3,9 @@ repos:
     rev: v4.5.0
     hooks:
     -   id: trailing-whitespace
+        exclude: '\.(txt|offxml)$'
     -   id: end-of-file-fixer
+        exclude: '\.(txt|offxml)$'
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.1.6
@@ -11,7 +13,6 @@ repos:
     -   id: ruff
         name: Lint python code
         args: [--fix]
-        exclude: '\.txt$'
     -   id: ruff-format
         name: Format python code
 
