@@ -105,6 +105,7 @@ def compare_force_fields(
     ff_first: smee.TensorForceField,
     ff_last: smee.TensorForceField,
     top_n: int = 10,
+    trained_handlers: set[str] = {"Bonds", "Angles"},
 ) -> dict:
     """Compare two SMEE force field checkpoints and find parameter changes.
 
@@ -122,10 +123,14 @@ def compare_force_fields(
     dict
         Dictionary containing comparison results by handler type.
     """
+
+    # trained_handlers is now a function argument
     results: dict = defaultdict(list)
 
     for pot_first, pot_last in zip(ff_first.potentials, ff_last.potentials):
         handler_name = pot_first.parameter_keys[0].associated_handler
+        if handler_name not in trained_handlers:
+            continue
         parameter_cols = pot_first.parameter_cols
         parameter_units = pot_first.parameter_units
 
@@ -388,20 +393,27 @@ def generate_training_plots(
             key = f"{handler_name}/{param_info['smirks']}/{param_info['parameter']}"
             values = param_history["parameters"].get(key, [])
 
-            if values:
-                # Truncate SMIRKS for legend
-                smirks_short = param_info["smirks"]
-                if len(smirks_short) > 30:
-                    smirks_short = smirks_short[:27] + "..."
-
-                label = f"{smirks_short} ({param_info['parameter']})"
-                ax.plot(
-                    param_history["epochs"],
-                    values,
-                    color=colors[i],
-                    linewidth=1.5,
-                    label=label,
+            if not values:
+                continue
+            if len(values) != len(param_history["epochs"]):
+                logger.warning(
+                    f"Skipping {key}: values length {len(values)} != epochs length {len(param_history['epochs'])}"
                 )
+                continue
+
+            # Truncate SMIRKS for legend
+            smirks_short = param_info["smirks"]
+            if len(smirks_short) > 30:
+                smirks_short = smirks_short[:27] + "..."
+
+            label = f"{smirks_short} ({param_info['parameter']})"
+            ax.plot(
+                param_history["epochs"],
+                values,
+                color=colors[i],
+                linewidth=1.5,
+                label=label,
+            )
 
         ax.set_xlabel("Epoch")
         ax.set_ylabel("Parameter Value")
@@ -582,6 +594,13 @@ Examples:
         help="Number of top changed parameters to show per handler (default: 10)",
     )
     parser.add_argument(
+        "--handlers",
+        type=str,
+        nargs="+",
+        default=["Bonds", "Angles"],
+        help="Parameter types to compare (default: Bonds Angles)",
+    )
+    parser.add_argument(
         "--plot",
         action="store_true",
         help="Generate plots of loss and parameter evolution over training",
@@ -613,7 +632,9 @@ Examples:
     ff_last = load_checkpoint(last_path)
 
     # Compare and report
-    results = compare_force_fields(ff_first, ff_last, top_n=args.top_n)
+    results = compare_force_fields(
+        ff_first, ff_last, top_n=args.top_n, trained_handlers=set(args.handlers)
+    )
     print_comparison_report(results, first_path, last_path, top_n=args.top_n)
 
     # Generate plots if requested
