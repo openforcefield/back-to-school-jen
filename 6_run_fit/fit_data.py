@@ -23,6 +23,9 @@ Command-line Arguments
     Learning rate for Adam optimizer (default: 0.001).
 --batch-size : int, optional
     Batch size for training (default: 500).
+--to_cuda : bool, optional
+    If true, the pytorch objects for the force field and topology objects are
+    converted to be GPU compatible (default: False).
 
 Examples
 --------
