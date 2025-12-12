@@ -48,77 +48,92 @@ def update_tensor_forcefield_from_offxml(
     offxml_ff : ForceField
         The OpenFF ForceField containing the updated parameters.
     """
-    # Map handler names to potential types
-    handler_to_potential_type = {
-        "Bonds": "Bonds",
-        "Angles": "Angles",
-        "ProperTorsions": "ProperTorsions",
-        "ImproperTorsions": "ImproperTorsions",
-        "vdW": "vdW",
-        "Electrostatics": "Electrostatics",
-        # Add other mappings as needed
-    }
 
-    for handler_name, handler in offxml_ff._parameter_handlers.items():
-        potential_type = handler_to_potential_type.get(handler_name)
+    for potential_type, handler in offxml_ff._parameter_handlers.items():
         if potential_type is None:
             continue
 
-        # Find the corresponding potential in tensor_ff
-        potential = None
-        for pot in tensor_ff.potentials:
-            if pot.type == potential_type:
-                potential = pot
-                break
+        # Find all corresponding potentials in tensor_ff (some code paths may
+        # create multiple potentials of the same type in the future). Update
+        # all matches rather than just the first to be robust.
+        matching_potentials = [
+            pot for pot in tensor_ff.potentials if pot.type == potential_type
+        ]
 
-        if potential is None:
-            logger.warning(f"No potential found for handler {handler_name}")
+        if not matching_potentials:
+            logger.warning(f"No potential found for handler {potential_type}")
             continue
+
+        if len(matching_potentials) > 1:
+            logger.info(
+                f"Found {len(matching_potentials)} potentials for type {potential_type}; updating all matches"
+            )
 
         # Update parameters for each parameter in the handler
         for param in handler._parameters:
             smirks = param.smirks
 
-            # Find matching parameter key in potential
-            param_idx = None
-            for i, key in enumerate(potential.parameter_keys):
-                if key is not None and key.id == smirks:
-                    param_idx = i
-                    break
+            # For each matching potential, find the parameter index and update
+            for potential in matching_potentials:
+                # Find matching parameter key in potential
+                param_idx = None
+                for i, key in enumerate(potential.parameter_keys):
+                    if key is not None and key.id == smirks:
+                        param_idx = i
+                        break
 
-            if param_idx is None:
-                logger.warning(
-                    f"No matching parameter found for SMIRKS {smirks} in {handler_name}"
-                )
-                continue
-
-            # Update the parameter values
-            param_values = []
-            for col in potential.parameter_cols:
-                if hasattr(param, col):
-                    value = getattr(param, col)
-                    # Convert to appropriate units if needed
-                    if hasattr(value, "m_as"):
-                        # Assume the potential.parameter_units has the target unit
-                        target_unit = potential.parameter_units[
-                            potential.parameter_cols.index(col)
-                        ]
-                        if target_unit is not None:
-                            value = value.m_as(target_unit)
-                        else:
-                            value = value.magnitude
-                    param_values.append(float(value))
-                else:
-                    logger.warning(
-                        f"Parameter {col} not found in {handler_name} parameter"
+                if param_idx is None:
+                    logger.debug(
+                        f"No matching parameter for SMIRKS {smirks} in potential {potential.type} (skipping)"
                     )
-                    param_values.append(0.0)
+                    continue
 
-            # Update the tensor
-            with torch.no_grad():
-                potential.parameters[param_idx] = torch.tensor(
-                    param_values, dtype=potential.parameters.dtype
-                )
+                # Update the parameter values
+                param_values = []
+                for col in potential.parameter_cols:
+                    if hasattr(param, col):
+                        value = getattr(param, col)
+                        # Convert to appropriate units if needed
+                        if hasattr(value, "m_as"):
+                            # Assume the potential.parameter_units has the target unit
+                            target_unit = potential.parameter_units[
+                                potential.parameter_cols.index(col)
+                            ]
+                            if target_unit is not None:
+                                value = value.m_as(target_unit)
+                            else:
+                                value = value.magnitude
+                            try:
+                                param_values.append(float(value))
+                            except (TypeError, ValueError):
+                                # Fallback for odd container types
+                                if hasattr(value, "__len__") and len(value) == 1:
+                                    param_values.append(float(value[0]))
+                                else:
+                                    logger.warning(
+                                        f"Cannot convert {col} value {value} (type {type(value)}) to float, using 0.0"
+                                    )
+                                    param_values.append(0.0)
+                        else:
+                            # Try direct conversion
+                            try:
+                                param_values.append(float(value))
+                            except (TypeError, ValueError):
+                                logger.warning(
+                                    f"Cannot convert {col} value {value} (type {type(value)}) to float, using 0.0"
+                                )
+                                param_values.append(0.0)
+                    else:
+                        logger.debug(
+                            f"Parameter {col} not found in {potential_type} parameter"
+                        )
+                        param_values.append(0.0)
+
+                # Update the tensor
+                with torch.no_grad():
+                    potential.parameters[param_idx] = torch.tensor(
+                        param_values, dtype=potential.parameters.dtype
+                    )
 
 
 def get_epoch_from_path(path: pathlib.Path) -> int:
