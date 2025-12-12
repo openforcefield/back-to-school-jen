@@ -105,7 +105,6 @@ def load_checkpoint(checkpoint_path: pathlib.Path) -> smee.TensorForceField:
 def compare_force_fields(
     ff_first: smee.TensorForceField,
     ff_last: smee.TensorForceField,
-    top_n: int = 10,
     trained_handlers: set[str] = {"Bonds", "Angles"},
 ) -> dict:
     """Compare two SMEE force field checkpoints and find parameter changes.
@@ -116,8 +115,6 @@ def compare_force_fields(
         SMEE TensorForceField from the first checkpoint.
     ff_last : smee.TensorForceField
         SMEE TensorForceField from the most recent checkpoint.
-    top_n : int, optional
-        Number of top changed parameters to report per handler (default: 10).
 
     Returns
     -------
@@ -228,13 +225,15 @@ def track_parameters_over_epochs(
     dict
         Dictionary with 'epochs' and parameter tracking data.
     """
-    epochs = []
+    epochs: list[int] = []
     param_values: dict[str, list[float]] = {
         f"{p['handler']}/{p['smirks']}/{p['parameter']}": [] for p in top_params
     }
 
-    for checkpoint_path in checkpoint_files:
+    for i, checkpoint_path in enumerate(checkpoint_files):
         epoch = get_epoch_from_path(checkpoint_path)
+        if i > 0 and epoch == 0:
+            epoch = epochs[-1] + (epochs[-1] - epochs[-2])
         epochs.append(epoch)
 
         ff = torch.load(checkpoint_path, map_location="cpu", weights_only=False)
@@ -634,7 +633,7 @@ Examples:
 
     # Compare and report
     results = compare_force_fields(
-        ff_first, ff_last, top_n=args.top_n, trained_handlers=set(args.handlers)
+        ff_first, ff_last, trained_handlers=set(args.handlers)
     )
     print_comparison_report(results, first_path, last_path, top_n=args.top_n)
 
@@ -647,7 +646,7 @@ Examples:
             checkpoint_dir,
             results,
             output_dir,
-            top_n=min(args.top_n, 5),  # Limit to 5 for readable plots
+            top_n=args.top_n,
         )
 
     logger.info("Done!")
