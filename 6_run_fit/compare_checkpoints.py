@@ -28,6 +28,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from loguru import logger
 
+from openff.toolkit import ForceField
+
 
 def get_epoch_from_path(path: pathlib.Path) -> int:
     """Extract epoch number from checkpoint filename."""
@@ -384,7 +386,7 @@ def generate_training_plots(
         ax.set_title("Training Loss")
 
     # Plot parameters by handler
-    colors = plt.cm.tab10(np.linspace(0, 1, top_n))
+    colors = plt.cm.get_cmap("viridis")(np.linspace(0, 1, top_n))
 
     for idx, (handler_name, params) in enumerate(results.items(), start=1):
         ax = axes[idx]
@@ -611,6 +613,12 @@ Examples:
         default=None,
         help="Directory to save plots (default: same as checkpoint-dir or current directory)",
     )
+    parser.add_argument(
+        "--final-offxml",
+        type=str,
+        default=None,
+        help="Path to the final OFFXML file to represent the final forcefield (optional). If not provided, the last .pt file will be used.",
+    )
 
     args = parser.parse_args()
 
@@ -627,9 +635,19 @@ Examples:
             "Either --checkpoint-dir or both --checkpoint-first and --checkpoint-last are required"
         )
 
-    # Load checkpoints
+    # Load checkpoints or final OFFXML
     ff_first = load_checkpoint(first_path)
-    ff_last = load_checkpoint(last_path)
+    if args.final_offxml:
+        logger.info(f"Loading final OFFXML: {args.final_offxml}")
+        ff_last = ForceField(str(last_path))
+    else:
+        ff_last = load_checkpoint(last_path)
+
+    # Ensure ff_last is valid
+    if not ff_last:
+        raise ValueError(
+            "Conversion from OFFXML to TensorForceField failed. Please check the OFFXML file."
+        )
 
     # Compare and report
     results = compare_force_fields(

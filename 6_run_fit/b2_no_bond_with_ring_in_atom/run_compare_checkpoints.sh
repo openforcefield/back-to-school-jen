@@ -5,4 +5,5 @@ python ../compare_checkpoints.py \
     --top-n 10 \
     --plot \
     --output-dir checkpoint_analysis/ \
+    --final-offxml final-force-field.offxml
     2>&1 | tee compare_checkpoints_log.txt
