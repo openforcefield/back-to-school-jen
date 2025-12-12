@@ -1,0 +1,75 @@
+2025-12-12 11:40:12.515 | INFO     | __main__:find_all_checkpoints:65 - Found 3 checkpoint files
+2025-12-12 11:40:12.515 | INFO     | __main__:find_all_checkpoints:66 - First checkpoint: force-field-epoch-0.pt
+2025-12-12 11:40:12.515 | INFO     | __main__:find_all_checkpoints:67 - Last checkpoint: final-force-field.pt
+2025-12-12 11:40:12.515 | INFO     | __main__:load_checkpoint:102 - Loading checkpoint: my-smee-fit/force-field-epoch-0.pt
+2025-12-12 11:40:21.521 | INFO     | __main__:load_checkpoint:102 - Loading checkpoint: my-smee-fit/final-force-field.pt
+2025-12-12 11:40:33.326 | INFO     | __main__:compare_force_fields:139 - Comparing Angles parameters...
+2025-12-12 11:40:33.435 | INFO     | __main__:compare_force_fields:139 - Comparing Bonds parameters...
+2025-12-12 11:40:33.462 | INFO     | __main__:find_all_checkpoints:65 - Found 3 checkpoint files
+2025-12-12 11:40:33.462 | INFO     | __main__:find_all_checkpoints:66 - First checkpoint: force-field-epoch-0.pt
+2025-12-12 11:40:33.462 | INFO     | __main__:find_all_checkpoints:67 - Last checkpoint: final-force-field.pt
+2025-12-12 11:40:33.462 | INFO     | __main__:generate_training_plots:351 - Tracking 10 parameters across 3 checkpoints...
+2025-12-12 11:41:07.264 | INFO     | __main__:parse_tensorboard_loss:287 - Reading TensorBoard events from: events.out.tfevents.1765486644.hpc3-gpu-24-05
+/dfs9/dmobley-lab/jclark9/descent/back-to-school-jen/6_run_fit/b2_no_bond_with_ring_in_atom/../compare_checkpoints.py:389: MatplotlibDeprecationWarning: The get_cmap function was deprecated in Matplotlib 3.7 and will be removed in 3.11. Use ``matplotlib.colormaps[name]`` or ``matplotlib.colormaps.get_cmap()`` or ``pyplot.get_cmap()`` instead.
+  colors = plt.cm.get_cmap("viridis")(np.linspace(0, 1, top_n))
+2025-12-12 11:41:08.093 | INFO     | __main__:generate_training_plots:434 - Saved training progress plot to: checkpoint_analysis/training_progress.pdf
+2025-12-12 11:41:08.284 | INFO     | __main__:generate_training_plots:467 - Saved Angles parameter plot to: checkpoint_analysis/parameter_evolution_angles.pdf
+2025-12-12 11:41:08.453 | INFO     | __main__:generate_training_plots:467 - Saved Bonds parameter plot to: checkpoint_analysis/parameter_evolution_bonds.pdf
+2025-12-12 11:41:08.453 | INFO     | __main__:main:654 - Done!
+
+================================================================================
+CHECKPOINT COMPARISON REPORT
+================================================================================
+
+First checkpoint:  force-field-epoch-0.pt
+Last checkpoint:   final-force-field.pt
+
+--------------------------------------------------------------------------------
+Angles - Top 10 Parameters by Absolute Change
+--------------------------------------------------------------------------------
+  SMIRKS                                        Param             First         Last      Δ (abs)      Δ (%)
+  -------------------------------------------------------------------------------------------------------
+  [#16X2;r5:1]~;@[#6X3;r5:2]~;@[#16X2;r5:3]     k            157.511093   117.699913    39.811180     25.28%
+  [#7X2;r5:1]~;@[#6X3;r5:2]~[#8X1;!r3;!r4;...   k             55.096188    94.320724    39.224537     71.19%
+  [#16X1;!r3;!r4;!r5;!r6;!r7;!r8:1]~[#6X3;...   k             55.096176    93.859177    38.763000     70.36%
+  [#7X2;!r3;!r4;!r5;!r6;!r7;!r8:1]~[#6X3;r...   k             55.096180    93.615501    38.519321     69.91%
+  [#16X4;!r3;!r4;!r5;!r6;!r7;!r8:1]~[#8X2;...   k            237.110474   198.710037    38.400436     16.20%
+  [#8X1;!r3;!r4;!r5;!r6;!r7;!r8:1]~[#15X4;...   k            158.725204   197.024261    38.299057     24.13%
+  [!#1;!r3;!r4;!r5;!r6;!r7;!r8:1]~[#16X3;!...   k            263.096954   224.804260    38.292694     14.55%
+  [#6X3;r6:1]~[#16X2;!r3;!r4;!r5;!r6;!r7;!...   k            289.593414   251.319489    38.273926     13.22%
+  [#16X2;!r3;!r4;!r5;!r6;!r7;!r8:1]~[#16X2...   k            239.906479   201.733185    38.173294     15.91%
+  [#15X3;!r3;!r4;!r5;!r6;!r7;!r8:1]~[#8X2;...   k            237.110474   198.947159    38.163315     16.10%
+
+--------------------------------------------------------------------------------
+Bonds - Top 10 Parameters by Absolute Change
+--------------------------------------------------------------------------------
+  SMIRKS                                        Param             First         Last      Δ (abs)      Δ (%)
+  -------------------------------------------------------------------------------------------------------
+  [#17X1;!r3;!r4;!r5;!r6;!r7;!r8:1]~[#6X4;...   k            209.362137   171.281052    38.081085     18.19%
+  [#16X2:1]~[#7X2:2]                            k            465.080811   427.096802    37.984009      8.17%
+  [#6X2:1]~[#6X3:2]                             k            860.031921   822.101440    37.930481      4.41%
+  [#6X3;r5:1]~;@[#7X2;r7:2]                     k            649.968628   612.092102    37.876526      5.83%
+  [#6X2;!r3;!r4;!r5;!r6;!r7;!r8:1]~[#6X2;!...   k           2163.630127  2125.833740    37.796387      1.75%
+  [#6X3;!r3;!r4;!r5;!r6;!r7;!r8:1]~[#7X3;!...   k            614.203979   651.618774    37.414795      6.09%
+  [#6X3;r7:1]~;@[#6X3;r7:2]                     k            742.723938   705.312988    37.410950      5.04%
+  [#7X2:1]~[#7X3:2]                             k            506.142212   468.766785    37.375427      7.38%
+  [#6X3;r5:1]~[#6X3;r7:2]                       k            646.257996   608.943909    37.314087      5.77%
+  [#6X3:1]~[#6X3:2]                             k            796.825134   759.779968    37.045166      4.65%
+
+================================================================================
+SUMMARY STATISTICS
+================================================================================
+
+Angles:
+  Total parameters:     4784
+  Parameters changed:   4783 (100.0%)
+  Mean absolute change: 9.193684
+  Max absolute change:  39.811180
+
+Bonds:
+  Total parameters:     1090
+  Parameters changed:   1090 (100.0%)
+  Mean absolute change: 8.250376
+  Max absolute change:  38.081085
+
+================================================================================

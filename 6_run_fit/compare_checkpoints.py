@@ -18,7 +18,6 @@ Usage
 """
 
 import argparse
-import copy
 import pathlib
 import re
 from collections import defaultdict
@@ -28,112 +27,6 @@ import torch
 import numpy as np
 import matplotlib.pyplot as plt
 from loguru import logger
-
-from openff.toolkit import ForceField
-
-
-def update_tensor_forcefield_from_offxml(
-    tensor_ff: smee.TensorForceField, offxml_ff: ForceField
-) -> None:
-    """Update a TensorForceField with parameters from an OpenFF ForceField.
-
-    This function maps parameters from OpenFF ForceField handlers to the
-    corresponding TensorPotential objects in the TensorForceField by matching
-    handler names and SMIRKS patterns.
-
-    Parameters
-    ----------
-    tensor_ff : smee.TensorForceField
-        The TensorForceField to update.
-    offxml_ff : ForceField
-        The OpenFF ForceField containing the updated parameters.
-    """
-
-    for potential_type, handler in offxml_ff._parameter_handlers.items():
-        if potential_type is None:
-            continue
-
-        # Find all corresponding potentials in tensor_ff (some code paths may
-        # create multiple potentials of the same type in the future). Update
-        # all matches rather than just the first to be robust.
-        matching_potentials = [
-            pot for pot in tensor_ff.potentials if pot.type == potential_type
-        ]
-
-        if not matching_potentials:
-            logger.warning(f"No potential found for handler {potential_type}")
-            continue
-
-        if len(matching_potentials) > 1:
-            logger.info(
-                f"Found {len(matching_potentials)} potentials for type {potential_type}; updating all matches"
-            )
-
-        # Update parameters for each parameter in the handler
-        for param in handler._parameters:
-            smirks = param.smirks
-
-            # For each matching potential, find the parameter index and update
-            for potential in matching_potentials:
-                # Find matching parameter key in potential
-                param_idx = None
-                for i, key in enumerate(potential.parameter_keys):
-                    if key is not None and key.id == smirks:
-                        param_idx = i
-                        break
-
-                if param_idx is None:
-                    logger.debug(
-                        f"No matching parameter for SMIRKS {smirks} in potential {potential.type} (skipping)"
-                    )
-                    continue
-
-                # Update the parameter values
-                param_values = []
-                for col in potential.parameter_cols:
-                    if hasattr(param, col):
-                        value = getattr(param, col)
-                        # Convert to appropriate units if needed
-                        if hasattr(value, "m_as"):
-                            # Assume the potential.parameter_units has the target unit
-                            target_unit = potential.parameter_units[
-                                potential.parameter_cols.index(col)
-                            ]
-                            if target_unit is not None:
-                                value = value.m_as(target_unit)
-                            else:
-                                value = value.magnitude
-                            try:
-                                param_values.append(float(value))
-                            except (TypeError, ValueError):
-                                # Fallback for odd container types
-                                if hasattr(value, "__len__") and len(value) == 1:
-                                    param_values.append(float(value[0]))
-                                else:
-                                    logger.warning(
-                                        f"Cannot convert {col} value {value} (type {type(value)}) to float, using 0.0"
-                                    )
-                                    param_values.append(0.0)
-                        else:
-                            # Try direct conversion
-                            try:
-                                param_values.append(float(value))
-                            except (TypeError, ValueError):
-                                logger.warning(
-                                    f"Cannot convert {col} value {value} (type {type(value)}) to float, using 0.0"
-                                )
-                                param_values.append(0.0)
-                    else:
-                        logger.debug(
-                            f"Parameter {col} not found in {potential_type} parameter"
-                        )
-                        param_values.append(0.0)
-
-                # Update the tensor
-                with torch.no_grad():
-                    potential.parameters[param_idx] = torch.tensor(
-                        param_values, dtype=potential.parameters.dtype
-                    )
 
 
 def get_epoch_from_path(path: pathlib.Path) -> int:
@@ -166,6 +59,7 @@ def find_all_checkpoints(checkpoint_dir: pathlib.Path) -> list[pathlib.Path]:
         raise FileNotFoundError(f"No checkpoint files found in {checkpoint_dir}")
 
     checkpoint_files.sort(key=get_epoch_from_path)
+    checkpoint_files += list(checkpoint_dir.glob("final-force-field.pt"))
 
     logger.info(f"Found {len(checkpoint_files)} checkpoint files")
     logger.info(f"First checkpoint: {checkpoint_files[0].name}")
@@ -718,12 +612,6 @@ Examples:
         default=None,
         help="Directory to save plots (default: same as checkpoint-dir or current directory)",
     )
-    parser.add_argument(
-        "--final-offxml",
-        type=str,
-        default=None,
-        help="Path to the final OFFXML file to represent the final forcefield (optional). If not provided, the last .pt file will be used.",
-    )
 
     args = parser.parse_args()
 
@@ -742,18 +630,7 @@ Examples:
 
     # Load checkpoints or final OFFXML
     ff_first = load_checkpoint(first_path)
-    if args.final_offxml:
-        logger.info(f"Loading final OFFXML: {args.final_offxml}")
-        ff_last = copy.deepcopy(ff_first)
-        update_tensor_forcefield_from_offxml(ff_last, ForceField(args.final_offxml))
-    else:
-        ff_last = load_checkpoint(last_path)
-
-    # Ensure ff_last is valid
-    if not ff_last:
-        raise ValueError(
-            "Conversion from OFFXML to TensorForceField failed. Please check the OFFXML file."
-        )
+    ff_last = load_checkpoint(last_path)
 
     # Compare and report
     results = compare_force_fields(
