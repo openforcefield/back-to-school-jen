@@ -18,6 +18,7 @@ Usage
 """
 
 import argparse
+import copy
 import pathlib
 import re
 from collections import defaultdict
@@ -29,6 +30,95 @@ import matplotlib.pyplot as plt
 from loguru import logger
 
 from openff.toolkit import ForceField
+
+
+def update_tensor_forcefield_from_offxml(
+    tensor_ff: smee.TensorForceField, offxml_ff: ForceField
+) -> None:
+    """Update a TensorForceField with parameters from an OpenFF ForceField.
+
+    This function maps parameters from OpenFF ForceField handlers to the
+    corresponding TensorPotential objects in the TensorForceField by matching
+    handler names and SMIRKS patterns.
+
+    Parameters
+    ----------
+    tensor_ff : smee.TensorForceField
+        The TensorForceField to update.
+    offxml_ff : ForceField
+        The OpenFF ForceField containing the updated parameters.
+    """
+    # Map handler names to potential types
+    handler_to_potential_type = {
+        "Bonds": "Bonds",
+        "Angles": "Angles",
+        "ProperTorsions": "ProperTorsions",
+        "ImproperTorsions": "ImproperTorsions",
+        "vdW": "vdW",
+        "Electrostatics": "Electrostatics",
+        # Add other mappings as needed
+    }
+
+    for handler_name, handler in offxml_ff._parameter_handlers.items():
+        potential_type = handler_to_potential_type.get(handler_name)
+        if potential_type is None:
+            continue
+
+        # Find the corresponding potential in tensor_ff
+        potential = None
+        for pot in tensor_ff.potentials:
+            if pot.type == potential_type:
+                potential = pot
+                break
+
+        if potential is None:
+            logger.warning(f"No potential found for handler {handler_name}")
+            continue
+
+        # Update parameters for each parameter in the handler
+        for param in handler._parameters:
+            smirks = param.smirks
+
+            # Find matching parameter key in potential
+            param_idx = None
+            for i, key in enumerate(potential.parameter_keys):
+                if key is not None and key.id == smirks:
+                    param_idx = i
+                    break
+
+            if param_idx is None:
+                logger.warning(
+                    f"No matching parameter found for SMIRKS {smirks} in {handler_name}"
+                )
+                continue
+
+            # Update the parameter values
+            param_values = []
+            for col in potential.parameter_cols:
+                if hasattr(param, col):
+                    value = getattr(param, col)
+                    # Convert to appropriate units if needed
+                    if hasattr(value, "m_as"):
+                        # Assume the potential.parameter_units has the target unit
+                        target_unit = potential.parameter_units[
+                            potential.parameter_cols.index(col)
+                        ]
+                        if target_unit is not None:
+                            value = value.m_as(target_unit)
+                        else:
+                            value = value.magnitude
+                    param_values.append(float(value))
+                else:
+                    logger.warning(
+                        f"Parameter {col} not found in {handler_name} parameter"
+                    )
+                    param_values.append(0.0)
+
+            # Update the tensor
+            with torch.no_grad():
+                potential.parameters[param_idx] = torch.tensor(
+                    param_values, dtype=potential.parameters.dtype
+                )
 
 
 def get_epoch_from_path(path: pathlib.Path) -> int:
@@ -639,7 +729,8 @@ Examples:
     ff_first = load_checkpoint(first_path)
     if args.final_offxml:
         logger.info(f"Loading final OFFXML: {args.final_offxml}")
-        ff_last = ForceField(str(last_path))
+        ff_last = copy.deepcopy(ff_first)
+        update_tensor_forcefield_from_offxml(ff_last, ForceField(args.final_offxml))
     else:
         ff_last = load_checkpoint(last_path)
 
