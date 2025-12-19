@@ -420,7 +420,7 @@ def generate_training_plots(
                     linewidth=1.5,
                     label=label,
                 )
-            ax.set_ylabel("{handler_name} {param_type}")
+            ax.set_ylabel(f"{handler_name} {param_type}")
             ax.legend(loc="center left", bbox_to_anchor=(1.02, 0.5), fontsize=8)
             ax.grid(True, alpha=0.3)
             ax.set_xlabel("Epoch")

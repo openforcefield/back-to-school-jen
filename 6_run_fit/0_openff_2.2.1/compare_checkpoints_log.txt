@@ -1,23 +1,23 @@
-2025-12-19 07:32:11.607 | INFO     | __main__:find_all_checkpoints:64 - Found 101 checkpoint files
-2025-12-19 07:32:11.607 | INFO     | __main__:find_all_checkpoints:65 - First checkpoint: force-field-epoch-0.pt
-2025-12-19 07:32:11.607 | INFO     | __main__:find_all_checkpoints:66 - Last checkpoint: final-force-field.pt
-2025-12-19 07:32:11.607 | INFO     | __main__:load_checkpoint:101 - Loading checkpoint: my-smee-fit/force-field-epoch-0.pt
-2025-12-19 07:32:18.852 | INFO     | __main__:load_checkpoint:101 - Loading checkpoint: my-smee-fit/final-force-field.pt
-2025-12-19 07:32:27.725 | INFO     | __main__:compare_force_fields:135 - Comparing Angles parameters...
-2025-12-19 07:32:27.727 | INFO     | __main__:compare_force_fields:135 - Comparing Bonds parameters...
-2025-12-19 07:32:27.731 | INFO     | __main__:find_all_checkpoints:64 - Found 101 checkpoint files
-2025-12-19 07:32:27.731 | INFO     | __main__:find_all_checkpoints:65 - First checkpoint: force-field-epoch-0.pt
-2025-12-19 07:32:27.731 | INFO     | __main__:find_all_checkpoints:66 - Last checkpoint: final-force-field.pt
-2025-12-19 07:32:27.731 | INFO     | __main__:generate_training_plots:351 - Tracking 40 parameters across 101 checkpoints...
-2025-12-19 07:48:30.328 | INFO     | __main__:parse_tensorboard_loss:286 - Reading TensorBoard events from: events.out.tfevents.1764886023.hpc3-gpu-l54-01
-/dfs9/dmobley-lab/jclark9/descent/back-to-school-jen/6_run_fit/0_openff_2.2.1/../compare_checkpoints.py:388: MatplotlibDeprecationWarning: The get_cmap function was deprecated in Matplotlib 3.7 and will be removed in 3.11. Use ``matplotlib.colormaps[name]`` or ``matplotlib.colormaps.get_cmap()`` or ``pyplot.get_cmap()`` instead.
+2025-12-19 08:40:40.984 | INFO     | __main__:find_all_checkpoints:64 - Found 101 checkpoint files
+2025-12-19 08:40:40.984 | INFO     | __main__:find_all_checkpoints:65 - First checkpoint: force-field-epoch-0.pt
+2025-12-19 08:40:40.984 | INFO     | __main__:find_all_checkpoints:66 - Last checkpoint: final-force-field.pt
+2025-12-19 08:40:40.984 | INFO     | __main__:load_checkpoint:101 - Loading checkpoint: my-smee-fit/force-field-epoch-0.pt
+2025-12-19 08:40:48.016 | INFO     | __main__:load_checkpoint:101 - Loading checkpoint: my-smee-fit/final-force-field.pt
+2025-12-19 08:40:56.952 | INFO     | __main__:compare_force_fields:135 - Comparing Angles parameters...
+2025-12-19 08:40:56.955 | INFO     | __main__:compare_force_fields:135 - Comparing Bonds parameters...
+2025-12-19 08:40:56.960 | INFO     | __main__:find_all_checkpoints:64 - Found 101 checkpoint files
+2025-12-19 08:40:56.960 | INFO     | __main__:find_all_checkpoints:65 - First checkpoint: force-field-epoch-0.pt
+2025-12-19 08:40:56.960 | INFO     | __main__:find_all_checkpoints:66 - Last checkpoint: final-force-field.pt
+2025-12-19 08:40:56.960 | INFO     | __main__:generate_training_plots:353 - Tracking 40 parameters across 101 checkpoints...
+2025-12-19 08:57:04.577 | INFO     | __main__:parse_tensorboard_loss:288 - Reading TensorBoard events from: events.out.tfevents.1764886023.hpc3-gpu-l54-01
+/dfs9/dmobley-lab/jclark9/descent/back-to-school-jen/6_run_fit/0_openff_2.2.1/../compare_checkpoints.py:392: MatplotlibDeprecationWarning: The get_cmap function was deprecated in Matplotlib 3.7 and will be removed in 3.11. Use ``matplotlib.colormaps[name]`` or ``matplotlib.colormaps.get_cmap()`` or ``pyplot.get_cmap()`` instead.
   colors = plt.cm.get_cmap("viridis")(np.linspace(0, 1, top_n))
-2025-12-19 07:48:31.210 | INFO     | __main__:generate_training_plots:430 - Saved training progress plot to: checkpoint_analysis/training_progress.pdf
-2025-12-19 07:48:31.318 | INFO     | __main__:generate_training_plots:459 - Saved Angles k parameter plot to: checkpoint_analysis/parameter_evolution_angles_k.pdf
-2025-12-19 07:48:31.430 | INFO     | __main__:generate_training_plots:459 - Saved Angles angle parameter plot to: checkpoint_analysis/parameter_evolution_angles_angle.pdf
-2025-12-19 07:48:31.537 | INFO     | __main__:generate_training_plots:459 - Saved Bonds k parameter plot to: checkpoint_analysis/parameter_evolution_bonds_k.pdf
-2025-12-19 07:48:31.642 | INFO     | __main__:generate_training_plots:459 - Saved Bonds length parameter plot to: checkpoint_analysis/parameter_evolution_bonds_length.pdf
-2025-12-19 07:48:31.642 | INFO     | __main__:main:645 - Done!
+2025-12-19 08:57:05.470 | INFO     | __main__:generate_training_plots:434 - Saved training progress plot to: checkpoint_analysis/training_progress.pdf
+2025-12-19 08:57:05.578 | INFO     | __main__:generate_training_plots:466 - Saved Angles k parameter plot to: checkpoint_analysis/parameter_evolution_angles_k.pdf
+2025-12-19 08:57:05.690 | INFO     | __main__:generate_training_plots:466 - Saved Angles angle parameter plot to: checkpoint_analysis/parameter_evolution_angles_angle.pdf
+2025-12-19 08:57:05.796 | INFO     | __main__:generate_training_plots:466 - Saved Bonds k parameter plot to: checkpoint_analysis/parameter_evolution_bonds_k.pdf
+2025-12-19 08:57:05.901 | INFO     | __main__:generate_training_plots:466 - Saved Bonds length parameter plot to: checkpoint_analysis/parameter_evolution_bonds_length.pdf
+2025-12-19 08:57:05.901 | INFO     | __main__:main:654 - Done!
 
 ================================================================================
 CHECKPOINT COMPARISON REPORT
