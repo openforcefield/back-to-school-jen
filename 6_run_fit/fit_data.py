@@ -80,27 +80,100 @@ import descent.train
 import descent.targets
 import descent.targets.energy
 from loguru import logger
+import numpy as np
 
 import tensorboardX
 import more_itertools
 
 from openff.toolkit import ForceField
 
-PARAMETERS = {
-    "Bonds": descent.train.ParameterConfig(
-        cols=["k", "length"],
-        scales={"k": 1e-2, "length": 1.0},  # normalize so roughly equal
-        limits={"k": [0.0, None], "length": [0.0, None]},
-        # the include/exclude types are Interchange PotentialKey.id's -- typically SMIRKS
-        # include=[], <-- bonds to train. Not specifying trains all
-        # exclude=[], <-- bonds NOT to train
-    ),
-    "Angles": descent.train.ParameterConfig(
-        cols=["k", "angle"],
-        scales={"k": 1e-2, "angle": 1.0},
-        limits={"k": [0.0, None], "angle": [0.0, math.pi]},
-    ),
-}
+
+def get_parameter_col_values(
+    ff: ForceField, parameter_type: str, parameter_cols: list[str]
+) -> dict:
+    """Return column-wise numeric values for a given parameter handler in an OFF force field.
+
+    Parameters
+    ----------
+    ff : ForceField
+        OpenFF ForceField instance to inspect.
+    parameter_type : str
+        Name of the parameter handler (e.g. "Bonds", "Angles", "ProperTorsions").
+    parameter_cols : list[str]
+        Column/attribute names to extract from each parameter (e.g. ["k", "length"]).
+
+    Returns
+    -------
+    dict[str, list[float]]
+        Mapping from each requested column name to a list of numeric values found in the
+        force field. Missing handlers or missing values result in empty lists for the
+        corresponding keys.
+
+    Notes
+    -----
+    - Scalars and single-element lists are converted to floats. Multi-valued attributes
+      (e.g. lists of k values for torsions) will have each entry appended separately.
+    """
+    values: dict = {k: [] for k in parameter_cols}
+    for parameter in ff.get_parameter_handler(parameter_type).parameters:
+        for parameter_col in parameter_cols:
+            val = getattr(parameter, parameter_col)
+            if val is not None:
+                values[parameter_col].append(val)
+    return values
+
+
+def _mean_vals(vals):
+    nums = []
+    for x in vals:
+        # pint.Quantity
+        if hasattr(x, "m"):
+            nums.append(x.m)
+        elif hasattr(x, "magnitude"):
+            nums.append(x.magnitude)
+        # iterable (ValidatedList, list, tuple, ...)
+        elif hasattr(x, "__iter__") and not isinstance(x, (str, bytes)):
+            for y in x:
+                nums.append(getattr(y, "m", getattr(y, "magnitude", y)))
+        # plain numeric
+        else:
+            nums.append(x)
+    return float(np.mean(nums))
+
+
+def get_parameter_scales(offxml: str) -> dict[str, dict[str, float]]:
+    """Compute simple summary statistics (mean) for parameter columns in an OFFXML.
+
+    Parameters
+    ----------
+    offxml : pathlib.Path | str
+        Path to an OFFXML file or a force field identifier that can be loaded by
+        openff.toolkit.ForceField.
+
+    Returns
+    -------
+    dict[str, dict[str, float]]
+        Mapping from parameter handler name (e.g. "Bonds") to a dict mapping column
+        names (e.g. "k", "length") to the mean value observed in the force field.
+        If no values are available for a column the mean will be 0.0.
+    """
+    PARAMETER_COLS = {
+        "Bonds": ["k", "length"],
+        "Angles": ["k", "angle"],
+        "ProperTorsions": ["k"],
+        "ImproperTorsions": ["k"],
+    }
+    ff = ForceField(offxml)
+
+    scales = {}
+    for parameter_type, parameter_cols in PARAMETER_COLS.items():
+        logger.info(f"Processing scales for parameter type: {parameter_type}")
+        values = get_parameter_col_values(ff, parameter_type, parameter_cols)
+        scales[parameter_type] = {
+            param: _mean_vals(vals) for param, vals in values.items()
+        }
+        logger.info(f"Mean values for {parameter_type}: {scales[parameter_type]}\n")
+    return scales
 
 
 def prepare_batch_for_device(batch: datasets.Dataset, device_str: str) -> list:
@@ -271,6 +344,7 @@ def write_metrics(
 
 def train_forcefield(
     train_filename_data: pathlib.Path | str,
+    offxml: pathlib.Path | str,
     smee_force_field: smee.TensorForceField,
     topologies: dict[str, smee.TensorTopology],
     n_epochs: int = 1000,
@@ -290,6 +364,8 @@ def train_forcefield(
     train_filename_data : pathlib.Path | str
         Path to directory containing training dataset in HuggingFace format.
         Must contain dataset_info.json, state.json, and .arrow files.
+    offxml : pathlib.Path | str
+        Path to the force field file.
     smee_force_field : smee.TensorForceField
         SMEE force field tensor object with parameters to optimize.
     topologies : dict[str, smee.TensorTopology]
@@ -322,6 +398,7 @@ def train_forcefield(
     --------
     >>> train_forcefield(
     ...     "data-train",
+    ...     "openff-2.2.1.offxml"
     ...     smee_ff,
     ...     topologies,
     ...     n_epochs=500,
@@ -393,6 +470,23 @@ def train_forcefield(
                         f"Topology {handler} particle_idxs device: {param_map.particle_idxs.device}"
                     )
 
+    mean_parameter_values = get_parameter_scales(str(offxml))
+    PARAMETERS = {
+        "Bonds": descent.train.ParameterConfig(
+            cols=["k", "length"],
+            scales=mean_parameter_values["Bonds"],  # normalize so roughly equal
+            limits={"k": [0.0, None], "length": [0.0, None]},
+            include=[],
+            exclude=[],
+        ),
+        "Angles": descent.train.ParameterConfig(
+            cols=["k", "angle"],
+            scales=mean_parameter_values["Angles"],
+            limits={"k": [0.0, None], "angle": [0.0, math.pi]},
+            include=[],
+            exclude=[],
+        ),
+    }
     trainable = descent.train.Trainable(
         force_field=smee_force_field, parameters=PARAMETERS, attributes={}
     )
@@ -650,6 +744,7 @@ def main(
     )
     train_forcefield(
         filename_data,
+        offxml,
         smee_force_field,
         topologies,
         n_epochs=n_epochs,

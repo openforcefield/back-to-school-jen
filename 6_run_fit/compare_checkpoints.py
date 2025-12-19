@@ -106,7 +106,7 @@ def compare_force_fields(
     ff_first: smee.TensorForceField,
     ff_last: smee.TensorForceField,
     trained_handlers: set[str] = {"Bonds", "Angles"},
-) -> dict:
+) -> dict[str, dict]:
     """Compare two SMEE force field checkpoints and find parameter changes.
 
     Parameters
@@ -123,7 +123,7 @@ def compare_force_fields(
     """
 
     # trained_handlers is now a function argument
-    results: dict = defaultdict(list)
+    results: dict[str, dict] = defaultdict(lambda: defaultdict(list))
 
     for pot_first, pot_last in zip(ff_first.potentials, ff_last.potentials):
         handler_name = pot_first.parameter_keys[0].associated_handler
@@ -150,7 +150,7 @@ def compare_force_fields(
                     abs_change / abs(val_first) if val_first != 0 else float("inf")
                 )
 
-                results[handler_name].append(
+                results[handler_name][col].append(
                     {
                         "smirks": smirks,
                         "parameter": col,
@@ -164,7 +164,10 @@ def compare_force_fields(
 
     # Sort by absolute change within each handler
     for handler_name in results:
-        results[handler_name].sort(key=lambda x: x["abs_change"], reverse=True)
+        for param_type in results[handler_name].keys():
+            results[handler_name][param_type].sort(
+                key=lambda x: x["abs_change"], reverse=True
+            )
 
     return dict(results)
 
@@ -331,16 +334,17 @@ def generate_training_plots(
 
     # Collect top changed parameters across all handlers
     top_params = []
-    for handler_name, params in results.items():
-        for param_info in params[:top_n]:
-            top_params.append(
-                {
-                    "handler": handler_name,
-                    "smirks": param_info["smirks"],
-                    "parameter": param_info["parameter"],
-                    "unit": param_info["unit"],
-                }
-            )
+    for handler_name, param_dict in results.items():
+        for param_type, params in param_dict.items():
+            for param_info in params[:top_n]:
+                top_params.append(
+                    {
+                        "handler": handler_name,
+                        "smirks": param_info["smirks"],
+                        "parameter": param_type,
+                        "unit": param_info["unit"],
+                    }
+                )
 
     # Get all checkpoint files
     checkpoint_files = find_all_checkpoints(checkpoint_dir)
@@ -355,9 +359,10 @@ def generate_training_plots(
     loss_history = parse_tensorboard_loss(checkpoint_dir)
 
     # Create figure with subplots
-    n_handlers = len(results)
-    n_rows = 1 + n_handlers  # Loss + one row per handler
-    fig, axes = plt.subplots(n_rows, 1, figsize=(12, 4 * n_rows))
+    n_rows = 1 + sum(
+        len(x) for x in results.values()
+    )  # Loss + one row per handler/parameter combination
+    fig, axes = plt.subplots(n_rows, 1, figsize=(12, 4 * n_rows), sharex=True)
 
     if n_rows == 1:
         axes = [axes]
@@ -386,42 +391,39 @@ def generate_training_plots(
     # Plot parameters by handler
     colors = plt.cm.get_cmap("viridis")(np.linspace(0, 1, top_n))
 
-    for idx, (handler_name, params) in enumerate(results.items(), start=1):
-        ax = axes[idx]
+    for idx, (handler_name, param_dict) in enumerate(results.items()):
+        for jdx, (param_type, params) in enumerate(param_dict.items()):
+            ax = axes[1 + idx * len(results) + jdx]
 
-        for i, param_info in enumerate(params[:top_n]):
-            key = f"{handler_name}/{param_info['smirks']}/{param_info['parameter']}"
-            values = param_history["parameters"].get(key, [])
+            for i, param_info in enumerate(params[:top_n]):
+                key = f"{handler_name}/{param_info['smirks']}/{param_info['parameter']}"
+                values = param_history["parameters"].get(key, [])
 
-            if not values:
-                continue
-            if len(values) != len(param_history["epochs"]):
-                logger.warning(
-                    f"Skipping {key}: values length {len(values)} != epochs length {len(param_history['epochs'])}"
+                if not values:
+                    continue
+                if len(values) != len(param_history["epochs"]):
+                    logger.warning(
+                        f"Skipping {key}: values length {len(values)} != epochs length {len(param_history['epochs'])}"
+                    )
+                    continue
+
+                # Truncate SMIRKS for legend
+                smirks_short = param_info["smirks"]
+                if len(smirks_short) > 30:
+                    smirks_short = smirks_short[:27] + "..."
+
+                label = f"{smirks_short}"
+                ax.plot(
+                    param_history["epochs"],
+                    values,
+                    color=colors[i],
+                    linewidth=1.5,
+                    label=label,
                 )
-                continue
-
-            # Truncate SMIRKS for legend
-            smirks_short = param_info["smirks"]
-            if len(smirks_short) > 30:
-                smirks_short = smirks_short[:27] + "..."
-
-            label = f"{smirks_short} ({param_info['parameter']})"
-            ax.plot(
-                param_history["epochs"],
-                values,
-                color=colors[i],
-                linewidth=1.5,
-                label=label,
-            )
-
-        ax.set_xlabel("Epoch")
-        ax.set_ylabel("Parameter Value")
-        ax.set_title(
-            f"{handler_name} - Top {min(top_n, len(params))} Changed Parameters"
-        )
-        ax.legend(loc="center left", bbox_to_anchor=(1.02, 0.5), fontsize=8)
-        ax.grid(True, alpha=0.3)
+            ax.set_ylabel("{handler_name} {param_type}")
+            ax.legend(loc="center left", bbox_to_anchor=(1.02, 0.5), fontsize=8)
+            ax.grid(True, alpha=0.3)
+            ax.set_xlabel("Epoch")
 
     plt.tight_layout()
 
@@ -432,37 +434,38 @@ def generate_training_plots(
     logger.info(f"Saved training progress plot to: {output_path}")
 
     # Also create individual plots for each handler
-    for handler_name, params in results.items():
-        fig, ax = plt.subplots(figsize=(10, 6))
+    for handler_name, param_dict in results.items():
+        for param_type, params in param_dict.items():
+            fig, ax = plt.subplots(figsize=(10, 6))
 
-        for i, param_info in enumerate(params[:top_n]):
-            key = f"{handler_name}/{param_info['smirks']}/{param_info['parameter']}"
-            values = param_history["parameters"].get(key, [])
+            for i, param_info in enumerate(params[:top_n]):
+                key = f"{handler_name}/{param_info['smirks']}/{param_info['parameter']}"
+                values = param_history["parameters"].get(key, [])
 
-            if values:
-                smirks_short = param_info["smirks"]
-                if len(smirks_short) > 40:
-                    smirks_short = smirks_short[:37] + "..."
+                if values:
+                    label = f"{param_info["smirks"]}"
+                    ax.plot(
+                        param_history["epochs"],
+                        values,
+                        color=colors[i % len(colors)],
+                        linewidth=1.5,
+                        label=label,
+                    )
 
-                label = f"{smirks_short}\n({param_info['parameter']})"
-                ax.plot(
-                    param_history["epochs"],
-                    values,
-                    color=colors[i % len(colors)],
-                    linewidth=1.5,
-                    label=label,
-                )
+            ax.set_xlabel("Epoch", fontsize=12)
+            ax.set_ylabel("{handler_name} {param_type}", fontsize=12)
+            ax.legend(loc="center left", bbox_to_anchor=(1.02, 0.5), fontsize=8)
+            ax.grid(True, alpha=0.3)
 
-        ax.set_xlabel("Epoch", fontsize=12)
-        ax.set_ylabel("Parameter Value", fontsize=12)
-        ax.set_title(f"{handler_name} Parameter Evolution", fontsize=14)
-        ax.legend(loc="center left", bbox_to_anchor=(1.02, 0.5), fontsize=8)
-        ax.grid(True, alpha=0.3)
-
-        output_path = output_dir / f"parameter_evolution_{handler_name.lower()}.pdf"
-        fig.savefig(output_path, bbox_inches="tight", dpi=150)
-        plt.close(fig)
-        logger.info(f"Saved {handler_name} parameter plot to: {output_path}")
+            output_path = (
+                output_dir
+                / f"parameter_evolution_{handler_name.lower()}_{param_type}.pdf"
+            )
+            fig.savefig(output_path, bbox_inches="tight", dpi=150)
+            plt.close(fig)
+            logger.info(
+                f"Saved {handler_name} {param_type} parameter plot to: {output_path}"
+            )
 
 
 def print_comparison_report(
@@ -490,60 +493,59 @@ def print_comparison_report(
     print(f"\nFirst checkpoint:  {first_path.name}")
     print(f"Last checkpoint:   {last_path.name}")
 
-    for handler_name, params in results.items():
-        print(f"\n{'-' * 80}")
-        print(
-            f"{handler_name} - Top {min(top_n, len(params))} Parameters by Absolute Change"
-        )
-        print(f"{'-' * 80}")
-
-        if not params:
-            print("  No parameters found")
-            continue
-
-        # Header
-        print(
-            f"  {'SMIRKS':<45} {'Param':<10} {'First':>12} {'Last':>12} "
-            f"{'Δ (abs)':>12} {'Δ (%)':>10}"
-        )
-        print("  " + "-" * 103)
-
-        for param_info in params[:top_n]:
-            smirks = param_info["smirks"]
-            if len(smirks) > 43:
-                smirks = smirks[:40] + "..."
-
-            rel_pct = param_info["rel_change"] * 100
-            rel_str = f"{rel_pct:.2f}%" if rel_pct < 1e6 else "inf"
-
+    for handler_name, param_dict in results.items():
+        for param_type, params in param_dict.items():
+            print(f"\n{'-' * 80}")
             print(
-                f"  {smirks:<45} {param_info['parameter']:<10} "
-                f"{param_info['value_first']:>12.6f} {param_info['value_last']:>12.6f} "
-                f"{param_info['abs_change']:>12.6f} {rel_str:>10}"
+                f"{handler_name} - {param_type} - Top {min(top_n, len(params))} Parameters by Absolute Change"
             )
+            print(f"{'-' * 80}")
+
+            if not params:
+                print("  No parameters found")
+                continue
+
+            # Header
+            print(
+                f"  {'First':>12} {'Last':>12} "
+                f"{'Δ (abs)':>12} {'Δ (%)':>10} {'SMIRKS':}"
+            )
+            print("  " + "-" * 103)
+
+            for param_info in params[:top_n]:
+                smirks = param_info["smirks"]
+
+                rel_pct = param_info["rel_change"] * 100
+                rel_str = f"{rel_pct:.2f}%" if rel_pct < 1e6 else "inf"
+
+                print(
+                    f"  {param_info['value_first']:>12.6f} {param_info['value_last']:>12.6f} "
+                    f"{param_info['abs_change']:>12.6f} {rel_str:>10} {smirks}"
+                )
 
     # Summary statistics
     print(f"\n{'=' * 80}")
     print("SUMMARY STATISTICS")
     print("=" * 80)
 
-    for handler_name, params in results.items():
-        if not params:
-            continue
+    for handler_name, param_dict in results.items():
+        for param_type, params in param_dict.items():
+            if not params:
+                continue
 
-        total_params = len(params)
-        abs_changes = [p["abs_change"] for p in params]
-        mean_change = sum(abs_changes) / len(abs_changes) if abs_changes else 0
-        max_change = max(abs_changes) if abs_changes else 0
-        changed_params = sum(1 for c in abs_changes if c > 1e-10)
+            total_params = len(params)
+            abs_changes = [p["abs_change"] for p in params]
+            mean_change = sum(abs_changes) / len(abs_changes) if abs_changes else 0
+            max_change = max(abs_changes) if abs_changes else 0
+            changed_params = sum(1 for c in abs_changes if c > 1e-10)
 
-        print(f"\n{handler_name}:")
-        print(f"  Total parameters:     {total_params}")
-        print(
-            f"  Parameters changed:   {changed_params} ({100*changed_params/total_params:.1f}%)"
-        )
-        print(f"  Mean absolute change: {mean_change:.6f}")
-        print(f"  Max absolute change:  {max_change:.6f}")
+            print(f"\n{handler_name} - {param_type}:")
+            print(f"  Total parameters:     {total_params}")
+            print(
+                f"  Parameters changed:   {changed_params} ({100*changed_params/total_params:.1f}%)"
+            )
+            print(f"  Mean absolute change: {mean_change:.6f}")
+            print(f"  Max absolute change:  {max_change:.6f}")
 
     print("\n" + "=" * 80)
 

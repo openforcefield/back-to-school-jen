@@ -35,6 +35,6 @@ python ../fit_data.py --data-dir "../../3_split_train_test/full_split_uci/data-t
                       --filename-forcefield "../../5_setup_train_ff_topologies/2025_12_08_uci_off_b/smee_force_field.pkl" \
                       --filename-topo-dict "../../5_setup_train_ff_topologies/2025_12_08_uci_off_b/smee_topology_dict.pkl" \
                       --offxml "../../4_make_offxmls/b_no_bond_with_ring_in_atom/openff-2.2.1-ring-no-bond.offxml" \
-                      --n-epochs 1000 \
+                      --n-epochs 300 \
 		      --to-cuda true \
-                      --learning-rate 0.001 2>&1 | tee log.txt
+                      --learning-rate 0.1 2>&1 | tee log.txt
