@@ -20,6 +20,9 @@ PARAMETERS = {
 ```
 The process of taking the mean from the initial dataset is done in fit_data.py
 
+Mean values for Bonds: {'k': 548.2096050741, 'length': 1.5660409917234321}
+Mean values for Angles: {'k': 116.02103319086014, 'angle': 115.24519982954872}
+
 Learning Rate: 0.1
 Number of Epochs: 100 (submitted as 300 and stopped early)
 
