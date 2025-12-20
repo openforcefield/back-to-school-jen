@@ -453,7 +453,7 @@ def generate_training_plots(
                     )
 
             ax.set_xlabel("Epoch", fontsize=12)
-            ax.set_ylabel("{handler_name} {param_type}", fontsize=12)
+            ax.set_ylabel(f"{handler_name} {param_type}", fontsize=12)
             ax.legend(loc="center left", bbox_to_anchor=(1.02, 0.5), fontsize=8)
             ax.grid(True, alpha=0.3)
 
