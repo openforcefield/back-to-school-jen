@@ -170,7 +170,7 @@ def get_parameter_scales(offxml: str) -> dict[str, dict[str, float]]:
         logger.info(f"Processing scales for parameter type: {parameter_type}")
         values = get_parameter_col_values(ff, parameter_type, parameter_cols)
         scales[parameter_type] = {
-            param: _mean_vals(vals) for param, vals in values.items()
+            param: 1 / _mean_vals(vals) for param, vals in values.items()
         }
         logger.info(f"Mean values for {parameter_type}: {scales[parameter_type]}\n")
     return scales
@@ -331,7 +331,7 @@ def write_metrics(
     >>> with tensorboardX.SummaryWriter("logs") as writer:
     ...     write_metrics(10, epoch_loss, energy_loss, force_loss, writer)
     """
-    print(f"epoch={epoch} loss={loss.detach().item():.6f}", flush=True)
+    logger.info(f"epoch={epoch} loss={loss.detach().item():.6f}", flush=True)
 
     writer.add_scalar("loss", loss.detach().item(), epoch)
     writer.add_scalar("loss_energy", loss_energy.detach().item(), epoch)
@@ -470,18 +470,18 @@ def train_forcefield(
                         f"Topology {handler} particle_idxs device: {param_map.particle_idxs.device}"
                     )
 
-    mean_parameter_values = get_parameter_scales(str(offxml))
+    scale_mean_parameter_values = get_parameter_scales(str(offxml))
     PARAMETERS = {
         "Bonds": descent.train.ParameterConfig(
             cols=["k", "length"],
-            scales=mean_parameter_values["Bonds"],  # normalize so roughly equal
+            scales=scale_mean_parameter_values["Bonds"],  # normalize so roughly equal
             limits={"k": [0.0, None], "length": [0.0, None]},
             include=[],
             exclude=[],
         ),
         "Angles": descent.train.ParameterConfig(
             cols=["k", "angle"],
-            scales=mean_parameter_values["Angles"],
+            scales=scale_mean_parameter_values["Angles"],
             limits={"k": [0.0, None], "angle": [0.0, math.pi]},
             include=[],
             exclude=[],

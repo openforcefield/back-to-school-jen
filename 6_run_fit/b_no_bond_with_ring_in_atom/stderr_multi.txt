@@ -1,2 +1,1 @@
-/export/spool/slurm/slurmd.spool/job47081199/slurm_script: line 22: nvcc: command not found
-[2025-12-19T07:18:51.995] error: *** JOB 47081199 ON hpc3-gpu-k54-01 CANCELLED AT 2025-12-19T07:18:51 DUE to SIGNAL Terminated ***
+/export/spool/slurm/slurmd.spool/job47089482/slurm_script: line 22: nvcc: command not found
