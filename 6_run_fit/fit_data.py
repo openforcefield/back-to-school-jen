@@ -156,6 +156,7 @@ def get_parameter_scales(offxml: str) -> dict[str, dict[str, float]]:
         Mapping from parameter handler name (e.g. "Bonds") to a dict mapping column
         names (e.g. "k", "length") to the mean value observed in the force field.
         If no values are available for a column the mean will be 0.0.
+        Note that scale for angles is converted from degrees to radians
     """
     PARAMETER_COLS = {
         "Bonds": ["k", "length"],
@@ -167,12 +168,13 @@ def get_parameter_scales(offxml: str) -> dict[str, dict[str, float]]:
 
     scales = {}
     for parameter_type, parameter_cols in PARAMETER_COLS.items():
-        logger.info(f"Processing scales for parameter type: {parameter_type}")
         values = get_parameter_col_values(ff, parameter_type, parameter_cols)
         scales[parameter_type] = {
             param: 1 / _mean_vals(vals) for param, vals in values.items()
         }
-        logger.info(f"Mean values for {parameter_type}: {scales[parameter_type]}\n")
+        if parameter_type == "Angles":
+            scales[parameter_type] *= 180 / np.pi
+        logger.info(f"Scaling values for {parameter_type}: {scales[parameter_type]}\n")
     return scales
 
 
