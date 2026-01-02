@@ -19,6 +19,7 @@ Usage
 
 import argparse
 import pathlib
+import warnings
 import re
 from collections import defaultdict
 
@@ -27,6 +28,65 @@ import torch
 import numpy as np
 import matplotlib.pyplot as plt
 from loguru import logger
+
+from openff.units import unit
+
+OFF_UNITS = {
+    "Bonds": {
+        "k": unit.kilocalorie_per_mole / unit.angstrom**2,
+        "length": unit.angstrom,
+    },
+    "Angles": {
+        "k": unit.kilocalorie_per_mole / unit.radian**2,
+        "angle": unit.degree,
+    },
+}
+
+
+def get_off_unit_string(handler_name: str, param_col: str) -> str:
+    """Get the OFF unit string for a parameter.
+
+    Parameters
+    ----------
+    handler_name : str
+        Name of the handler (e.g., "Bonds", "Angles").
+    param_col : str
+        Name of the parameter column (e.g., "k", "length", "angle").
+
+    Returns
+    -------
+    str
+        The OFF unit as a string.
+    """
+    off_unit = OFF_UNITS.get(handler_name, {}).get(param_col)
+    return str(off_unit) if off_unit else ""
+
+
+def convert_to_off_units(
+    quantity: unit.Quantity, handler_name: str, param_col: str
+) -> unit.Quantity:
+    """Convert a parameter value from SMEE units to OFF units.
+
+    Parameters
+    ----------
+    quantity : unit.Quantity
+        The parameter value with SMEE units assigned.
+    handler_name : str
+        Name of the handler (e.g., "Bonds", "Angles").
+    param_col : str
+        Name of the parameter column (e.g., "k", "length", "angle").
+
+    Returns
+    -------
+    unit.Quantity
+        The parameter value converted to OFF units.
+    """
+    off_unit = OFF_UNITS.get(handler_name, {}).get(param_col, None)
+    if off_unit is not None:
+        return quantity.to(off_unit)
+    else:
+        warnings.warn(f"Quantity, {quantity}, is not supported for unit conversion")
+        return quantity
 
 
 def get_epoch_from_path(path: pathlib.Path) -> int:
@@ -142,22 +202,34 @@ def compare_force_fields(
             params_first_np = params_first.detach().cpu().numpy()
             params_last_np = params_last.detach().cpu().numpy()
 
-            for j, (col, unit) in enumerate(zip(parameter_cols, parameter_units)):
-                val_first = float(params_first_np[j])
-                val_last = float(params_last_np[j])
-                abs_change = abs(val_last - val_first)
-                rel_change = (
-                    abs_change / abs(val_first) if val_first != 0 else float("inf")
-                )
+            for j, (col, param_unit) in enumerate(zip(parameter_cols, parameter_units)):
+                try:
+                    val_first = params_first_np[j] * param_unit
+                    val_last = params_last_np[j] * param_unit
+                except Exception as e:
+                    print("Test units", param_unit, type(param_unit))
+                    raise ValueError(e)
+
+                # Convert to OFF units for reporting
+                val_first_off = convert_to_off_units(val_first, handler_name, col)
+                val_last_off = convert_to_off_units(val_last, handler_name, col)
+
+                abs_change = abs(val_last_off - val_first_off)
+                if val_first_off.m != 0:
+                    rel_change = (
+                        abs_change / abs(val_first_off)
+                    ).m  # Dimensionless ratio
+                else:
+                    rel_change = float("inf")
 
                 results[handler_name][col].append(
                     {
                         "smirks": smirks,
                         "parameter": col,
-                        "unit": str(unit),
-                        "value_first": val_first,
-                        "value_last": val_last,
-                        "abs_change": abs_change,
+                        "unit": str(val_first_off.units),
+                        "value_first": val_first_off.m,
+                        "value_last": val_last_off.m,
+                        "abs_change": abs_change.m,
                         "rel_change": rel_change,
                     }
                 )
@@ -191,7 +263,7 @@ def extract_parameter_value(
     Returns
     -------
     float
-        The parameter value.
+        The parameter value in OFF units.
     """
     for potential in ff.potentials:
         if potential.parameter_keys[0].associated_handler != handler_name:
@@ -202,10 +274,15 @@ def extract_parameter_value(
             continue
 
         col_idx = param_cols.index(param_col)
+        param_unit = potential.parameter_units[col_idx]
 
         for i, params in enumerate(potential.parameters):
             if potential.parameter_keys[i].id == smirks:
-                return float(params.detach().cpu().numpy()[col_idx])
+                value = float(params.detach().cpu().numpy()[col_idx])
+                # Convert to OFF units
+                quantity = value * param_unit
+                value_off = convert_to_off_units(quantity, handler_name, param_col)
+                return value_off.m
 
     raise ValueError(f"Parameter not found: {handler_name}/{smirks}/{param_col}")
 
@@ -420,7 +497,11 @@ def generate_training_plots(
                     linewidth=1.5,
                     label=label,
                 )
-            ax.set_ylabel(f"{handler_name} {param_type}")
+
+            # Get OFF unit for the y-axis label
+            off_unit_str = get_off_unit_string(handler_name, param_type)
+            unit_label = f" ({off_unit_str})" if off_unit_str else ""
+            ax.set_ylabel(f"{handler_name} {param_type}{unit_label}")
             ax.legend(loc="center left", bbox_to_anchor=(1.02, 0.5), fontsize=8)
             ax.grid(True, alpha=0.3)
             ax.set_xlabel("Epoch")
@@ -443,7 +524,7 @@ def generate_training_plots(
                 values = param_history["parameters"].get(key, [])
 
                 if values:
-                    label = f"{param_info["smirks"]}"
+                    label = f"{param_info['smirks']}"
                     ax.plot(
                         param_history["epochs"],
                         values,
@@ -453,7 +534,10 @@ def generate_training_plots(
                     )
 
             ax.set_xlabel("Epoch", fontsize=12)
-            ax.set_ylabel(f"{handler_name} {param_type}", fontsize=12)
+            # Get OFF unit for the y-axis label
+            off_unit_str = get_off_unit_string(handler_name, param_type)
+            unit_label = f" ({off_unit_str})" if off_unit_str else ""
+            ax.set_ylabel(f"{handler_name} {param_type}{unit_label}", fontsize=12)
             ax.legend(loc="center left", bbox_to_anchor=(1.02, 0.5), fontsize=8)
             ax.grid(True, alpha=0.3)
 
@@ -499,7 +583,13 @@ def print_comparison_report(
             print(
                 f"{handler_name} - {param_type} - Top {min(top_n, len(params))} Parameters by Absolute Change"
             )
-            print(f"{'-' * 80}")
+
+            # Get unit for this parameter type
+            unit_str = ""
+            if params:
+                unit_str = params[0].get("unit", "")
+            unit_label = f" (units: {unit_str})" if unit_str else ""
+            print(f"{'-' * 80}{unit_label}")
 
             if not params:
                 print("  No parameters found")
@@ -539,13 +629,17 @@ def print_comparison_report(
             max_change = max(abs_changes) if abs_changes else 0
             changed_params = sum(1 for c in abs_changes if c > 1e-10)
 
+            # Get unit for this parameter type
+            unit_str = params[0].get("unit", "")
+            unit_label = f" {unit_str}" if unit_str else ""
+
             print(f"\n{handler_name} - {param_type}:")
             print(f"  Total parameters:     {total_params}")
             print(
                 f"  Parameters changed:   {changed_params} ({100*changed_params/total_params:.1f}%)"
             )
-            print(f"  Mean absolute change: {mean_change:.6f}")
-            print(f"  Max absolute change:  {max_change:.6f}")
+            print(f"  Mean absolute change: {mean_change:.6f}{unit_label}")
+            print(f"  Max absolute change:  {max_change:.6f}{unit_label}")
 
     print("\n" + "=" * 80)
 

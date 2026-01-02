@@ -86,6 +86,7 @@ import tensorboardX
 import more_itertools
 
 from openff.toolkit import ForceField
+from openff.units import unit
 
 
 def get_parameter_col_values(
@@ -142,7 +143,11 @@ def _mean_vals(vals):
 
 
 def get_parameter_scales(offxml: str) -> dict[str, dict[str, float]]:
-    """Compute simple summary statistics (mean) for parameter columns in an OFFXML.
+    """Compute scaling factors for force field parameters using SMEE's internal units.
+
+    Extracts parameter values from an OFFXML force field and converts them to
+    SMEE's internal unit system before computing scaling factors (1/mean).
+    This ensures that scaling factors match the units used during optimization.
 
     Parameters
     ----------
@@ -153,11 +158,32 @@ def get_parameter_scales(offxml: str) -> dict[str, dict[str, float]]:
     Returns
     -------
     dict[str, dict[str, float]]
-        Mapping from parameter handler name (e.g. "Bonds") to a dict mapping column
-        names (e.g. "k", "length") to the mean value observed in the force field.
-        If no values are available for a column the mean will be 0.0.
-        Note that scale for angles is converted from degrees to radians
+        Mapping from parameter handler name to a dict of scaling factors.
+        Example: {"Bonds": {"k": 0.0018, "length": 0.64}, "Angles": {"k": 0.0086, "angle": 0.497}}
+
+    Notes
+    -----
+    SMEE internal units (from smee/converters/openff/valence.py):
+    - Bonds: k in kcal/(mol·Å²), length in Å
+    - Angles: k in kcal/(mol·rad²), angle in radians
+    - ProperTorsions: k in kcal/mol
+    - ImproperTorsions: k in kcal/mol
     """
+    # SMEE default units from smee/converters/openff/valence.py
+    # _ANGSTROM = openff.units.unit.angstrom
+    # _RADIANS = openff.units.unit.radians
+    # _KCAL_PER_MOL = openff.units.unit.kilocalories / openff.units.unit.mole
+    SMEE_UNITS = {
+        "Bonds": {
+            "k": unit.kilocalorie_per_mole / unit.angstrom**2,
+            "length": unit.angstrom,
+        },
+        "Angles": {
+            "k": unit.kilocalorie_per_mole / unit.radian**2,
+            "angle": unit.radian,
+        },
+    }
+
     PARAMETER_COLS = {
         "Bonds": ["k", "length"],
         "Angles": ["k", "angle"],
@@ -168,14 +194,75 @@ def get_parameter_scales(offxml: str) -> dict[str, dict[str, float]]:
 
     scales = {}
     for parameter_type, parameter_cols in PARAMETER_COLS.items():
+        logger.info(f"Processing scales for parameter type: {parameter_type}")
         values = get_parameter_col_values(ff, parameter_type, parameter_cols)
+
+        # Convert all parameters to SMEE's internal units
+        if parameter_type in SMEE_UNITS:
+            for param_name, target_unit in SMEE_UNITS[parameter_type].items():
+                if param_name in values:
+                    values[param_name] = [
+                        val.to(target_unit) if hasattr(val, "to") else val
+                        for val in values[param_name]
+                    ]
+        else:
+            raise ValueError(f"Parameter type, {parameter_type}, is unknown.")
+
         scales[parameter_type] = {
             param: 1 / _mean_vals(vals) for param, vals in values.items()
         }
-        if parameter_type == "Angles":
-            scales[parameter_type] *= 180 / np.pi
-        logger.info(f"Scaling values for {parameter_type}: {scales[parameter_type]}\n")
+        logger.info(f"Mean values for {parameter_type}: {scales[parameter_type]}\n")
     return scales
+
+
+def get_parameter_limits() -> dict[str, dict[str, tuple[float | None, float | None]]]:
+    """Get parameter limits in SMEE's internal unit system.
+
+    Returns physically reasonable bounds for force field parameters during optimization.
+    All limits are specified in SMEE's internal units to match the optimization space.
+
+    Returns
+    -------
+    dict[str, dict[str, tuple[float, float | None]]]
+        Mapping from parameter handler name to parameter limits.
+        Tuple format: (lower_bound, upper_bound), where None means no upper bound.
+
+    Notes
+    -----
+    SMEE internal units and typical ranges:
+    - Bonds:
+        - k: [0, ∞) kcal/(mol·Å²) - force constant must be positive
+        - length: [0, ∞) Å - bond length must be positive
+    - Angles:
+        - k: [0, ∞) kcal/(mol·rad²) - force constant must be positive
+        - angle: [0, π] radians - equilibrium angle range
+    - ProperTorsions:
+        - k: (-∞, ∞) kcal/mol - can be positive or negative
+    - ImproperTorsions:
+        - k: [0, ∞) kcal/mol - typically positive
+
+    Examples
+    --------
+    >>> limits = get_parameter_limits()
+    >>> limits["Angles"]["angle"]
+    (0.0, 3.141592653589793)
+    """
+    return {
+        "Bonds": {
+            "k": (0.0, None),  # kcal/(mol·Å²), must be positive
+            "length": (0.0, None),  # Å, must be positive
+        },
+        "Angles": {
+            "k": (0.0, None),  # kcal/(mol·rad²), must be positive
+            "angle": (0.0, math.pi),  # radians, 0 to π
+        },
+        "ProperTorsions": {
+            "k": (None, None),  # kcal/mol, can be any value
+        },
+        "ImproperTorsions": {
+            "k": (0.0, None),  # kcal/mol, typically positive
+        },
+    }
 
 
 def prepare_batch_for_device(batch: datasets.Dataset, device_str: str) -> list:
@@ -473,18 +560,20 @@ def train_forcefield(
                     )
 
     scale_mean_parameter_values = get_parameter_scales(str(offxml))
+    parameter_limits = get_parameter_limits()
+
     PARAMETERS = {
         "Bonds": descent.train.ParameterConfig(
             cols=["k", "length"],
-            scales=scale_mean_parameter_values["Bonds"],  # normalize so roughly equal
-            limits={"k": [0.0, None], "length": [0.0, None]},
+            scales=scale_mean_parameter_values["Bonds"],
+            limits=parameter_limits["Bonds"],
             include=[],
             exclude=[],
         ),
         "Angles": descent.train.ParameterConfig(
             cols=["k", "angle"],
             scales=scale_mean_parameter_values["Angles"],
-            limits={"k": [0.0, None], "angle": [0.0, math.pi]},
+            limits=parameter_limits["Angles"],
             include=[],
             exclude=[],
         ),
@@ -628,8 +717,10 @@ def write_new_offxml(
                 smirks = potential.parameter_keys[i].id
                 ff_parameter = handler[smirks]
                 opt_parameters = opt_parameters.detach().cpu().numpy()
-                for j, (p, unit) in enumerate(zip(parameter_attrs, parameter_units)):
-                    setattr(ff_parameter, p, opt_parameters[j] * unit)
+                for j, (p, param_unit) in enumerate(
+                    zip(parameter_attrs, parameter_units)
+                ):
+                    setattr(ff_parameter, p, opt_parameters[j] * param_unit)
 
         elif handler_name in ["ProperTorsions"]:
             handler = starting_ff.get_parameter_handler(handler_name)
