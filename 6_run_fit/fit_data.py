@@ -187,8 +187,6 @@ def get_parameter_scales(offxml: str) -> dict[str, dict[str, float]]:
     PARAMETER_COLS = {
         "Bonds": ["k", "length"],
         "Angles": ["k", "angle"],
-        "ProperTorsions": ["k"],
-        "ImproperTorsions": ["k"],
     }
     ff = ForceField(offxml)
 

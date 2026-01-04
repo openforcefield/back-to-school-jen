@@ -1,1 +1,1 @@
-/export/spool/slurm/slurmd.spool/job47089482/slurm_script: line 22: nvcc: command not found
+/export/spool/slurm/slurmd.spool/job47273411/slurm_script: line 22: nvcc: command not found
