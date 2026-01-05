@@ -209,7 +209,7 @@ def get_parameter_scales(offxml: str) -> dict[str, dict[str, float]]:
         scales[parameter_type] = {
             param: 1 / _mean_vals(vals) for param, vals in values.items()
         }
-        logger.info(f"Mean values for {parameter_type}: {scales[parameter_type]}\n")
+        logger.info(f"Scaling values for {parameter_type}: {scales[parameter_type]}\n")
     return scales
 
 
