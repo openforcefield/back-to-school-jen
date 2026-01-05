@@ -146,7 +146,7 @@ def find_checkpoints(checkpoint_dir: pathlib.Path) -> tuple[pathlib.Path, pathli
 
 
 def load_checkpoint(checkpoint_path: pathlib.Path) -> smee.TensorForceField:
-    """Load a SMEE force field checkpoint.
+    """Load a SMEE force field checkpoint, *.pt file.
 
     Parameters
     ----------
@@ -159,7 +159,12 @@ def load_checkpoint(checkpoint_path: pathlib.Path) -> smee.TensorForceField:
         SMEE TensorForceField object.
     """
     logger.info(f"Loading checkpoint: {checkpoint_path}")
-    return torch.load(checkpoint_path, map_location="cpu", weights_only=False)
+
+    if checkpoint_path.suffix == ".pt":
+        tff = torch.load(checkpoint_path, map_location="cpu", weights_only=False)
+    else:
+        raise ValueError(f"Only *.pt files are accepted, not {checkpoint_path}")
+    return tff
 
 
 def compare_force_fields(
@@ -407,6 +412,11 @@ def generate_training_plots(
     top_n : int, optional
         Number of top changed parameters to plot per handler (default: 5).
     """
+
+    if checkpoint_dir is None:
+        print("checkpoint_dir is None, no parameter progress can be analyzed.")
+        return
+
     output_dir.mkdir(parents=True, exist_ok=True)
 
     # Collect top changed parameters across all handlers

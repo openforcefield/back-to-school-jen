@@ -1,0 +1,17 @@
+2026-01-05 10:55:41.596 | INFO     | __main__:load_checkpoint:161 - Loading checkpoint: ../b_no_bond_with_ring_in_atom/final-force-field.offxml
+Traceback (most recent call last):
+  File "/Users/jenniferclark/bin/back-to-school-jen/6_run_fit/compare_b_b2/../compare_checkpoints.py", line 757, in <module>
+    main()
+  File "/Users/jenniferclark/bin/back-to-school-jen/6_run_fit/compare_b_b2/../compare_checkpoints.py", line 732, in main
+    ff_first = load_checkpoint(first_path)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jenniferclark/bin/back-to-school-jen/6_run_fit/compare_b_b2/../compare_checkpoints.py", line 162, in load_checkpoint
+    return torch.load(checkpoint_path, map_location="cpu", weights_only=False)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jenniferclark/mamba/envs/bts/lib/python3.12/site-packages/torch/serialization.py", line 1114, in load
+    return _legacy_load(
+           ^^^^^^^^^^^^^
+  File "/Users/jenniferclark/mamba/envs/bts/lib/python3.12/site-packages/torch/serialization.py", line 1338, in _legacy_load
+    magic_number = pickle_module.load(f, **pickle_load_args)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_pickle.UnpicklingError: invalid load key, '<'.
