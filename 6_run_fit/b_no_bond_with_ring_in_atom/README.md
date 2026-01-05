@@ -8,31 +8,29 @@ This fit was run with the parameters as is, and scaling defined (loosely) as:
 PARAMETERS = {
     "Bonds": descent.train.ParameterConfig(
         cols=["k", "length"],
-        scales={"k": bond_k_mean, "length": bond_x0_mean},
+        scales={"k": 1/bond_k_mean, "length": 1/bond_x0_mean},
         limits={"k": [0.0, None], "length": [0.0, None]},
     ),
     "Angles": descent.train.ParameterConfig(
         cols=["k", "angle"],
-        scales={"k": angle_k_mean, "angle": angle_x0_mean},
+        scales={"k": 1/angle_k_mean, "angle": 1/angle_x0_mean},
         limits={"k": [0.0, None], "angle": [0.0, math.pi]},
     ),
 }
 ```
 The process of taking the mean from the initial dataset is done in fit_data.py
 
-Mean values for Bonds: {'k': 548.2096050741, 'length': 1.5660409917234321}
-Mean values for Angles: {'k': 116.02103319086014, 'angle': 115.24519982954872}
+Mean values for Bonds: {'k': 0.0018241198088180758, 'length': 0.638552889282609}
+Mean values for Angles: {'k': 0.008619126829830522, 'angle': 0.49716413002732057} # in radians
 
-Learning Rate: 0.1
-Number of Epochs: 100 (submitted as 300 and stopped early)
+Learning Rate: 0.03
+Number of Epochs: 300
 
 Previous Step:
 FF-B2, Generalized Bonds with Ring Definitions: Attempt 2
 Showed descent progress in all parameters, but it's expected that fitting of Bond spring constant k could be improved.
 
 Conclusion:
-Poor fitting performance for angles and seemingly descent performance for bond reference length.
+Significant progress but oscillating initial steps
 
 Next Step:
-FF-B3, Generalized Bonds with Ring Definitions: Attempt 4
-Run with linearized potentials
