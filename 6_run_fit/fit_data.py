@@ -438,7 +438,8 @@ def train_forcefield(
     learning_rate: float = 0.001,
     batch_size: int = 500,
     to_cuda: bool = False,
-) -> None:
+    output_dir: pathlib.Path | str = pathlib.Path("my-smee-fit"),
+) -> pathlib.Path:
     """Train force field parameters using molecular energy and force data.
 
     Optimizes force field parameters by minimizing the mean squared errors
@@ -465,15 +466,18 @@ def train_forcefield(
         Number of molecular configurations per batch (default: 500).
     to_cuda : bool, optional
         If True, run training on GPU. If False, use CPU (default: False).
+    output_dir : pathlib.Path | str, optional
+        Directory for saving training outputs (default: "my-smee-fit").
 
     Returns
     -------
-    None
+    pathlib.Path
+        Path to the final optimized force field file (final-force-field.pt).
 
     Notes
     -----
     Side effects:
-    - Creates my-smee-fit/ directory with TensorBoard logs
+    - Creates output_dir/ directory with TensorBoard logs
     - Saves force field checkpoints every 10 epochs as .pt files
     - Saves final optimized force field as final-force-field.pt
     - Logs training metrics (loss, RMSE) to TensorBoard
@@ -483,7 +487,7 @@ def train_forcefield(
 
     Examples
     --------
-    >>> train_forcefield(
+    >>> ff_path = train_forcefield(
     ...     "data-train",
     ...     "openff-2.2.1.offxml"
     ...     smee_ff,
@@ -580,7 +584,7 @@ def train_forcefield(
         force_field=smee_force_field, parameters=PARAMETERS, attributes={}
     )
 
-    directory = pathlib.Path("my-smee-fit")
+    directory = pathlib.Path(output_dir)
     directory.mkdir(exist_ok=True, parents=True)
 
     trainable_parameters = trainable.to_values()
@@ -655,28 +659,32 @@ def train_forcefield(
                     directory / f"force-field-epoch-{i}.pt",
                 )
 
-        logger.info(f'Saving {directory / "final-force-field.pt"}')
+        final_ff_path = directory / "final-force-field.pt"
+        logger.info(f"Saving {final_ff_path}")
         torch.save(
             trainable.to_force_field(trainable_parameters),
-            directory / "final-force-field.pt",
+            final_ff_path,
         )
+
+        return final_ff_path
 
 
 def write_new_offxml(
-    smee_force_field: smee.TensorForceField, offxml: pathlib.Path | str
+    offxml: pathlib.Path | str, optimized_ff_path: pathlib.Path | str
 ) -> None:
     """Convert optimized SMEE force field parameters to OFFXML format.
 
-    Takes the optimized parameters from a SMEE force field and writes them
-    back to an OpenFF OFFXML file, preserving the original force field
-    structure while updating the fitted parameters.
+    Loads the optimized force field from the specified path and writes the fitted
+    parameters back to an OpenFF OFFXML file, preserving the original force field
+    structure while updating only the fitted parameters.
 
     Parameters
     ----------
-    smee_force_field : smee.TensorForceField
-        Optimized SMEE force field tensor object containing fitted parameters.
     offxml : pathlib.Path | str
         Path to the reference OFFXML file used for output structure.
+        Must be the same OFFXML used during training.
+    optimized_ff_path : pathlib.Path | str
+        Path to the optimized SMEE force field .pt file.
 
     Returns
     -------
@@ -685,6 +693,7 @@ def write_new_offxml(
     Notes
     -----
     Side effects:
+    - Loads optimized force field from optimized_ff_path (must exist)
     - Creates final-force-field.offxml in current working directory
     - Updates parameters for Bonds, Angles, ProperTorsions, and ImproperTorsions
     - Preserves original force field structure and non-fitted parameters
@@ -696,62 +705,83 @@ def write_new_offxml(
 
     Examples
     --------
-    >>> write_new_offxml(optimized_smee_ff, "openff-2.2.1.offxml")
+    >>> write_new_offxml("openff-2.2.1.offxml")
+    >>> write_new_offxml("openff-2.2.1.offxml", "custom-dir/optimized-ff.pt")
     """
 
+    # Load the optimized force field that was saved during training
+    optimized_ff_path = pathlib.Path(optimized_ff_path)
+    logger.info(f"Loading optimized force field from: {optimized_ff_path}")
+
+    if not optimized_ff_path.exists():
+        raise FileNotFoundError(
+            f"Optimized force field not found at {optimized_ff_path}. "
+            "Ensure training has completed successfully."
+        )
+
+    smee_force_field = torch.load(optimized_ff_path)
+
     offxml = pathlib.Path(offxml)
-    logger.info("Writing out new forcefield...")
+    logger.info("Writing optimized parameters to new OFFXML force field...")
     starting_ff = ForceField(offxml)
 
     for potential in smee_force_field.potentials:
         handler_name = potential.parameter_keys[0].associated_handler
+        if handler_name is None:
+            logger.warning("Skipping potential with no associated handler")
+            continue
+
+        handler = starting_ff.get_parameter_handler(handler_name)
 
         parameter_attrs = potential.parameter_cols
         parameter_units = potential.parameter_units
 
-        if handler_name in ["Bonds", "Angles"]:
-            handler = starting_ff.get_parameter_handler(handler_name)
-            for i, opt_parameters in enumerate(potential.parameters):
-                smirks = potential.parameter_keys[i].id
-                ff_parameter = handler[smirks]
-                opt_parameters = opt_parameters.detach().cpu().numpy()
-                for j, (p, param_unit) in enumerate(
-                    zip(parameter_attrs, parameter_units)
-                ):
-                    setattr(ff_parameter, p, opt_parameters[j] * param_unit)
+        logger.info(f"Updating {len(potential.parameters)} {handler_name} parameters")
 
-        elif handler_name in ["ProperTorsions"]:
-            handler = starting_ff.get_parameter_handler(handler_name)
+        if handler_name in ["Bonds", "Angles"]:
+            # Update force constants and equilibrium values directly
+            for param_key, opt_parameters in zip(
+                potential.parameter_keys, potential.parameters
+            ):
+                ff_parameter = handler[param_key.id]
+                opt_parameters = opt_parameters.detach().cpu().numpy()
+
+                for param_name, param_value, param_unit in zip(
+                    parameter_attrs, opt_parameters, parameter_units
+                ):
+                    setattr(ff_parameter, param_name, param_value * param_unit)
+
+        elif handler_name == "ProperTorsions":
+            # Collect k values by periodicity for each SMIRKS pattern
             k_index = parameter_attrs.index("k")
             p_index = parameter_attrs.index("periodicity")
-            # we need to collect the k values into a list across the entries
             collection_data: dict[str, dict[int, float]] = defaultdict(dict)
-            for i, opt_parameters in enumerate(potential.parameters):
-                smirks = potential.parameter_keys[i].id
-                ff_parameter = handler[smirks]
-                opt_parameters = opt_parameters.detach().cpu().numpy()
-                # find k and the periodicity
-                k = opt_parameters[k_index] * parameter_units[k_index]
-                p = int(opt_parameters[p_index])
-                collection_data[smirks][p] = k
-            # now update the force field
-            for smirks, k_s in collection_data.items():
-                ff_parameter = handler[smirks]
-                k_mapped_to_p = [k_s[p] for p in ff_parameter.periodicity]
-                ff_parameter.k = k_mapped_to_p
 
-        elif handler_name in ["ImproperTorsions"]:
-            k_index = parameter_attrs.index("k")
-            handler = starting_ff.get_parameter_handler(handler_name)
-            # we only fit the v2 terms for improper torsions so convert to list and set
-            for i, opt_parameters in enumerate(potential.parameters):
-                smirks = potential.parameter_keys[i].id
+            for param_key, opt_parameters in zip(
+                potential.parameter_keys, potential.parameters
+            ):
+                opt_parameters = opt_parameters.detach().cpu().numpy()
+                k = opt_parameters[k_index] * parameter_units[k_index]
+                periodicity = int(opt_parameters[p_index])
+                collection_data[param_key.id][periodicity] = k
+
+            # Update force field with collected k values
+            for smirks, k_by_periodicity in collection_data.items():
                 ff_parameter = handler[smirks]
+                ff_parameter.k = [k_by_periodicity[p] for p in ff_parameter.periodicity]
+
+        elif handler_name == "ImproperTorsions":
+            # Only fit v2 terms for improper torsions
+            k_index = parameter_attrs.index("k")
+            for param_key, opt_parameters in zip(
+                potential.parameter_keys, potential.parameters
+            ):
+                ff_parameter = handler[param_key.id]
                 opt_parameters = opt_parameters.detach().cpu().numpy()
                 ff_parameter.k = [opt_parameters[k_index] * parameter_units[k_index]]
 
     filename = "final-force-field.offxml"
-    logger.info(f"Saving new forcefield to: {filename}")
+    logger.info(f"Saving optimized force field to: {filename}")
     starting_ff.to_file(filename)
 
 
@@ -833,7 +863,9 @@ def main(
     smee_force_field, topologies = load_smee_outputs(
         filename_ff, filename_topo, to_cuda=to_cuda
     )
-    train_forcefield(
+
+    # Train force field and get path to optimized parameters
+    optimized_ff_path = train_forcefield(
         filename_data,
         offxml,
         smee_force_field,
@@ -843,7 +875,9 @@ def main(
         batch_size=batch_size,
         to_cuda=to_cuda,
     )
-    write_new_offxml(smee_force_field, offxml)
+
+    # Convert optimized force field to OFFXML format
+    write_new_offxml(offxml, optimized_ff_path)
 
 
 if __name__ == "__main__":
