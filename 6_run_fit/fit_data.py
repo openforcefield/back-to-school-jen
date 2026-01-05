@@ -723,7 +723,7 @@ def write_new_offxml(
 
     offxml = pathlib.Path(offxml)
     logger.info("Writing optimized parameters to new OFFXML force field...")
-    starting_ff = ForceField(offxml)
+    starting_ff = ForceField(str(offxml))
 
     for potential in smee_force_field.potentials:
         handler_name = potential.parameter_keys[0].associated_handler
@@ -731,7 +731,11 @@ def write_new_offxml(
             logger.warning("Skipping potential with no associated handler")
             continue
 
-        handler = starting_ff.get_parameter_handler(handler_name)
+        try:
+            handler = starting_ff.get_parameter_handler(handler_name)
+        except Exception:
+            logger.warning(f"Handler {handler_name} not found in force field, skipping")
+            continue
 
         parameter_attrs = potential.parameter_cols
         parameter_units = potential.parameter_units
