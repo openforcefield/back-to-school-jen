@@ -64,7 +64,6 @@ def write_new_offxml(
             collection_data: dict[str, dict[int, float]] = defaultdict(dict)
             for i, opt_parameters in enumerate(potential.parameters):
                 smirks = potential.parameter_keys[i].id
-                ff_parameter = handler[smirks]
                 opt_parameters = opt_parameters.detach().cpu().numpy()
                 k = opt_parameters[k_index] * parameter_units[k_index]
                 p = int(opt_parameters[p_index])
