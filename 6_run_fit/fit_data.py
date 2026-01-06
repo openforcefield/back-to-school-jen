@@ -1,9 +1,7 @@
 """Force field parameter optimization using molecular datasets.
 
 This module prepares data for use in parametrization with SMEE. The workflow includes
-loading pre-prepared SMEE force fields and topologies, and exporting them as .pkl files.
-
-Note that for improper torsions we only fit the v2 terms
+loading pre-prepared SMEE force fields and topologies that have been exported as .pkl files.
 
 Command-line Arguments
 ----------------------
@@ -25,6 +23,9 @@ Command-line Arguments
     Learning rate for Adam optimizer (default: 0.001).
 --batch-size : int, optional
     Batch size for training (default: 500).
+--to_cuda : bool, optional
+    If true, the pytorch objects for the force field and topology objects are
+    converted to be GPU compatible (default: False).
 
 Examples
 --------
@@ -79,32 +80,226 @@ import descent.train
 import descent.targets
 import descent.targets.energy
 from loguru import logger
+import numpy as np
 
 import tensorboardX
 import more_itertools
 
 from openff.toolkit import ForceField
+from openff.units import unit
 
-PARAMETERS = {
-    "Bonds": descent.train.ParameterConfig(
-        cols=["k", "length"],
-        scales={"k": 1e-2, "length": 1.0},  # normalize so roughly equal
-        limits={"k": [0.0, None], "length": [0.0, None]},
-        # the include/exclude types are Interchange PotentialKey.id's -- typically SMIRKS
-        # include=[], <-- bonds to train. Not specifying trains all
-        # exclude=[], <-- bonds NOT to train
-    ),
-    #    "Angles": descent.train.ParameterConfig(
-    #        cols=["k", "angle"],
-    #        scales={"k": 1e-2, "angle": 1.0},
-    #        limits={"k": [0.0, None], "angle": [0.0, math.pi]},
-    #    ),
-}
+
+def get_parameter_col_values(
+    ff: ForceField, parameter_type: str, parameter_cols: list[str]
+) -> dict:
+    """Return column-wise numeric values for a given parameter handler in an OFF force field.
+
+    Parameters
+    ----------
+    ff : ForceField
+        OpenFF ForceField instance to inspect.
+    parameter_type : str
+        Name of the parameter handler (e.g. "Bonds", "Angles", "ProperTorsions").
+    parameter_cols : list[str]
+        Column/attribute names to extract from each parameter (e.g. ["k", "length"]).
+
+    Returns
+    -------
+    dict[str, list[float]]
+        Mapping from each requested column name to a list of numeric values found in the
+        force field. Missing handlers or missing values result in empty lists for the
+        corresponding keys.
+
+    Notes
+    -----
+    - Scalars and single-element lists are converted to floats. Multi-valued attributes
+      (e.g. lists of k values for torsions) will have each entry appended separately.
+    """
+    values: dict = {k: [] for k in parameter_cols}
+    for parameter in ff.get_parameter_handler(parameter_type).parameters:
+        for parameter_col in parameter_cols:
+            val = getattr(parameter, parameter_col)
+            if val is not None:
+                values[parameter_col].append(val)
+    return values
+
+
+def _mean_vals(vals):
+    nums = []
+    for x in vals:
+        # pint.Quantity
+        if hasattr(x, "m"):
+            nums.append(x.m)
+        elif hasattr(x, "magnitude"):
+            nums.append(x.magnitude)
+        # iterable (ValidatedList, list, tuple, ...)
+        elif hasattr(x, "__iter__") and not isinstance(x, (str, bytes)):
+            for y in x:
+                nums.append(getattr(y, "m", getattr(y, "magnitude", y)))
+        # plain numeric
+        else:
+            nums.append(x)
+    return float(np.mean(nums))
+
+
+def get_parameter_scales(offxml: str) -> dict[str, dict[str, float]]:
+    """Compute scaling factors for force field parameters using SMEE's internal units.
+
+    Extracts parameter values from an OFFXML force field and converts them to
+    SMEE's internal unit system before computing scaling factors (1/mean).
+    This ensures that scaling factors match the units used during optimization.
+
+    Parameters
+    ----------
+    offxml : pathlib.Path | str
+        Path to an OFFXML file or a force field identifier that can be loaded by
+        openff.toolkit.ForceField.
+
+    Returns
+    -------
+    dict[str, dict[str, float]]
+        Mapping from parameter handler name to a dict of scaling factors.
+        Example: {"Bonds": {"k": 0.0018, "length": 0.64}, "Angles": {"k": 0.0086, "angle": 0.497}}
+
+    Notes
+    -----
+    SMEE internal units (from smee/converters/openff/valence.py):
+    - Bonds: k in kcal/(mol·Å²), length in Å
+    - Angles: k in kcal/(mol·rad²), angle in radians
+    - ProperTorsions: k in kcal/mol
+    - ImproperTorsions: k in kcal/mol
+    """
+    # SMEE default units from smee/converters/openff/valence.py
+    # _ANGSTROM = openff.units.unit.angstrom
+    # _RADIANS = openff.units.unit.radians
+    # _KCAL_PER_MOL = openff.units.unit.kilocalories / openff.units.unit.mole
+    SMEE_UNITS = {
+        "Bonds": {
+            "k": unit.kilocalorie_per_mole / unit.angstrom**2,
+            "length": unit.angstrom,
+        },
+        "Angles": {
+            "k": unit.kilocalorie_per_mole / unit.radian**2,
+            "angle": unit.radian,
+        },
+    }
+
+    PARAMETER_COLS = {
+        "Bonds": ["k", "length"],
+        "Angles": ["k", "angle"],
+    }
+    ff = ForceField(offxml)
+
+    scales = {}
+    for parameter_type, parameter_cols in PARAMETER_COLS.items():
+        logger.info(f"Processing scales for parameter type: {parameter_type}")
+        values = get_parameter_col_values(ff, parameter_type, parameter_cols)
+
+        # Convert all parameters to SMEE's internal units
+        if parameter_type in SMEE_UNITS:
+            for param_name, target_unit in SMEE_UNITS[parameter_type].items():
+                if param_name in values:
+                    values[param_name] = [
+                        val.to(target_unit) if hasattr(val, "to") else val
+                        for val in values[param_name]
+                    ]
+        else:
+            raise ValueError(f"Parameter type, {parameter_type}, is unknown.")
+
+        scales[parameter_type] = {
+            param: 1 / _mean_vals(vals) for param, vals in values.items()
+        }
+        logger.info(f"Scaling values for {parameter_type}: {scales[parameter_type]}\n")
+    return scales
+
+
+def get_parameter_limits() -> dict[str, dict[str, tuple[float | None, float | None]]]:
+    """Get parameter limits in SMEE's internal unit system.
+
+    Returns physically reasonable bounds for force field parameters during optimization.
+    All limits are specified in SMEE's internal units to match the optimization space.
+
+    Returns
+    -------
+    dict[str, dict[str, tuple[float, float | None]]]
+        Mapping from parameter handler name to parameter limits.
+        Tuple format: (lower_bound, upper_bound), where None means no upper bound.
+
+    Notes
+    -----
+    SMEE internal units and typical ranges:
+    - Bonds:
+        - k: [0, ∞) kcal/(mol·Å²) - force constant must be positive
+        - length: [0, ∞) Å - bond length must be positive
+    - Angles:
+        - k: [0, ∞) kcal/(mol·rad²) - force constant must be positive
+        - angle: [0, π] radians - equilibrium angle range
+    - ProperTorsions:
+        - k: (-∞, ∞) kcal/mol - can be positive or negative
+    - ImproperTorsions:
+        - k: [0, ∞) kcal/mol - typically positive
+
+    Examples
+    --------
+    >>> limits = get_parameter_limits()
+    >>> limits["Angles"]["angle"]
+    (0.0, 3.141592653589793)
+    """
+    return {
+        "Bonds": {
+            "k": (0.0, None),  # kcal/(mol·Å²), must be positive
+            "length": (0.0, None),  # Å, must be positive
+        },
+        "Angles": {
+            "k": (0.0, None),  # kcal/(mol·rad²), must be positive
+            "angle": (0.0, math.pi),  # radians, 0 to π
+        },
+        "ProperTorsions": {
+            "k": (None, None),  # kcal/mol, can be any value
+        },
+        "ImproperTorsions": {
+            "k": (0.0, None),  # kcal/mol, typically positive
+        },
+    }
+
+
+def prepare_batch_for_device(batch: datasets.Dataset, device_str: str) -> list:
+    """Prepare a batch for the target device (CPU or CUDA).
+
+    Converts coordinate, energy, and force tensors to the specified device
+    before passing to descent.targets.energy.predict().
+
+    Parameters
+    ----------
+    batch : datasets.Dataset
+        Batch of molecular data from HuggingFace dataset.
+    device_str : str
+        Target device string ("cpu" or "cuda").
+
+    Returns
+    -------
+    list
+        List of entries with tensors moved to the target device.
+    """
+    device_batch = []
+    for entry in batch:
+        entry_copy = {}
+        for key, value in entry.items():
+            if key in ["coords", "energy", "forces"]:
+                if isinstance(value, torch.Tensor):
+                    entry_copy[key] = value.to(device_str)
+                else:
+                    entry_copy[key] = torch.tensor(value, device=device_str)
+            else:
+                entry_copy[key] = value
+        device_batch.append(entry_copy)
+    return device_batch
 
 
 def load_smee_outputs(
     filename_ff: pathlib.Path | str,
     filename_topo: pathlib.Path | str,
+    to_cuda: bool = False,
 ) -> tuple[smee.TensorForceField, dict[str, smee.TensorTopology]]:
     """Load SMEE force field and topologies from pickle files.
 
@@ -114,6 +309,9 @@ def load_smee_outputs(
         Path to saved SMEE force field .pkl file.
     filename_topo : pathlib.Path | str
         Path to saved SMEE topologies .pkl file.
+    to_cuda : bool
+        If true, the pytorch objects for the force field and topology objects are
+        converted to be GPU compatible (default: False).
 
     Returns
     -------
@@ -165,6 +363,14 @@ def load_smee_outputs(
             f"Unsupported file format for topologies: {filename_topo.suffix}"
         )
 
+    # Always explicitly move to the target device to ensure consistency
+    # This handles cases where .pkl files were saved with tensors on a different device
+    target_device = "cuda" if to_cuda else "cpu"
+    smee_ff = smee_ff.to(target_device)
+    topologies = {
+        smiles: topology.to(target_device) for smiles, topology in topologies.items()
+    }
+
     return smee_ff, topologies
 
 
@@ -212,7 +418,7 @@ def write_metrics(
     >>> with tensorboardX.SummaryWriter("logs") as writer:
     ...     write_metrics(10, epoch_loss, energy_loss, force_loss, writer)
     """
-    print(f"epoch={epoch} loss={loss.detach().item():.6f}", flush=True)
+    logger.info(f"epoch={epoch} loss={loss.detach().item():.6f}", flush=True)
 
     writer.add_scalar("loss", loss.detach().item(), epoch)
     writer.add_scalar("loss_energy", loss_energy.detach().item(), epoch)
@@ -225,12 +431,15 @@ def write_metrics(
 
 def train_forcefield(
     train_filename_data: pathlib.Path | str,
+    offxml: pathlib.Path | str,
     smee_force_field: smee.TensorForceField,
     topologies: dict[str, smee.TensorTopology],
     n_epochs: int = 1000,
     learning_rate: float = 0.001,
     batch_size: int = 500,
-) -> None:
+    to_cuda: bool = False,
+    output_dir: pathlib.Path | str = pathlib.Path("my-smee-fit"),
+) -> pathlib.Path:
     """Train force field parameters using molecular energy and force data.
 
     Optimizes force field parameters by minimizing the mean squared errors
@@ -243,6 +452,8 @@ def train_forcefield(
     train_filename_data : pathlib.Path | str
         Path to directory containing training dataset in HuggingFace format.
         Must contain dataset_info.json, state.json, and .arrow files.
+    offxml : pathlib.Path | str
+        Path to the force field file.
     smee_force_field : smee.TensorForceField
         SMEE force field tensor object with parameters to optimize.
     topologies : dict[str, smee.TensorTopology]
@@ -253,15 +464,20 @@ def train_forcefield(
         Learning rate for Adam optimizer (default: 0.001).
     batch_size : int, optional
         Number of molecular configurations per batch (default: 500).
+    to_cuda : bool, optional
+        If True, run training on GPU. If False, use CPU (default: False).
+    output_dir : pathlib.Path | str, optional
+        Directory for saving training outputs (default: "my-smee-fit").
 
     Returns
     -------
-    None
+    pathlib.Path
+        Path to the final optimized force field file (final-force-field.pt).
 
     Notes
     -----
     Side effects:
-    - Creates my-smee-fit/ directory with TensorBoard logs
+    - Creates output_dir/ directory with TensorBoard logs
     - Saves force field checkpoints every 10 epochs as .pt files
     - Saves final optimized force field as final-force-field.pt
     - Logs training metrics (loss, RMSE) to TensorBoard
@@ -271,8 +487,9 @@ def train_forcefield(
 
     Examples
     --------
-    >>> train_forcefield(
+    >>> ff_path = train_forcefield(
     ...     "data-train",
+    ...     "openff-2.2.1.offxml"
     ...     smee_ff,
     ...     topologies,
     ...     n_epochs=500,
@@ -284,15 +501,93 @@ def train_forcefield(
     logger.info(f"Loading dataset from: {train_filename_data.resolve()}")
     dataset = datasets.Dataset.load_from_disk(train_filename_data)
 
+    # Validate that all SMILES in the dataset have corresponding topologies
+    dataset_smiles = set(entry["smiles"] for entry in dataset)
+    topology_smiles = set(topologies.keys())
+    missing_smiles = dataset_smiles - topology_smiles
+
+    if missing_smiles:
+        logger.warning(
+            f"Found {len(missing_smiles)} SMILES in dataset without matching topologies. "
+            f"These molecules will be excluded from training."
+        )
+        for smiles in list(missing_smiles)[:5]:  # Log first 5 missing
+            logger.debug(f"Missing topology for SMILES: {smiles}")
+        if len(missing_smiles) > 5:
+            logger.debug(f"... and {len(missing_smiles) - 5} more missing SMILES")
+
+        # Filter dataset to only include molecules with topologies
+        original_size = len(dataset)
+        dataset = dataset.filter(
+            lambda example: example["smiles"] in topology_smiles,
+            desc="Filtering molecules with topologies",
+        )
+        logger.info(
+            f"Dataset filtered: {original_size} -> {len(dataset)} molecules "
+            f"({len(dataset)/original_size*100:.1f}% retained)"
+        )
+
+        if len(dataset) == 0:
+            raise ValueError(
+                "No molecules remaining after filtering! Check that the topology "
+                "dictionary was generated from the same dataset."
+            )
+
+    # Determine target device - use CPU by default for consistency
+    # The trainable will create parameters on the same device as the force field
+    # Use string device specifier for compatibility with smee's .to() method
+    device_str = "cuda" if to_cuda else "cpu"
+    device = torch.device(device_str)
+
+    # Ensure force field and topologies are on the target device before creating Trainable
+    smee_force_field = smee_force_field.to(device_str)
+    topologies = {
+        smiles: topology.to(device_str) for smiles, topology in topologies.items()
+    }
+
+    logger.info(f"Using device: {device_str}")
+
+    # Verify topologies are on the correct device
+    for smiles, topo in list(topologies.items())[:1]:  # Check first topology
+        for potential in smee_force_field.potentials:
+            handler = potential.parameter_keys[0].associated_handler
+            if hasattr(topo, "parameters") and handler in topo.parameters:
+                param_map = topo.parameters[handler]
+                if (
+                    hasattr(param_map, "particle_idxs")
+                    and param_map.particle_idxs is not None
+                ):
+                    logger.info(
+                        f"Topology {handler} particle_idxs device: {param_map.particle_idxs.device}"
+                    )
+
+    scale_mean_parameter_values = get_parameter_scales(str(offxml))
+    parameter_limits = get_parameter_limits()
+
+    PARAMETERS = {
+        "Bonds": descent.train.ParameterConfig(
+            cols=["k", "length"],
+            scales=scale_mean_parameter_values["Bonds"],
+            limits=parameter_limits["Bonds"],
+            include=[],
+            exclude=[],
+        ),
+        "Angles": descent.train.ParameterConfig(
+            cols=["k", "angle"],
+            scales=scale_mean_parameter_values["Angles"],
+            limits=parameter_limits["Angles"],
+            include=[],
+            exclude=[],
+        ),
+    }
     trainable = descent.train.Trainable(
         force_field=smee_force_field, parameters=PARAMETERS, attributes={}
     )
 
-    directory = pathlib.Path("my-smee-fit")
+    directory = pathlib.Path(output_dir)
     directory.mkdir(exist_ok=True, parents=True)
 
     trainable_parameters = trainable.to_values()
-    device = trainable_parameters.device.type
 
     logger.info("Start training...")
     with tensorboardX.SummaryWriter(str(directory)) as writer:
@@ -302,7 +597,8 @@ def train_forcefield(
         dataset_indices = list(range(len(dataset)))
 
         for i in range(n_epochs):
-            ff = trainable.to_force_field(trainable_parameters)
+            ff = trainable.to_force_field(trainable_parameters).to(device_str)
+
             epoch_loss = torch.zeros(size=(1,), device=device)
             energy_loss = torch.zeros(size=(1,), device=device)
             force_loss = torch.zeros(size=(1,), device=device)
@@ -315,11 +611,13 @@ def train_forcefield(
                 total=math.ceil(len(dataset) / batch_size),
             ):
                 batch = dataset.select(indices=batch_ids)
+                # Prepare batch for the target device (CPU or CUDA)
+                device_batch = prepare_batch_for_device(batch, device_str)
                 true_batch_size = len(
                     dataset
                 )  # because loss between batches are combined
                 e_ref, e_pred, f_ref, f_pred = descent.targets.energy.predict(
-                    batch, ff, topologies, "mean"
+                    device_batch, ff, topologies, "mean"
                 )
                 # L2 loss
                 batch_loss_energy = ((e_pred - e_ref) ** 2).sum() / true_batch_size
@@ -361,28 +659,32 @@ def train_forcefield(
                     directory / f"force-field-epoch-{i}.pt",
                 )
 
-        logger.info(f"Saving {directory / "final-force-field.pt"}")
+        final_ff_path = directory / "final-force-field.pt"
+        logger.info(f"Saving {final_ff_path}")
         torch.save(
             trainable.to_force_field(trainable_parameters),
-            directory / "final-force-field.pt",
+            final_ff_path,
         )
+
+        return final_ff_path
 
 
 def write_new_offxml(
-    smee_force_field: smee.TensorForceField, offxml: pathlib.Path | str
+    offxml: pathlib.Path | str, optimized_ff_path: pathlib.Path | str
 ) -> None:
     """Convert optimized SMEE force field parameters to OFFXML format.
 
-    Takes the optimized parameters from a SMEE force field and writes them
-    back to an OpenFF OFFXML file, preserving the original force field
-    structure while updating the fitted parameters.
+    Loads the optimized force field from the specified path and writes the fitted
+    parameters back to an OpenFF OFFXML file, preserving the original force field
+    structure while updating only the fitted parameters.
 
     Parameters
     ----------
-    smee_force_field : smee.TensorForceField
-        Optimized SMEE force field tensor object containing fitted parameters.
     offxml : pathlib.Path | str
         Path to the reference OFFXML file used for output structure.
+        Must be the same OFFXML used during training.
+    optimized_ff_path : pathlib.Path | str
+        Path to the optimized SMEE force field .pt file.
 
     Returns
     -------
@@ -391,6 +693,7 @@ def write_new_offxml(
     Notes
     -----
     Side effects:
+    - Loads optimized force field from optimized_ff_path (must exist)
     - Creates final-force-field.offxml in current working directory
     - Updates parameters for Bonds, Angles, ProperTorsions, and ImproperTorsions
     - Preserves original force field structure and non-fitted parameters
@@ -402,60 +705,87 @@ def write_new_offxml(
 
     Examples
     --------
-    >>> write_new_offxml(optimized_smee_ff, "openff-2.2.1.offxml")
+    >>> write_new_offxml("openff-2.2.1.offxml")
+    >>> write_new_offxml("openff-2.2.1.offxml", "custom-dir/optimized-ff.pt")
     """
 
+    # Load the optimized force field that was saved during training
+    optimized_ff_path = pathlib.Path(optimized_ff_path)
+    logger.info(f"Loading optimized force field from: {optimized_ff_path}")
+
+    if not optimized_ff_path.exists():
+        raise FileNotFoundError(
+            f"Optimized force field not found at {optimized_ff_path}. "
+            "Ensure training has completed successfully."
+        )
+
+    smee_force_field = torch.load(optimized_ff_path)
+
     offxml = pathlib.Path(offxml)
-    logger.info("Writing out new forcefield...")
-    starting_ff = ForceField(offxml)
+    logger.info("Writing optimized parameters to new OFFXML force field...")
+    starting_ff = ForceField(str(offxml))
 
     for potential in smee_force_field.potentials:
         handler_name = potential.parameter_keys[0].associated_handler
+        if handler_name is None:
+            logger.warning("Skipping potential with no associated handler")
+            continue
+
+        try:
+            handler = starting_ff.get_parameter_handler(handler_name)
+        except Exception:
+            logger.warning(f"Handler {handler_name} not found in force field, skipping")
+            continue
 
         parameter_attrs = potential.parameter_cols
         parameter_units = potential.parameter_units
 
-        if handler_name in ["Bonds", "Angles"]:
-            handler = starting_ff.get_parameter_handler(handler_name)
-            for i, opt_parameters in enumerate(potential.parameters):
-                smirks = potential.parameter_keys[i].id
-                ff_parameter = handler[smirks]
-                opt_parameters = opt_parameters.detach().cpu().numpy()
-                for j, (p, unit) in enumerate(zip(parameter_attrs, parameter_units)):
-                    setattr(ff_parameter, p, opt_parameters[j] * unit)
+        logger.info(f"Updating {len(potential.parameters)} {handler_name} parameters")
 
-        elif handler_name in ["ProperTorsions"]:
-            handler = starting_ff.get_parameter_handler(handler_name)
+        if handler_name in ["Bonds", "Angles"]:
+            # Update force constants and equilibrium values directly
+            for param_key, opt_parameters in zip(
+                potential.parameter_keys, potential.parameters
+            ):
+                ff_parameter = handler[param_key.id]
+                opt_parameters = opt_parameters.detach().cpu().numpy()
+
+                for param_name, param_value, param_unit in zip(
+                    parameter_attrs, opt_parameters, parameter_units
+                ):
+                    setattr(ff_parameter, param_name, param_value * param_unit)
+
+        elif handler_name == "ProperTorsions":
+            # Collect k values by periodicity for each SMIRKS pattern
             k_index = parameter_attrs.index("k")
             p_index = parameter_attrs.index("periodicity")
-            # we need to collect the k values into a list across the entries
             collection_data: dict[str, dict[int, float]] = defaultdict(dict)
-            for i, opt_parameters in enumerate(potential.parameters):
-                smirks = potential.parameter_keys[i].id
-                ff_parameter = handler[smirks]
-                opt_parameters = opt_parameters.detach().cpu().numpy()
-                # find k and the periodicity
-                k = opt_parameters[k_index] * parameter_units[k_index]
-                p = int(opt_parameters[p_index])
-                collection_data[smirks][p] = k
-            # now update the force field
-            for smirks, k_s in collection_data.items():
-                ff_parameter = handler[smirks]
-                k_mapped_to_p = [k_s[p] for p in ff_parameter.periodicity]
-                ff_parameter.k = k_mapped_to_p
 
-        elif handler_name in ["ImproperTorsions"]:
-            k_index = parameter_attrs.index("k")
-            handler = starting_ff.get_parameter_handler(handler_name)
-            # we only fit the v2 terms for improper torsions so convert to list and set
-            for i, opt_parameters in enumerate(potential.parameters):
-                smirks = potential.parameter_keys[i].id
+            for param_key, opt_parameters in zip(
+                potential.parameter_keys, potential.parameters
+            ):
+                opt_parameters = opt_parameters.detach().cpu().numpy()
+                k = opt_parameters[k_index] * parameter_units[k_index]
+                periodicity = int(opt_parameters[p_index])
+                collection_data[param_key.id][periodicity] = k
+
+            # Update force field with collected k values
+            for smirks, k_by_periodicity in collection_data.items():
                 ff_parameter = handler[smirks]
+                ff_parameter.k = [k_by_periodicity[p] for p in ff_parameter.periodicity]
+
+        elif handler_name == "ImproperTorsions":
+            # Only fit v2 terms for improper torsions
+            k_index = parameter_attrs.index("k")
+            for param_key, opt_parameters in zip(
+                potential.parameter_keys, potential.parameters
+            ):
+                ff_parameter = handler[param_key.id]
                 opt_parameters = opt_parameters.detach().cpu().numpy()
                 ff_parameter.k = [opt_parameters[k_index] * parameter_units[k_index]]
 
     filename = "final-force-field.offxml"
-    logger.info(f"Saving new forcefield to: {filename}")
+    logger.info(f"Saving optimized force field to: {filename}")
     starting_ff.to_file(filename)
 
 
@@ -467,6 +797,7 @@ def main(
     n_epochs: int = 1000,
     learning_rate: float = 0.001,
     batch_size: int = 500,
+    to_cuda: bool = False,
 ) -> None:
     """Main workflow for force field parameter optimization.
 
@@ -492,6 +823,9 @@ def main(
         (default: 0.001).
     batch_size : int, optional
         Batch size for training (default: 500).
+    to_cuda : bool
+        If true, the pytorch objects for the force field and topology objects are
+        converted to be GPU compatible (default: False).
 
     Returns
     -------
@@ -530,16 +864,24 @@ def main(
     """
     filename_data = pathlib.Path(filename_data)
     offxml = pathlib.Path(offxml)
-    smee_force_field, topologies = load_smee_outputs(filename_ff, filename_topo)
-    train_forcefield(
+    smee_force_field, topologies = load_smee_outputs(
+        filename_ff, filename_topo, to_cuda=to_cuda
+    )
+
+    # Train force field and get path to optimized parameters
+    optimized_ff_path = train_forcefield(
         filename_data,
+        offxml,
         smee_force_field,
         topologies,
         n_epochs=n_epochs,
         learning_rate=learning_rate,
         batch_size=batch_size,
+        to_cuda=to_cuda,
     )
-    write_new_offxml(smee_force_field, offxml)
+
+    # Convert optimized force field to OFFXML format
+    write_new_offxml(offxml, optimized_ff_path)
 
 
 if __name__ == "__main__":
@@ -593,6 +935,12 @@ Examples:
         default=500,
         help="Batch size",
     )
+    parser.add_argument(
+        "--to-cuda",
+        type=bool,
+        default=False,
+        help="Whether to convert pytorch data to be formatted for GPUs",
+    )
     args = parser.parse_args()
     main(
         args.data_dir,
@@ -602,4 +950,5 @@ Examples:
         n_epochs=args.n_epochs,
         learning_rate=args.learning_rate,
         batch_size=args.batch_size,
+        to_cuda=args.to_cuda,
     )
