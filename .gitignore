@@ -57,6 +57,10 @@ coverage.xml
 *.cover
 .hypothesis/
 
+# Tensorflow
+*.tfevents.*
+*.pt
+
 # Translations
 *.mo
 *.pot
