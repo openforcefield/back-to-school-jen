@@ -36,5 +36,5 @@ python ../fit_data.py --data-dir "../../3_split_train_test/full_split_uci/data-t
                       --filename-topo-dict "../../5_setup_train_ff_topologies/2025_09_11_uci_full_split/smee_topology_dict.pkl" \
                       --offxml "../../forcefields/openff_unconstrained-2.3.0-rc2.offxml" \
                       --n-epochs 300 \
-		      --to-cuda true \
+                      --to-cuda true \
                       --learning-rate 0.015 2>&1 | tee log.txt
