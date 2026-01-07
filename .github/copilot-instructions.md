@@ -45,7 +45,6 @@ For scripts with CLI:
 - Shell script (*.sh) should accompany Python script showing example usage
 
 ### Shell Scripts (*.sh)
-- Document purpose at top of file (comment block)
 - Include conda environment activation if applicable
 - Use clear variable names
 - Paths should be configurable or clearly documented
