@@ -23,21 +23,21 @@ This document provides automated review guidelines for GitHub Copilot when revie
 
 ## 2. Documentation Consistency Checks
 
-### Module-Level Documentation
-For each **Python script**, verify:
+### Module-Level Documentation in Python scripts (*.py)
+For each **Python script (*.py)**, verify:
 - **Module docstring** present at the top describing overall functionality
 - **Script purpose** clearly stated (what problem does it solve?)
 - **Input/output behavior** documented
 - If script writes custom JSON/CSV/other files, **schema must be documented** in docstring or README
 
-### Function Documentation
+### Function Documentation in Python scripts (*.py)
 For each **function** in Python scripts:
 - **Function docstring** present with description of purpose
 - **Parameters** documented (type hints preferred)
 - **Return values** documented
 - **Side effects** noted (e.g., writes files, modifies global state)
 
-### Command-Line Interface
+### Command-Line Interface in Python scripts (*.py)
 For scripts with CLI:
 - Must use **`click`**, **`argparse`**, or similar interface (flag if hard-coded paths detected)
 - Each input/output argument must have a **description** in help text
@@ -45,7 +45,6 @@ For scripts with CLI:
 - Shell script (*.sh) should accompany Python script showing example usage
 
 ### Shell Scripts (*.sh)
-- Document purpose at top of file (comment block)
 - Include conda environment activation if applicable
 - Use clear variable names
 - Paths should be configurable or clearly documented

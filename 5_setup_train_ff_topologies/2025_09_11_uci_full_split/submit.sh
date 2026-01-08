@@ -17,11 +17,11 @@ hn=`hostname`
 echo "Running job on host $hn"
 
 source ~/.bashrc
-micromamba activate descent-workflow
+mamba activate bts
 
 # Setup and save topologies for fitting
 python -u ../setup_train_ff_topo.py --data-dir "../../3_split_train_test/full_split_uci/data-train" \
-                                    --offxml "/dfs9/dmobley-lab/jclark9/descent/openff-2.2.1.offxml" \
+                                    --offxml "../../forcefields/openff_unconstrained-2.3.0-rc2.offxml" \
                                     --file-format "pkl" \
                                     --device "cpu" \
 			            --n-cpus $SLURM_CPUS_ON_NODE \
