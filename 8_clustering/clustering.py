@@ -92,6 +92,7 @@ import pathlib
 from typing import cast
 
 import hdbscan
+import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 from loguru import logger
@@ -410,7 +411,7 @@ def plot_and_cluster(
     # Plot
     fig, ax = plt.subplots(figsize=(8, 6))
     sorted_labels = list(sorted(set(labels)))
-    colors = plt.cm.get_cmap("nipy_spectral")(
+    colors = matplotlib.colormaps.get_cmap("nipy_spectral")(
         np.linspace(0, 1, max(1, len(sorted_labels)))
     )
 
