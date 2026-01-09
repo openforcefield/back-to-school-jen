@@ -1,0 +1,123 @@
+Thu Jan  8 06:29:23 AM PST 2026
+Running job on host hpc3-21-12
+2026-01-08 06:29:30.631 | INFO     | __main__:main:723 - Benchmarking force field: OpenFF-2.3.0-rc2 SMEE-SPICE
+2026-01-08 06:29:30.632 | INFO     | __main__:load_qcarchive_dataset:119 - Loading QCArchive dataset from: /data/homezvol2/jclark9/bin/yammbs-dataset-submission/datasets/OpenFF-Industry-Benchmark-Season-1-v1.2/cache.json
+2026-01-08 06:29:33.673 | INFO     | __main__:load_qcarchive_dataset:128 - Loaded 63063 QM molecules (QCArchiveDataset format)
+2026-01-08 06:29:33.673 | INFO     | __main__:get_or_create_store:185 - Loading existing database: benchmark.sqlite
+2026-01-08 06:29:33.707 | INFO     | __main__:run_benchmark:216 - Running MM optimizations with force field: ../../6_run_fit/0_openff_2.3-rc2/final-force-field.offxml
+2026-01-08 06:29:33.708 | INFO     | __main__:run_benchmark:217 - Using 32 parallel processes
+Building and minimizing systems with ../../6_run_fit/0_openff_2.3-rc2/final-force-field.offxml:   0%|          | 0/15 [00:00<?, ?it/s]WARNING:yammbs._minimize:Skipping record 37014700 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 37014703 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 37014701 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 37014702 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 37014704 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955694 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955695 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955696 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955697 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955698 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955701 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955699 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955702 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955703 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955700 with unassigned valence terms
+Building and minimizing systems with ../../6_run_fit/0_openff_2.3-rc2/final-force-field.offxml:   7%|▋         | 1/15 [00:00<00:12,  1.16it/s]Building and minimizing systems with ../../6_run_fit/0_openff_2.3-rc2/final-force-field.offxml: 100%|██████████| 15/15 [00:00<00:00, 17.35it/s]
+2026-01-08 09:31:00.163 | INFO     | __main__:run_benchmark:221 - MM optimizations complete
+2026-01-08 09:31:00.163 | INFO     | __main__:get_metrics:243 - Computing benchmark metrics...
+Building and minimizing systems with OpenFF-2.2.1 SMEE-SPICE:   0%|          | 0/15 [00:00<?, ?it/s]WARNING:yammbs._minimize:Skipping record 37014700 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 37014703 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 37014701 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 37014702 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 37014704 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955694 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955695 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955696 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955697 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955698 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955701 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955699 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955702 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955703 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955700 with unassigned valence terms
+Building and minimizing systems with OpenFF-2.2.1 SMEE-SPICE:   7%|▋         | 1/15 [00:01<00:15,  1.09s/it]Building and minimizing systems with OpenFF-2.2.1 SMEE-SPICE: 100%|██████████| 15/15 [00:01<00:00, 13.70it/s]
+Building and minimizing systems with OpenFF-2.2.1 SMEE-SPICE:   0%|          | 0/15 [00:00<?, ?it/s]WARNING:yammbs._minimize:Skipping record 37014700 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 37014703 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 37014701 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 37014702 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 37014704 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955694 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955695 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955696 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955697 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955698 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955701 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955699 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955702 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955703 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955700 with unassigned valence terms
+Building and minimizing systems with OpenFF-2.2.1 SMEE-SPICE:   7%|▋         | 1/15 [00:00<00:09,  1.40it/s]Building and minimizing systems with OpenFF-2.2.1 SMEE-SPICE: 100%|██████████| 15/15 [00:00<00:00, 21.01it/s]
+Warning: Problem parsing SMILES:
+Warning: Inconsistent cis/trans bond stereo.
+Warning: [H:24][c:1]1[c:2]([c:5]([c:12]2[c:11]([c:4]1[H:27])[c:7]([c:8]([c:15]3[c:13]2[C:10](=[C:14](/[C:17](=[N:19]/[H:34])/[O:22]3)/[C:18](=[N:20]/[C:16]4=[C:6]([C:3](=[C:9]([S:23]4)[H:32])[H:26])[H:29])/[O:21][H:35])[H:33])[H:31])[H:30])[H:28])[H:25]
+Building and minimizing systems with OpenFF-2.2.1 SMEE-SPICE:   0%|          | 0/15 [00:00<?, ?it/s]WARNING:yammbs._minimize:Skipping record 37014700 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 37014703 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 37014701 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 37014702 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 37014704 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955694 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955695 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955696 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955697 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955698 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955701 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955699 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955702 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955703 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955700 with unassigned valence terms
+Building and minimizing systems with OpenFF-2.2.1 SMEE-SPICE:   7%|▋         | 1/15 [00:00<00:12,  1.11it/s]Building and minimizing systems with OpenFF-2.2.1 SMEE-SPICE: 100%|██████████| 15/15 [00:00<00:00, 16.65it/s]
+Warning: Problem parsing SMILES:
+Warning: Inconsistent cis/trans bond stereo.
+Warning: [H:24][c:1]1[c:2]([c:5]([c:12]2[c:11]([c:4]1[H:27])[c:7]([c:8]([c:15]3[c:13]2[C:10](=[C:14](/[C:17](=[N:19]/[H:34])/[O:22]3)/[C:18](=[N:20]/[C:16]4=[C:6]([C:3](=[C:9]([S:23]4)[H:32])[H:26])[H:29])/[O:21][H:35])[H:33])[H:31])[H:30])[H:28])[H:25]
+WARNING:yammbs._store:Molecule InChI=1/C2H3Cl/c1-2-3/h2H,1H2 failed with list index out of range
+WARNING:yammbs._store:Molecule InChI=1/C2H4Cl2/c1-2(3)4/h2H,1H3 failed with list index out of range
+WARNING:yammbs._store:Molecule InChI=1/C2H4F2/c1-2(3)4/h2H,1H3 failed with list index out of range
+WARNING:yammbs._store:Molecule InChI=1/C2H5NO/c1-2(3)4/h1H3,(H2,3,4)/f/h3H2 failed with list index out of range
+WARNING:yammbs._store:Molecule InChI=1/C2H6O/c1-2-3/h3H,2H2,1H3 failed with list index out of range
+WARNING:yammbs._store:Molecule InChI=1/C2H6O/c1-3-2/h1-2H3 failed with list index out of range
+WARNING:yammbs._store:Molecule InChI=1/C2H6O2S/c1-5(2,3)4/h1-2H3 failed with list index out of range
+WARNING:yammbs._store:Molecule InChI=1/C2H6S/c1-3-2/h1-2H3 failed with list index out of range
+WARNING:yammbs._store:Molecule InChI=1/C3H4/c1-3-2/h1H,2H3 failed with list index out of range
+WARNING:yammbs._store:Molecule InChI=1/C3H6O/c1-3(2)4/h1-2H3 failed with list index out of range
+WARNING:yammbs._store:Molecule InChI=1/C3H7Cl/c1-3(2)4/h3H,1-2H3 failed with list index out of range
+WARNING:yammbs._store:Molecule InChI=1/C3H8/c1-3-2/h3H2,1-2H3 failed with list index out of range
+WARNING:yammbs._store:Molecule InChI=1/C4H10/c1-4(2)3/h4H,1-3H3 failed with list index out of range
+WARNING:yammbs._store:Molecule InChI=1/C4H10O/c1-4(2,3)5/h5H,1-3H3 failed with list index out of range
+WARNING:yammbs._store:Molecule InChI=1/C5H12/c1-5(2,3)4/h1-4H3 failed with list index out of range
+WARNING:yammbs._store:Molecule InChI=1/CH2Cl2/c2-1-3/h1H2 failed with list index out of range
+WARNING:yammbs._store:Molecule InChI=1/CH3Cl/c1-2/h1H3 failed with list index out of range
+WARNING:yammbs._store:Molecule InChI=1/CH3F/c1-2/h1H3 failed with list index out of range
+WARNING:yammbs._store:Molecule InChI=1/CH4/h1H4 failed with list index out of range
+WARNING:yammbs._store:Molecule InChI=1/CH4N2O/c2-1(3)4/h(H4,2,3,4)/f/h2-3H2 failed with list index out of range
+WARNING:yammbs._store:Molecule InChI=1/CH4O/c1-2/h2H,1H3 failed with list index out of range
+WARNING:yammbs._store:Molecule InChI=1/CH4S/c1-2/h2H,1H3 failed with list index out of range
+WARNING:yammbs._store:Molecule InChI=1/CH5NO2S/c1-5(2,3)4/h1H3,(H2,2,3,4)/f/h2H2 failed with list index out of range
+WARNING:yammbs._store:Molecule InChI=1/CHCl3/c2-1(3)4/h1H failed with list index out of range
+Building and minimizing systems with OpenFF-2.2.1 SMEE-SPICE:   0%|          | 0/15 [00:00<?, ?it/s]WARNING:yammbs._minimize:Skipping record 37014700 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 37014703 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 37014701 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 37014702 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 37014704 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955694 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955695 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955696 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955697 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955698 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955701 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955699 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955702 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955703 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955700 with unassigned valence terms
+Building and minimizing systems with OpenFF-2.2.1 SMEE-SPICE:   7%|▋         | 1/15 [00:00<00:10,  1.40it/s]Building and minimizing systems with OpenFF-2.2.1 SMEE-SPICE: 100%|██████████| 15/15 [00:00<00:00, 20.99it/s]
+Warning: Problem parsing SMILES:
+Warning: Inconsistent cis/trans bond stereo.
+Warning: [H:24][c:1]1[c:2]([c:5]([c:12]2[c:11]([c:4]1[H:27])[c:7]([c:8]([c:15]3[c:13]2[C:10](=[C:14](/[C:17](=[N:19]/[H:34])/[O:22]3)/[C:18](=[N:20]/[C:16]4=[C:6]([C:3](=[C:9]([S:23]4)[H:32])[H:26])[H:29])/[O:21][H:35])[H:33])[H:31])[H:30])[H:28])[H:25]
