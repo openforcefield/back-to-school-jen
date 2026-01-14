@@ -1,0 +1,21 @@
+2026-01-09 13:31:43.955 | INFO     | __main__:main:540 - Output directory: /Users/jenniferclark/bin/back-to-school-jen/8_clustering/b2_no_bond_with_ring_in_atom/clusters
+2026-01-09 13:31:43.955 | INFO     | __main__:load_offxml:131 - Loading OFFXML force field from: ../../6_run_fit/b2_no_bond_with_ring_in_atom/final-force-field.offxml
+2026-01-09 13:31:44.543 | INFO     | __main__:main:545 - Extracting bond parameters...
+2026-01-09 13:31:44.557 | INFO     | __main__:main:551 - Found 554 bond parameters
+2026-01-09 13:31:44.557 | INFO     | __main__:main:553 - Extracting angle parameters...
+2026-01-09 13:31:44.621 | INFO     | __main__:main:559 - Found 2392 angle parameters
+2026-01-09 13:31:44.621 | INFO     | __main__:main:573 - Clustering bonds with kwargs: {'min_cluster_size': 3}
+2026-01-09 13:31:44.621 | INFO     | __main__:main:574 - Clustering angles with kwargs: {'min_cluster_size': 3, 'min_samples': 5}
+2026-01-09 13:31:44.621 | INFO     | __main__:cluster_parameters:293 - Feature scaling: X_means = [7.66155755 1.53593943]
+2026-01-09 13:31:44.626 | INFO     | __main__:plot_and_cluster:379 - Bonds: Found 35 clusters and 186 noise points
+2026-01-09 13:31:44.628 | INFO     | __main__:plot_and_cluster:408 - Saved cluster assignments to: clusters/bonds_clusters.csv
+/Users/jenniferclark/bin/back-to-school-jen/8_clustering/b2_no_bond_with_ring_in_atom/../clustering.py:413: MatplotlibDeprecationWarning: The get_cmap function was deprecated in Matplotlib 3.7 and will be removed in 3.11. Use ``matplotlib.colormaps[name]`` or ``matplotlib.colormaps.get_cmap()`` or ``pyplot.get_cmap()`` instead.
+  colors = plt.cm.get_cmap("nipy_spectral")(
+2026-01-09 13:31:45.062 | INFO     | __main__:plot_and_cluster:470 - Saved cluster plot to: clusters/bonds_clusters.pdf
+2026-01-09 13:31:47.144 | INFO     | __main__:cluster_parameters:293 - Feature scaling: X_means = [  6.22058012 115.10109031]
+2026-01-09 13:31:47.184 | INFO     | __main__:plot_and_cluster:379 - Angles: Found 4 clusters and 23 noise points
+2026-01-09 13:31:47.191 | INFO     | __main__:plot_and_cluster:408 - Saved cluster assignments to: clusters/angles_clusters.csv
+/Users/jenniferclark/bin/back-to-school-jen/8_clustering/b2_no_bond_with_ring_in_atom/../clustering.py:413: MatplotlibDeprecationWarning: The get_cmap function was deprecated in Matplotlib 3.7 and will be removed in 3.11. Use ``matplotlib.colormaps[name]`` or ``matplotlib.colormaps.get_cmap()`` or ``pyplot.get_cmap()`` instead.
+  colors = plt.cm.get_cmap("nipy_spectral")(
+2026-01-09 13:31:47.322 | INFO     | __main__:plot_and_cluster:470 - Saved cluster plot to: clusters/angles_clusters.pdf
+2026-01-09 13:31:54.649 | INFO     | __main__:main:594 - Clustering analysis complete
