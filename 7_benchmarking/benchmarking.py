@@ -205,7 +205,7 @@ def run_benchmark(
     store : MoleculeStore
         Database store containing QM reference data.
     force_field : str
-        Path to OFFXML force field or force field identifier.
+        Path to OFFXML force field.
     n_processes : int, optional
         Number of parallel processes (default: 4).
 
@@ -718,7 +718,7 @@ def main(
 
     # Determine force field name/tag
     if force_field_name is None:
-        force_field_name = offxml.stem
+        force_field_name = offxml.name
 
     logger.info(f"Benchmarking force field: {force_field_name}")
 
@@ -731,6 +731,12 @@ def main(
 
     # Compute metrics
     metrics = get_metrics(store)
+    if force_field_name is not None and force_field_name != str(offxml):
+        try:
+            if str(offxml) in metrics.metrics:
+                metrics.metrics[force_field_name] = metrics.metrics.pop(str(offxml))
+        except (KeyError, AttributeError, TypeError) as e:
+            logger.warning(f"Could not relabel metrics to '{force_field_name}': {e}")
 
     # Parameter type analysis (bonds, angles, dihedrals, impropers by SMIRKS)
     parameter_type_summary = None
@@ -755,10 +761,12 @@ def main(
             with open(metrics_path, "r") as f:
                 metrics_dict = json.load(f)
 
-            generate_basic_plots(metrics_dict, output_dir)
+            generate_basic_plots([metrics_dict], [force_field_name], output_dir)
 
             if parameter_type_summary:
-                generate_parameter_type_plots(parameter_type_summary, output_dir)
+                generate_parameter_type_plots(
+                    [parameter_type_summary], [force_field_name], output_dir
+                )
         except Exception as e:
             logger.warning(f"Plot generation failed: {e}")
             logger.warning("Continuing without plots")
@@ -831,7 +839,11 @@ Output Files:
         "--force-field-name",
         type=str,
         default=None,
-        help="Custom name/tag for the force field (default: filename)",
+        help=(
+            "Custom display name/tag for the force field (default: filename). "
+            "This is only used for reporting/logging and will NOT be used to "
+            "locate or load the OFFXML file — provide the OFFXML via --offxml."
+        ),
     )
     parser.add_argument(
         "--skip-type-analysis",
