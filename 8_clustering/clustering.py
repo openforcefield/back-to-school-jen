@@ -147,10 +147,6 @@ def _get_handler_parameters(handler) -> list:
     list
         List of parameter objects from the handler.
 
-    Notes
-    -----
-    Handles both public (.parameters) and private (._parameters) APIs
-    for compatibility across OpenFF toolkit versions.
     """
     if hasattr(handler, "parameters"):
         return handler.parameters
