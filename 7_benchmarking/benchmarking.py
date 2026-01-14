@@ -718,7 +718,7 @@ def main(
 
     # Determine force field name/tag
     if force_field_name is None:
-        force_field_name = str(offxml)
+        force_field_name = offxml.name
 
     logger.info(f"Benchmarking force field: {force_field_name}")
 
@@ -735,7 +735,7 @@ def main(
         try:
             if str(offxml) in metrics.metrics:
                 metrics.metrics[force_field_name] = metrics.metrics.pop(str(offxml))
-        except Exception as e:
+        except (KeyError, AttributeError, TypeError) as e:
             logger.warning(f"Could not relabel metrics to '{force_field_name}': {e}")
 
     # Parameter type analysis (bonds, angles, dihedrals, impropers by SMIRKS)

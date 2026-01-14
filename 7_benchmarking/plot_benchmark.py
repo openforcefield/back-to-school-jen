@@ -1,5 +1,8 @@
 """Generate benchmark plots from existing benchmark results.
 
+Parameter summaries are only produced if a single dataset
+is passed.
+
 This script reads the output files from benchmarking.py and generates
 visualization plots. It can work with metrics.json alone for basic plots,
 or with benchmark.sqlite and an offxml file for parameter type analysis.
@@ -910,6 +913,9 @@ def main():
         description="Generate benchmark plots from existing results",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
+Plot benchmarking results where parameter summaries are only produced if a single dataset
+is passed.
+
 Examples:
     Basic plots from single metrics.json:
         python plot_benchmark.py --metrics benchmark_results/metrics.json
