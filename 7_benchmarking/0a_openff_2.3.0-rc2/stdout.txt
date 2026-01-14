@@ -1,0 +1,184 @@
+Tue Jan 13 06:28:49 AM PST 2026
+Running job on host hpc3-21-00
+2026-01-13 06:28:59.186 | INFO     | __main__:main:723 - Benchmarking force field: OpenFF-2.3.0-rc2
+2026-01-13 06:28:59.188 | INFO     | __main__:load_qcarchive_dataset:119 - Loading QCArchive dataset from: /data/homezvol2/jclark9/bin/yammbs-dataset-submission/datasets/OpenFF-Industry-Benchmark-Season-1-v1.2/cache.json
+2026-01-13 06:29:02.261 | INFO     | __main__:load_qcarchive_dataset:128 - Loaded 63063 QM molecules (QCArchiveDataset format)
+2026-01-13 06:29:02.262 | INFO     | __main__:get_or_create_store:185 - Loading existing database: benchmark.sqlite
+2026-01-13 06:29:02.303 | INFO     | __main__:run_benchmark:216 - Running MM optimizations with force field: ../../forcefields/openff_unconstrained-2.3.0-rc2.offxml
+2026-01-13 06:29:02.303 | INFO     | __main__:run_benchmark:217 - Using 32 parallel processes
+Building and minimizing systems with ../../forcefields/openff_unconstrained-2.3.0-rc2.offxml:   0%|          | 0/15 [00:00<?, ?it/s]WARNING:yammbs._minimize:Skipping record 37014700 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 37014703 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 37014701 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 37014702 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 37014704 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955694 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955695 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955696 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955697 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955698 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955701 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955699 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955702 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955703 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955700 with unassigned valence terms
+Building and minimizing systems with ../../forcefields/openff_unconstrained-2.3.0-rc2.offxml:   7%|▋         | 1/15 [00:00<00:12,  1.12it/s]Building and minimizing systems with ../../forcefields/openff_unconstrained-2.3.0-rc2.offxml: 100%|██████████| 15/15 [00:00<00:00, 16.78it/s]
+2026-01-13 12:30:17.999 | INFO     | __main__:run_benchmark:221 - MM optimizations complete
+2026-01-13 12:30:17.999 | INFO     | __main__:get_metrics:243 - Computing benchmark metrics...
+Building and minimizing systems with ../../forcefields/openff_unconstrained-2.3.0-rc2.offxml:   0%|          | 0/15 [00:00<?, ?it/s]WARNING:yammbs._minimize:Skipping record 37014700 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 37014703 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 37014701 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 37014702 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 37014704 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955694 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955695 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955696 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955697 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955698 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955701 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955699 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955702 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955703 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955700 with unassigned valence terms
+Building and minimizing systems with ../../forcefields/openff_unconstrained-2.3.0-rc2.offxml:   7%|▋         | 1/15 [00:01<00:15,  1.11s/it]Building and minimizing systems with ../../forcefields/openff_unconstrained-2.3.0-rc2.offxml: 100%|██████████| 15/15 [00:01<00:00, 13.51it/s]
+Building and minimizing systems with ../../forcefields/openff_unconstrained-2.3.0-rc2.offxml:   0%|          | 0/15 [00:00<?, ?it/s]WARNING:yammbs._minimize:Skipping record 37014700 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 37014703 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 37014701 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 37014702 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 37014704 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955694 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955695 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955696 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955697 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955698 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955701 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955699 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955702 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955703 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955700 with unassigned valence terms
+Building and minimizing systems with ../../forcefields/openff_unconstrained-2.3.0-rc2.offxml:   7%|▋         | 1/15 [00:00<00:11,  1.23it/s]Building and minimizing systems with ../../forcefields/openff_unconstrained-2.3.0-rc2.offxml: 100%|██████████| 15/15 [00:00<00:00, 18.39it/s]
+Warning: Problem parsing SMILES:
+Warning: Inconsistent cis/trans bond stereo.
+Warning: [H:24][c:1]1[c:2]([c:5]([c:12]2[c:11]([c:4]1[H:27])[c:7]([c:8]([c:15]3[c:13]2[C:10](=[C:14](/[C:17](=[N:19]/[H:34])/[O:22]3)/[C:18](=[N:20]/[C:16]4=[C:6]([C:3](=[C:9]([S:23]4)[H:32])[H:26])[H:29])/[O:21][H:35])[H:33])[H:31])[H:30])[H:28])[H:25]
+Building and minimizing systems with ../../forcefields/openff_unconstrained-2.3.0-rc2.offxml:   0%|          | 0/15 [00:00<?, ?it/s]WARNING:yammbs._minimize:Skipping record 37014700 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 37014703 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 37014701 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 37014702 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 37014704 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955694 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955695 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955696 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955697 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955698 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955701 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955699 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955702 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955703 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955700 with unassigned valence terms
+Building and minimizing systems with ../../forcefields/openff_unconstrained-2.3.0-rc2.offxml:   7%|▋         | 1/15 [00:00<00:12,  1.13it/s]Building and minimizing systems with ../../forcefields/openff_unconstrained-2.3.0-rc2.offxml: 100%|██████████| 15/15 [00:00<00:00, 16.98it/s]
+Warning: Problem parsing SMILES:
+Warning: Inconsistent cis/trans bond stereo.
+Warning: [H:24][c:1]1[c:2]([c:5]([c:12]2[c:11]([c:4]1[H:27])[c:7]([c:8]([c:15]3[c:13]2[C:10](=[C:14](/[C:17](=[N:19]/[H:34])/[O:22]3)/[C:18](=[N:20]/[C:16]4=[C:6]([C:3](=[C:9]([S:23]4)[H:32])[H:26])[H:29])/[O:21][H:35])[H:33])[H:31])[H:30])[H:28])[H:25]
+WARNING:yammbs._store:Molecule InChI=1/C2H3Cl/c1-2-3/h2H,1H2 failed with list index out of range
+WARNING:yammbs._store:Molecule InChI=1/C2H4Cl2/c1-2(3)4/h2H,1H3 failed with list index out of range
+WARNING:yammbs._store:Molecule InChI=1/C2H4F2/c1-2(3)4/h2H,1H3 failed with list index out of range
+WARNING:yammbs._store:Molecule InChI=1/C2H5NO/c1-2(3)4/h1H3,(H2,3,4)/f/h3H2 failed with list index out of range
+WARNING:yammbs._store:Molecule InChI=1/C2H6O/c1-2-3/h3H,2H2,1H3 failed with list index out of range
+WARNING:yammbs._store:Molecule InChI=1/C2H6O/c1-3-2/h1-2H3 failed with list index out of range
+WARNING:yammbs._store:Molecule InChI=1/C2H6O2S/c1-5(2,3)4/h1-2H3 failed with list index out of range
+WARNING:yammbs._store:Molecule InChI=1/C2H6S/c1-3-2/h1-2H3 failed with list index out of range
+WARNING:yammbs._store:Molecule InChI=1/C3H4/c1-3-2/h1H,2H3 failed with list index out of range
+WARNING:yammbs._store:Molecule InChI=1/C3H6O/c1-3(2)4/h1-2H3 failed with list index out of range
+WARNING:yammbs._store:Molecule InChI=1/C3H7Cl/c1-3(2)4/h3H,1-2H3 failed with list index out of range
+WARNING:yammbs._store:Molecule InChI=1/C3H8/c1-3-2/h3H2,1-2H3 failed with list index out of range
+WARNING:yammbs._store:Molecule InChI=1/C4H10/c1-4(2)3/h4H,1-3H3 failed with list index out of range
+WARNING:yammbs._store:Molecule InChI=1/C4H10O/c1-4(2,3)5/h5H,1-3H3 failed with list index out of range
+WARNING:yammbs._store:Molecule InChI=1/C5H12/c1-5(2,3)4/h1-4H3 failed with list index out of range
+WARNING:yammbs._store:Molecule InChI=1/CH2Cl2/c2-1-3/h1H2 failed with list index out of range
+WARNING:yammbs._store:Molecule InChI=1/CH3Cl/c1-2/h1H3 failed with list index out of range
+WARNING:yammbs._store:Molecule InChI=1/CH3F/c1-2/h1H3 failed with list index out of range
+WARNING:yammbs._store:Molecule InChI=1/CH4/h1H4 failed with list index out of range
+WARNING:yammbs._store:Molecule InChI=1/CH4N2O/c2-1(3)4/h(H4,2,3,4)/f/h2-3H2 failed with list index out of range
+WARNING:yammbs._store:Molecule InChI=1/CH4O/c1-2/h2H,1H3 failed with list index out of range
+WARNING:yammbs._store:Molecule InChI=1/CH4S/c1-2/h2H,1H3 failed with list index out of range
+WARNING:yammbs._store:Molecule InChI=1/CH5NO2S/c1-5(2,3)4/h1H3,(H2,2,3,4)/f/h2H2 failed with list index out of range
+WARNING:yammbs._store:Molecule InChI=1/CHCl3/c2-1(3)4/h1H failed with list index out of range
+Building and minimizing systems with ../../forcefields/openff_unconstrained-2.3.0-rc2.offxml:   0%|          | 0/15 [00:00<?, ?it/s]WARNING:yammbs._minimize:Skipping record 37014700 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 37014703 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 37014701 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 37014702 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 37014704 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955694 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955695 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955696 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955697 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955698 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955701 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955699 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955702 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955703 with unassigned valence terms
+WARNING:yammbs._minimize:Skipping record 36955700 with unassigned valence terms
+Building and minimizing systems with ../../forcefields/openff_unconstrained-2.3.0-rc2.offxml:   7%|▋         | 1/15 [00:00<00:11,  1.19it/s]Building and minimizing systems with ../../forcefields/openff_unconstrained-2.3.0-rc2.offxml: 100%|██████████| 15/15 [00:00<00:00, 17.83it/s]
+Warning: Problem parsing SMILES:
+Warning: Inconsistent cis/trans bond stereo.
+Warning: [H:24][c:1]1[c:2]([c:5]([c:12]2[c:11]([c:4]1[H:27])[c:7]([c:8]([c:15]3[c:13]2[C:10](=[C:14](/[C:17](=[N:19]/[H:34])/[O:22]3)/[C:18](=[N:20]/[C:16]4=[C:6]([C:3](=[C:9]([S:23]4)[H:32])[H:26])[H:29])/[O:21][H:35])[H:33])[H:31])[H:30])[H:28])[H:25]
+Analyzing internal coordinates by parameter type...
+Using 32 parallel processes
+Total molecules to process: 9815
+Preparing molecule data for parallel processing...
+Prepared 9815 molecules for processing
+Processing molecules in parallel with 32 workers...
+Warning: Problem parsing SMILES:
+Warning: Inconsistent cis/trans bond stereo.
+Warning: [H:24][c:1]1[c:2]([c:5]([c:12]2[c:11]([c:4]1[H:27])[c:7]([c:8]([c:15]3[c:13]2[C:10](=[C:14](/[C:17](=[N:19]/[H:34])/[O:22]3)/[C:18](=[N:20]/[C:16]4=[C:6]([C:3](=[C:9]([S:23]4)[H:32])[H:26])[H:29])/[O:21][H:35])[H:33])[H:31])[H:30])[H:28])[H:25]
+Progress: 0% complete (1/9815 molecules)
+Progress: 5% complete (491/9815 molecules)
+Progress: 10% complete (982/9815 molecules)
+Progress: 15% complete (1473/9815 molecules)
+Progress: 20% complete (1963/9815 molecules)
+Progress: 25% complete (2454/9815 molecules)
+Progress: 30% complete (2945/9815 molecules)
+Progress: 35% complete (3436/9815 molecules)
+Progress: 40% complete (3926/9815 molecules)
+Progress: 45% complete (4417/9815 molecules)
+Progress: 50% complete (4908/9815 molecules)
+Progress: 55% complete (5399/9815 molecules)
+Progress: 60% complete (5889/9815 molecules)
+Progress: 65% complete (6380/9815 molecules)
+Progress: 70% complete (6871/9815 molecules)
+Progress: 75% complete (7362/9815 molecules)
+Progress: 80% complete (7852/9815 molecules)
+Progress: 85% complete (8343/9815 molecules)
+Progress: 90% complete (8834/9815 molecules)
+Progress: 95% complete (9325/9815 molecules)
+Progress: 100% complete (9815/9815 molecules)
+Analysis complete! Processed 9815 molecules
+Total deviations collected: 16204065
+2026-01-14 03:41:55.283 | INFO     | __main__:compute_parameter_type_summary:556 - Computing parameter type summary statistics...
+2026-01-14 03:41:56.920 | INFO     | __main__:save_results:613 - Saving metrics to: benchmark_results/metrics.json
+2026-01-14 03:41:57.126 | INFO     | __main__:save_results:620 - Saving parameter type analysis to: benchmark_results/metrics_by_parameter_type.json
+2026-01-14 03:41:57.152 | INFO     | __main__:save_results:627 - Saving minimized outputs to: benchmark_results/minimized.json
+2026-01-14 03:42:02.843 | INFO     | plot_benchmark:generate_basic_plots:426 - Generating basic benchmark plots...
+2026-01-14 03:42:03.278 | INFO     | plot_benchmark:generate_basic_plots:493 - Saved: benchmark_results/plots/dde_histogram.pdf
+2026-01-14 03:42:03.450 | INFO     | plot_benchmark:generate_basic_plots:511 - Saved: benchmark_results/plots/rmsd_cdf.pdf
+2026-01-14 03:42:03.614 | INFO     | plot_benchmark:generate_basic_plots:529 - Saved: benchmark_results/plots/tfd_cdf.pdf
+2026-01-14 03:42:03.999 | INFO     | plot_benchmark:generate_basic_plots:564 - Saved: benchmark_results/plots/icrmsd_comparison.pdf
+2026-01-14 03:42:04.611 | INFO     | plot_benchmark:generate_basic_plots:598 - Saved: benchmark_results/plots/icrmsd_by_type.pdf
+2026-01-14 03:42:04.611 | INFO     | plot_benchmark:generate_basic_plots:600 - Basic plots saved to: benchmark_results/plots
+2026-01-14 03:42:04.616 | INFO     | plot_benchmark:generate_parameter_type_plots:619 - Generating parameter type breakdown plots...
+2026-01-14 03:42:05.060 | INFO     | plot_benchmark:generate_parameter_type_plots:706 - Saved: benchmark_results/plots/deviation_by_bond_type.pdf
+2026-01-14 03:42:05.366 | INFO     | plot_benchmark:generate_parameter_type_plots:706 - Saved: benchmark_results/plots/deviation_by_angle_type.pdf
+2026-01-14 03:42:06.407 | INFO     | plot_benchmark:generate_parameter_type_plots:706 - Saved: benchmark_results/plots/deviation_by_dihedral_type.pdf
+2026-01-14 03:42:06.530 | INFO     | plot_benchmark:generate_parameter_type_plots:706 - Saved: benchmark_results/plots/deviation_by_improper_type.pdf
+2026-01-14 03:42:07.106 | INFO     | plot_benchmark:generate_parameter_type_plots:755 - Saved: benchmark_results/plots/deviation_summary_all_types.pdf
+2026-01-14 03:42:07.106 | INFO     | plot_benchmark:generate_parameter_type_plots:757 - Parameter type plots saved to: benchmark_results/plots
+
+============================================================
+BENCHMARK SUMMARY
+============================================================
+
+Force Field: OpenFF-2.3.0-rc2
+----------------------------------------
+  DDE:  mean=-0.757, std=2.974, n=53111
+  RMSD: mean=0.272, std=0.263, n=62392
+  TFD:  mean=0.0418, std=0.0381, n=62392
+2026-01-14 03:42:07.180 | INFO     | __main__:main:777 - Benchmarking complete!

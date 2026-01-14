@@ -1,26 +1,37 @@
 """Generate benchmark plots from existing benchmark results.
 
+Parameter summaries are only produced if a single dataset
+is passed.
+
 This script reads the output files from benchmarking.py and generates
 visualization plots. It can work with metrics.json alone for basic plots,
 or with benchmark.sqlite and an offxml file for parameter type analysis.
 
+Supports comparing multiple force fields by providing multiple input files.
+
 Command-line Arguments
 ----------------------
---metrics : str
-    Path to metrics.json file from benchmarking run.
+--metrics : str (one or more)
+    Path(s) to metrics.json file(s) from benchmarking run(s).
+--labels : str (optional)
+    Labels for each force field (defaults to filenames).
 --output-dir : str
     Directory to save plot files (default: current directory).
 --database : str, optional
-    Path to benchmark.sqlite for parameter type analysis.
+    Path(s) to benchmark.sqlite for parameter type analysis.
 --offxml : str, optional
-    Path to OFFXML force field file (required for parameter type analysis).
+    Path(s) to OFFXML force field file(s) (required for parameter type analysis).
 --param-json : str, optional
-    Path to existing metrics_by_parameter_type.json (alternative to database+offxml).
+    Path(s) to existing metrics_by_parameter_type.json (alternative to database+offxml).
 
 Examples
 --------
 Basic plots from metrics.json only:
     $ python plot_benchmark.py --metrics benchmark_results/metrics.json
+
+Compare multiple force fields:
+    $ python plot_benchmark.py --metrics ff1/metrics.json ff2/metrics.json \\
+        --labels "OpenFF 2.2.1" "Custom FF" --output-dir comparison/
 
 Full plots including parameter type analysis:
     $ python plot_benchmark.py --metrics benchmark_results/metrics.json \\
@@ -399,32 +410,44 @@ def compute_parameter_type_summary(
 
 
 def generate_basic_plots(
-    metrics: dict,
+    metrics_list: list[dict],
+    labels: list[str],
     output_dir: pathlib.Path,
 ) -> None:
-    """Generate basic benchmark plots from metrics.json.
+    """Generate basic benchmark plots from metrics.json files.
 
     Parameters
     ----------
-    metrics : dict
-        Loaded metrics data.
-    output_dir : pathlib.Path
-        Directory to save plot files.
+    metrics_list : list[dict]
+        List of loaded metrics data dictionaries (for multiple FFs).
+    labels : list[str], optional
+        Labels for each force field. If None
+        uses force field names from the metrics file.
+    output_dir : pathlib.Path or str
+        Directory to save plot files (default: current directory).
     """
     logger.info("Generating basic benchmark plots...")
 
+    output_dir = pathlib.Path(output_dir)
     plots_dir = output_dir / "plots"
     plots_dir.mkdir(parents=True, exist_ok=True)
 
-    # Extract force fields and metrics
-    ff_metrics = metrics.get("metrics", metrics)
-    force_fields = list(ff_metrics.keys())
-    colors = plt.cm.tab10(np.linspace(0, 1, max(len(force_fields), 1)))
+    if labels is None:
+        labels = [f"FF_{i+1}" for i in range(len(metrics_list))]
+    elif len(labels) != len(metrics_list):
+        raise ValueError(
+            f"Number of metrics files ({len(metrics_list)}) must match number of labels ({len(labels)})"
+        )
 
-    # Extract metrics by force field
+    # Generate colors for each force field
+    n_ff = len(labels)
+    colors = plt.cm.tab10(np.linspace(0, 1, max(n_ff, 1)))
+
+    # Extract metrics by force field label
     ff_data: dict[str, dict[str, list[float]]] = {}
-    for ff, records in ff_metrics.items():
-        ff_data[ff] = {
+    for metrics, label in zip(metrics_list, labels):
+        ff_metrics = metrics.get("metrics", metrics)
+        ff_data[label] = {
             "dde": [],
             "rmsd": [],
             "tfd": [],
@@ -433,33 +456,35 @@ def generate_basic_plots(
             "icrmsd_dihedral": [],
             "icrmsd_improper": [],
         }
-        for _, metric in records.items():
-            if isinstance(metric, dict):
-                if metric.get("dde") is not None:
-                    ff_data[ff]["dde"].append(metric["dde"])
-                if metric.get("rmsd") is not None:
-                    ff_data[ff]["rmsd"].append(metric["rmsd"])
-                if metric.get("tfd") is not None:
-                    ff_data[ff]["tfd"].append(metric["tfd"])
-                if metric.get("icrmsd"):
-                    icrmsd = metric["icrmsd"]
-                    if icrmsd.get("Bond") is not None:
-                        ff_data[ff]["icrmsd_bond"].append(icrmsd["Bond"])
-                    if icrmsd.get("Angle") is not None:
-                        ff_data[ff]["icrmsd_angle"].append(icrmsd["Angle"])
-                    if icrmsd.get("Dihedral") is not None:
-                        ff_data[ff]["icrmsd_dihedral"].append(icrmsd["Dihedral"])
-                    if icrmsd.get("Improper") is not None:
-                        ff_data[ff]["icrmsd_improper"].append(icrmsd["Improper"])
+        # Iterate through all force fields in this metrics file
+        for ff_name, records in ff_metrics.items():
+            for _, metric in records.items():
+                if isinstance(metric, dict):
+                    if metric.get("dde") is not None:
+                        ff_data[label]["dde"].append(metric["dde"])
+                    if metric.get("rmsd") is not None:
+                        ff_data[label]["rmsd"].append(metric["rmsd"])
+                    if metric.get("tfd") is not None:
+                        ff_data[label]["tfd"].append(metric["tfd"])
+                    if metric.get("icrmsd"):
+                        icrmsd = metric["icrmsd"]
+                        if icrmsd.get("Bond") is not None:
+                            ff_data[label]["icrmsd_bond"].append(icrmsd["Bond"])
+                        if icrmsd.get("Angle") is not None:
+                            ff_data[label]["icrmsd_angle"].append(icrmsd["Angle"])
+                        if icrmsd.get("Dihedral") is not None:
+                            ff_data[label]["icrmsd_dihedral"].append(icrmsd["Dihedral"])
+                        if icrmsd.get("Improper") is not None:
+                            ff_data[label]["icrmsd_improper"].append(icrmsd["Improper"])
 
     # Plot 1: DDE Histogram
     fig, ax = plt.subplots(figsize=(10, 6))
-    for i, ff in enumerate(force_fields):
-        data = np.array(ff_data[ff]["dde"])
+    for i, label in enumerate(labels):
+        data = np.array(ff_data[label]["dde"])
         data = data[np.isfinite(data)]
         if len(data) > 0:
             counts, bins = np.histogram(data, bins=np.linspace(-15, 15, 31))
-            ax.stairs(counts, bins, label=ff, color=colors[i])
+            ax.stairs(counts, bins, label=label, color=colors[i])
     ax.set_xlabel("DDE (kcal/mol)")
     ax.set_ylabel("Count")
     ax.set_title("Deformation-Driven Energy Difference Distribution")
@@ -472,16 +497,16 @@ def generate_basic_plots(
 
     # Plot 2: RMSD CDF
     fig, ax = plt.subplots(figsize=(10, 6))
-    for i, ff in enumerate(force_fields):
-        data = np.sort(ff_data[ff]["rmsd"])
+    for i, label in enumerate(labels):
+        data = np.sort(ff_data[label]["rmsd"])
         if len(data) > 0:
             cdf = np.arange(1, len(data) + 1) / len(data)
-            ax.plot(data, cdf, "-", label=ff, color=colors[i])
+            ax.plot(data, cdf, "-", label=label, color=colors[i])
     ax.set_xlabel("RMSD (Å)")
     ax.set_ylabel("CDF")
     ax.set_title("Root Mean Square Deviation - Cumulative Distribution")
-    ax.set_xlim(-0.1, 3.0)
-    ax.set_ylim(-0.05, 1.05)
+    ax.set_xlim(0, 3.0)
+    ax.set_ylim(0, 1.05)
     ax.legend(loc="best")
     fig.tight_layout()
     fig.savefig(plots_dir / "rmsd_cdf.pdf", bbox_inches="tight")
@@ -490,16 +515,16 @@ def generate_basic_plots(
 
     # Plot 3: TFD CDF
     fig, ax = plt.subplots(figsize=(10, 6))
-    for i, ff in enumerate(force_fields):
-        data = np.sort(ff_data[ff]["tfd"])
+    for i, label in enumerate(labels):
+        data = np.sort(ff_data[label]["tfd"])
         if len(data) > 0:
             cdf = np.arange(1, len(data) + 1) / len(data)
-            ax.plot(data, cdf, "-", label=ff, color=colors[i])
+            ax.plot(data, cdf, "-", label=label, color=colors[i])
     ax.set_xlabel("TFD")
     ax.set_ylabel("CDF")
     ax.set_title("Torsion Fingerprint Deviation - Cumulative Distribution")
-    ax.set_xlim(-0.02, 0.5)
-    ax.set_ylim(-0.05, 1.05)
+    ax.set_xlim(0, 0.5)
+    ax.set_ylim(0, 1.05)
     ax.legend(loc="best")
     fig.tight_layout()
     fig.savefig(plots_dir / "tfd_cdf.pdf", bbox_inches="tight")
@@ -512,15 +537,15 @@ def generate_basic_plots(
     ic_units = ["Å", "°", "°", "°"]
 
     fig, axes = plt.subplots(1, 4, figsize=(16, 4))
-    x = np.arange(len(force_fields))
+    x = np.arange(n_ff)
     width = 0.6
 
     for idx, (ic_type, ic_key, unit) in enumerate(zip(ic_types, ic_keys, ic_units)):
         ax = axes[idx]
         means = []
         stds = []
-        for ff in force_fields:
-            data = np.array(ff_data[ff][ic_key])
+        for label in labels:
+            data = np.array(ff_data[label][ic_key])
             data = data[np.isfinite(data)]
             if len(data) > 0:
                 means.append(np.mean(data))
@@ -529,13 +554,11 @@ def generate_basic_plots(
                 means.append(0)
                 stds.append(0)
 
-        ax.bar(x, means, width, yerr=stds, capsize=3, color=colors[: len(force_fields)])
+        ax.bar(x, means, width, yerr=stds, capsize=3, color=colors[:n_ff])
         ax.set_ylabel(f"ICRMSD ({unit})")
         ax.set_title(f"{ic_type} RMSD")
         ax.set_xticks(x)
-        ax.set_xticklabels(
-            [ff.split("/")[-1][:15] for ff in force_fields], rotation=45, ha="right"
-        )
+        ax.set_xticklabels([lbl[:15] for lbl in labels], rotation=45, ha="right")
 
     fig.suptitle("Internal Coordinate RMSD by Type", fontsize=14)
     fig.tight_layout()
@@ -556,19 +579,19 @@ def generate_basic_plots(
 
     for idx, (ic_type, ic_key, unit) in enumerate(zip(ic_types, ic_keys, ic_units)):
         ax = axes[idx]
-        for i, ff in enumerate(force_fields):
-            data = np.array(ff_data[ff][ic_key])
+        for i, label in enumerate(labels):
+            data = np.array(ff_data[label][ic_key])
             data = data[np.isfinite(data)]
             if len(data) > 0:
                 sorted_data = np.sort(data)
                 cdf = np.arange(1, len(sorted_data) + 1) / len(sorted_data)
-                ax.plot(sorted_data, cdf, "-", label=ff, color=colors[i])
+                ax.plot(sorted_data, cdf, "-", label=label, color=colors[i])
 
         ax.set_xlabel(f"{ic_type} RMSD ({unit})")
         ax.set_ylabel("CDF")
         ax.set_title(f"{ic_type} Internal Coordinate RMSD")
         ax.set_xlim(xlims[ic_key])
-        ax.set_ylim(-0.05, 1.05)
+        ax.set_ylim(0, 1.05)
         ax.legend(loc="best", fontsize=8)
 
     fig.suptitle("Internal Coordinate RMSD - Cumulative Distributions", fontsize=14)
@@ -581,22 +604,36 @@ def generate_basic_plots(
 
 
 def generate_parameter_type_plots(
-    param_summary: dict[str, dict[str, dict[str, float]]],
-    output_dir: pathlib.Path,
+    param_summaries: list[dict[str, dict[str, dict[str, float]]]],
+    labels: list[str] | None = None,
+    output_dir: pathlib.Path | str = ".",
 ) -> None:
     """Generate plots showing deviations by parameter type (SMIRKS).
 
     Parameters
     ----------
-    param_summary : dict
-        Summary statistics from compute_parameter_type_summary().
-    output_dir : pathlib.Path
-        Directory to save plot files.
+    param_summaries : list[dict]
+        List of summary statistics from compute_parameter_type_summary() (one per FF).
+    labels : list[str], optional
+        Labels for each force field. If None uses "Force Field" as the label.
+    output_dir : pathlib.Path or str
+        Directory to save plot files (default: current directory).
     """
     logger.info("Generating parameter type breakdown plots...")
 
+    output_dir = pathlib.Path(output_dir)
     plots_dir = output_dir / "plots"
     plots_dir.mkdir(parents=True, exist_ok=True)
+
+    if labels is None:
+        labels = [f"FF_{i+1}" for i in range(len(param_summaries))]
+    elif len(param_summaries) != len(labels):
+        raise ValueError(
+            f"Number of parameter summaries ({len(param_summaries)}) must match number of labels ({len(labels)})"
+        )
+
+    n_ff = len(labels)
+    colors = plt.cm.tab10(np.linspace(0, 1, max(n_ff, 1)))
 
     ic_type_info = {
         "Bond": {"unit": "Å", "title": "Bond Length Deviations"},
@@ -606,56 +643,63 @@ def generate_parameter_type_plots(
     }
 
     for ic_type, info in ic_type_info.items():
-        if ic_type not in param_summary or not param_summary[ic_type]:
+        # Collect all unique parameter IDs across all force fields
+        all_param_ids: set[str] = set()
+        for param_summary in param_summaries:
+            if ic_type in param_summary:
+                all_param_ids.update(param_summary[ic_type].keys())
+
+        if not all_param_ids:
             logger.warning(f"No data for {ic_type}, skipping...")
             continue
 
-        # Sort parameters by count (most common first)
-        all_params = sorted(
-            param_summary[ic_type].items(),
-            key=lambda x: x[1].get("count", 0),
+        # Use first FF's ordering (by count) as the reference
+        first_summary = param_summaries[0].get(ic_type, {})
+        all_params_sorted = sorted(
+            all_param_ids,
+            key=lambda x: first_summary.get(x, {}).get("count", 0),
             reverse=True,
         )
 
-        if not all_params:
-            continue
+        # Plot 1: Grouped horizontal bar chart of mean deviations
+        fig_height = max(8, len(all_params_sorted) * 0.4)
+        fig, ax = plt.subplots(figsize=(14, fig_height))
 
-        smirks_labels = [p[0] for p in all_params]
-        means = [p[1]["mean"] for p in all_params]
-        stds = [p[1]["std"] for p in all_params]
-        counts = [p[1]["count"] for p in all_params]
+        y = np.arange(len(all_params_sorted))
+        bar_height = 0.8 / n_ff
 
-        # Plot 1: Horizontal bar chart of mean deviations (axes swapped)
-        # Dynamic figure height based on number of parameters
-        fig_height = max(8, len(all_params) * 0.3)
-        fig, ax = plt.subplots(figsize=(12, fig_height))
+        for ff_idx, (param_summary, label) in enumerate(zip(param_summaries, labels)):
+            ic_data = param_summary.get(ic_type, {})
+            means = []
+            stds = []
+            for param_id in all_params_sorted:
+                if param_id in ic_data:
+                    means.append(ic_data[param_id]["mean"])
+                    stds.append(ic_data[param_id]["std"])
+                else:
+                    means.append(0)
+                    stds.append(0)
 
-        y = np.arange(len(smirks_labels))
-        bars = ax.barh(
-            y, means, xerr=stds, capsize=2, color="steelblue", alpha=0.8, height=0.7
-        )
+            y_positions = y - 0.4 + bar_height * (ff_idx + 0.5)
+            ax.barh(
+                y_positions,
+                means,
+                xerr=stds,
+                height=bar_height,
+                label=label,
+                color=colors[ff_idx],
+                alpha=0.8,
+                capsize=1,
+            )
 
         ax.set_xlabel(f"Mean Absolute Deviation ({info['unit']})")
         ax.set_ylabel("SMIRKS Parameter ID")
-        ax.set_title(f"{info['title']} by Parameter Type Sorted by Count")
+        ax.set_title(f"{info['title']} by Parameter Type")
         ax.set_yticks(y)
-        ax.set_yticklabels(smirks_labels, fontsize=7)
-        ax.set_xlim(left=0)  # Set x-axis minimum to 0
-
-        # Invert y-axis so most common is at top
+        ax.set_yticklabels(all_params_sorted, fontsize=7)
+        ax.set_xlim(left=0)
         ax.invert_yaxis()
-
-        # Add count labels on bars
-        for i, (bar, count) in enumerate(zip(bars, counts)):
-            ax.annotate(
-                f"n={count}",
-                xy=(bar.get_width(), bar.get_y() + bar.get_height() / 2),
-                xytext=(3, 3),
-                textcoords="offset points",
-                ha="left",
-                va="center",
-                fontsize=6,
-            )
+        ax.legend(loc="lower right")
 
         fig.tight_layout()
         fig.savefig(
@@ -664,100 +708,35 @@ def generate_parameter_type_plots(
         plt.close(fig)
         logger.info(f"Saved: {plots_dir / f'deviation_by_{ic_type.lower()}_type.pdf'}")
 
-        # Plot 2: Horizontal box plot for distribution (ALL parameters, axes swapped)
-        fig_height = max(8, len(all_params) * 0.3)
-        fig, ax = plt.subplots(figsize=(12, fig_height))
-
-        labels_all = [p[0][:40] + "..." if len(p[0]) > 40 else p[0] for p in all_params]
-
-        # Create synthetic box plot data from summary stats
-        box_data = []
-        for smirks, stats in all_params:
-            mean_val = stats["mean"]
-            std = stats["std"]
-            median = stats["median"]
-            min_val = stats["min"]
-            max_val = stats["max"]
-            # Use actual stats for box plot approximation
-            q1 = max(min_val, median - std * 0.675)  # Approximate Q1
-            q3 = min(max_val, median + std * 0.675)  # Approximate Q3
-            box_data.append(
-                {
-                    "min": min_val,
-                    "q1": q1,
-                    "median": median,
-                    "q3": q3,
-                    "max": max_val,
-                    "mean": mean_val,
-                }
-            )
-
-        positions = np.arange(len(all_params))
-
-        # Draw horizontal box plots manually for better control
-        for i, (pos, data) in enumerate(zip(positions, box_data)):
-            # Box from Q1 to Q3 (horizontal)
-            box_width = data["q3"] - data["q1"]
-            ax.barh(
-                pos,
-                box_width,
-                left=data["q1"],
-                height=0.6,
-                color="lightsteelblue",
-                edgecolor="black",
-                linewidth=1,
-            )
-
-            # Median line (vertical)
-            ax.vlines(data["median"], pos - 0.3, pos + 0.3, colors="black", linewidth=2)
-
-            # Mean marker
-            ax.plot(
-                data["mean"],
-                pos,
-                "D",
-                color="red",
-                markersize=4,
-                label="Mean" if i == 0 else "",
-            )
-
-            # Whiskers (horizontal)
-            ax.hlines(pos, data["min"], data["q1"], colors="black", linewidth=1)
-            ax.hlines(pos, data["q3"], data["max"], colors="black", linewidth=1)
-
-            # Whisker caps (vertical)
-            ax.vlines(data["min"], pos - 0.15, pos + 0.15, colors="black", linewidth=1)
-            ax.vlines(data["max"], pos - 0.15, pos + 0.15, colors="black", linewidth=1)
-
-        ax.set_xlabel(f"Deviation ({info['unit']})")
-        ax.set_ylabel("SMIRKS Parameter ID")
-        ax.set_title(
-            f"{info['title']} Distribution by Parameter Type (All {len(all_params)} parameters)"
-        )
-        ax.set_yticks(positions)
-        ax.set_yticklabels(labels_all, fontsize=7)
-        ax.set_ylim(-0.5, len(all_params) - 0.5)
-        ax.invert_yaxis()  # Most common at top
-        ax.legend(loc="lower right")
-
-        fig.tight_layout()
-        fig.savefig(
-            plots_dir / f"deviation_dist_{ic_type.lower()}_type.pdf",
-            bbox_inches="tight",
-        )
-        plt.close(fig)
-        logger.info(
-            f"Saved: {plots_dir / f'deviation_dist_{ic_type.lower()}_type.pdf'}"
-        )
-
-    # Summary plot: All IC types comparison
+    # Summary plot: All IC types comparison across force fields
     fig, axes = plt.subplots(2, 2, figsize=(14, 12))
     axes = axes.flatten()
 
     for idx, (ic_type, info) in enumerate(ic_type_info.items()):
         ax = axes[idx]
 
-        if ic_type not in param_summary or not param_summary[ic_type]:
+        has_data = False
+        for ff_idx, (param_summary, label) in enumerate(zip(param_summaries, labels)):
+            if ic_type not in param_summary or not param_summary[ic_type]:
+                continue
+            has_data = True
+
+            all_means = [stats["mean"] for stats in param_summary[ic_type].values()]
+            all_counts = [stats["count"] for stats in param_summary[ic_type].values()]
+
+            if all_means:
+                weighted_mean = np.average(all_means, weights=all_counts)
+                ax.hist(
+                    all_means,
+                    bins=30,
+                    weights=all_counts,
+                    color=colors[ff_idx],
+                    alpha=0.5,
+                    edgecolor=colors[ff_idx],
+                    label=f"{label} (μ={weighted_mean:.3f})",
+                )
+
+        if not has_data:
             ax.text(
                 0.5,
                 0.5,
@@ -766,35 +745,11 @@ def generate_parameter_type_plots(
                 va="center",
                 transform=ax.transAxes,
             )
-            ax.set_title(info["title"])
-            continue
 
-        # Get all mean deviations for this IC type
-        all_means = [stats["mean"] for stats in param_summary[ic_type].values()]
-        all_counts = [stats["count"] for stats in param_summary[ic_type].values()]
-
-        # Weighted histogram
-        ax.hist(
-            all_means,
-            bins=30,
-            weights=all_counts,
-            color="steelblue",
-            alpha=0.7,
-            edgecolor="black",
-        )
         ax.set_xlabel(f"Mean Deviation ({info['unit']})")
         ax.set_ylabel("Count (weighted by occurrences)")
         ax.set_title(info["title"])
-
-        # Add summary stats
-        weighted_mean = np.average(all_means, weights=all_counts) if all_means else 0
-        ax.axvline(
-            weighted_mean,
-            color="red",
-            linestyle="--",
-            label=f"Weighted Mean: {weighted_mean:.3f}",
-        )
-        ax.legend()
+        ax.legend(fontsize=8)
 
     fig.suptitle("Internal Coordinate Deviation Distributions by Type", fontsize=14)
     fig.tight_layout()
@@ -806,41 +761,70 @@ def generate_parameter_type_plots(
 
 
 def print_summary(
-    metrics: dict, param_summary: dict | None = None, offxml_path: str | None = None
+    metrics_list: list[dict],
+    labels: list[str] | None = None,
+    param_summaries: list[dict] | None = None,
+    offxml_paths: list[str] | None = None,
 ) -> None:
     """Print summary of benchmark results to console.
 
     Parameters
     ----------
-    metrics : dict
-        Loaded metrics data.
-    param_summary : dict, optional
-        Parameter type summary statistics.
-    offxml_path : str, optional
-        Path to force field file for looking up SMIRKS patterns.
+    metrics_list : list[dict]
+        List of loaded metrics data dictionaries.
+    labels : list[str]
+        Labels for each force field.
+    param_summaries : list[dict], optional
+        List of parameter type summary statistics.
+    offxml_paths : list[str], optional
+        Paths to force field files for looking up SMIRKS patterns.
     """
-    print("\n" + "=" * 60)
+
+    if labels is None:
+        # Extract force field names from the metrics
+        if len(metrics_list) > 0:
+            ff_metrics = metrics_list[0].get("metrics", metrics_list[0])
+            labels = list(ff_metrics.keys())
+        else:
+            labels = ["Force Field"]
+
+    if len(metrics_list) != len(labels):
+        raise ValueError(
+            f"Number of metrics ({len(metrics_list)}) must match number of labels ({len(labels)})"
+        )
+    if param_summaries is not None and len(metrics_list) != len(param_summaries):
+        raise ValueError(
+            f"Number of metrics ({len(metrics_list)}) must match number of parameter summaries ({len(param_summaries)})."
+        )
+    if offxml_paths is not None and len(metrics_list) != len(offxml_paths):
+        raise ValueError(
+            f"Number of metrics ({len(metrics_list)}) must match number of offxml paths ({len(offxml_paths)})."
+        )
+
+    print("\n" + "=" * 70)
     print("BENCHMARK SUMMARY")
-    print("=" * 60)
+    print("=" * 70)
 
-    ff_metrics = metrics.get("metrics", metrics)
+    # Print metrics for each force field
+    for metrics, label in zip(metrics_list, labels):
+        ff_metrics = metrics.get("metrics", metrics)
 
-    for force_field, records in ff_metrics.items():
-        print(f"\nForce Field: {force_field}")
-        print("-" * 40)
+        print(f"\n{label}")
+        print("-" * 50)
 
         ddes = []
         rmsds = []
         tfds = []
 
-        for record_id, metric in records.items():
-            if isinstance(metric, dict):
-                if metric.get("dde") is not None:
-                    ddes.append(metric["dde"])
-                if metric.get("rmsd") is not None:
-                    rmsds.append(metric["rmsd"])
-                if metric.get("tfd") is not None:
-                    tfds.append(metric["tfd"])
+        for _, records in ff_metrics.items():
+            for _, metric in records.items():
+                if isinstance(metric, dict):
+                    if metric.get("dde") is not None:
+                        ddes.append(metric["dde"])
+                    if metric.get("rmsd") is not None:
+                        rmsds.append(metric["rmsd"])
+                    if metric.get("tfd") is not None:
+                        tfds.append(metric["tfd"])
 
         if ddes:
             dde_arr = np.array(ddes)
@@ -862,52 +846,66 @@ def print_summary(
                 f"  TFD:  mean={np.mean(tfd_arr):.4f}, std={np.std(tfd_arr):.4f}, n={len(tfd_arr)}"
             )
 
-    if param_summary:
-        print("\n" + "=" * 60)
+    # Print parameter type analysis if available
+    if param_summaries:
+        print("\n" + "=" * 70)
         print("TOP PARAMETER TYPES BY MEAN DEVIATION")
-        print("=" * 60)
+        print("=" * 70)
 
-        # Try to load force field for SMIRKS lookup
-        smirks_lookup = {}
-        if offxml_path:
-            try:
-                ff = ForceField(offxml_path)
-                # Build lookup from parameter ID to SMIRKS
-                for handler_name in [
-                    "Bonds",
-                    "Angles",
-                    "ProperTorsions",
-                    "ImproperTorsions",
-                ]:
-                    handler = ff.get_parameter_handler(handler_name)
-                    for param in handler.parameters:
-                        smirks_lookup[param.id] = param.smirks
-            except Exception as e:
-                logger.debug(f"Could not load force field for SMIRKS lookup: {e}")
+        # Build SMIRKS lookup from force fields if available
+        smirks_lookups = []
+        if offxml_paths:
+            for offxml_path in offxml_paths:
+                lookup = {}
+                if offxml_path:
+                    try:
+                        ff = ForceField(offxml_path)
+                        for handler_name in [
+                            "Bonds",
+                            "Angles",
+                            "ProperTorsions",
+                            "ImproperTorsions",
+                        ]:
+                            handler = ff.get_parameter_handler(handler_name)
+                            for param in handler.parameters:
+                                lookup[param.id] = param.smirks
+                    except Exception as e:
+                        logger.debug(
+                            f"Could not load force field for SMIRKS lookup: {e}"
+                        )
+                smirks_lookups.append(lookup)
+        else:
+            smirks_lookups = [{}] * len(param_summaries)
 
         for ic_type in ["Bond", "Angle", "Dihedral", "Improper"]:
-            if ic_type not in param_summary or not param_summary[ic_type]:
-                continue
-
             unit = "Å" if ic_type == "Bond" else "°"
             print(f"\n{ic_type}s ({unit}):")
-            print("-" * 80)
+            print("-" * 70)
 
-            # Sort by mean deviation (largest first)
-            params_sorted = sorted(
-                param_summary[ic_type].items(),
-                key=lambda x: x[1].get("mean", 0),
-                reverse=True,
-            )
+            for ff_idx, (param_summary, label) in enumerate(
+                zip(param_summaries, labels)
+            ):
+                if ic_type not in param_summary or not param_summary[ic_type]:
+                    continue
 
-            for i, (param_id, data) in enumerate(params_sorted[:5], 1):
-                count = data.get("count", 0)
-                mean_err = data.get("mean", float("nan"))
-                smirks = smirks_lookup.get(param_id, "")
-                smirks_suffix = f", SMIRKS: {smirks}" if smirks else ""
-                print(
-                    f"  {i}. {param_id}: mean={mean_err:.4f}{unit}, n={count}{smirks_suffix}"
+                print(f"\n  {label}:")
+                smirks_lookup = (
+                    smirks_lookups[ff_idx] if ff_idx < len(smirks_lookups) else {}
                 )
+
+                params_sorted = sorted(
+                    param_summary[ic_type].items(),
+                    key=lambda x: x[1].get("mean", 0),
+                    reverse=True,
+                )
+
+                for i, (param_id, data) in enumerate(params_sorted[:5], 1):
+                    count = data.get("count", 0)
+                    mean_err = data.get("mean", float("nan"))
+                    smirks = smirks_lookup.get(param_id, "")
+                    print(f"    {i}. {param_id}: mean={mean_err:.4f} {unit}, n={count}")
+                    if smirks:
+                        print(f"       SMIRKS: {smirks}")
 
 
 def main():
@@ -915,17 +913,25 @@ def main():
         description="Generate benchmark plots from existing results",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
+Plot benchmarking results where parameter summaries are only produced if a single dataset
+is passed.
+
 Examples:
-    Basic plots from metrics.json only:
+    Basic plots from single metrics.json:
         python plot_benchmark.py --metrics benchmark_results/metrics.json
 
-    Full plots including parameter type analysis (from database):
-        python plot_benchmark.py --metrics benchmark_results/metrics.json \\
-            --database benchmark.sqlite --offxml openff-2.2.1.offxml
+    Compare multiple force fields:
+        python plot_benchmark.py \\
+            --metrics ff1/metrics.json ff2/metrics.json \\
+            --labels "OpenFF 2.2.1" "Custom FF" \\
+            --output-dir comparison/
 
-    Using pre-computed parameter type analysis:
-        python plot_benchmark.py --metrics benchmark_results/metrics.json \\
-            --param-json benchmark_results/metrics_by_parameter_type.json
+    With parameter type analysis:
+        python plot_benchmark.py \\
+            --metrics ff1/metrics.json ff2/metrics.json \\
+            --labels "OpenFF 2.2.1" "Custom FF" \\
+            --param-json ff1/metrics_by_parameter_type.json ff2/metrics_by_parameter_type.json \\
+            --offxml ff1.offxml ff2.offxml
 
 Output Files:
     - plots/dde_histogram.pdf           : DDE distribution histogram
@@ -934,15 +940,22 @@ Output Files:
     - plots/icrmsd_comparison.pdf       : Bar chart of ICRMSD by type
     - plots/icrmsd_by_type.pdf          : CDF plots for each IC type
     - plots/deviation_by_*_type.pdf     : Mean deviation by SMIRKS (requires param analysis)
-    - plots/deviation_dist_*_type.pdf   : Deviation distributions by parameter type
     - plots/deviation_summary_all_types.pdf : Summary of all IC type deviations
         """,
     )
     parser.add_argument(
         "--metrics",
         type=str,
+        nargs="+",
         required=True,
-        help="Path to metrics.json file from benchmarking run",
+        help="Path(s) to metrics.json file(s) from benchmarking run(s)",
+    )
+    parser.add_argument(
+        "--labels",
+        type=str,
+        nargs="+",
+        default=None,
+        help="Labels for each force field (defaults to parent directory names)",
     )
     parser.add_argument(
         "--output-dir",
@@ -953,20 +966,23 @@ Output Files:
     parser.add_argument(
         "--database",
         type=str,
+        nargs="+",
         default=None,
-        help="Path to benchmark.sqlite for parameter type analysis",
+        help="Path(s) to benchmark.sqlite for parameter type analysis",
     )
     parser.add_argument(
         "--offxml",
         type=str,
+        nargs="+",
         default=None,
-        help="Path to OFFXML force field file (required with --database)",
+        help="Path(s) to OFFXML force field file(s) for SMIRKS lookup",
     )
     parser.add_argument(
         "--param-json",
         type=str,
+        nargs="+",
         default=None,
-        help="Path to existing metrics_by_parameter_type.json",
+        help="Path(s) to existing metrics_by_parameter_type.json file(s)",
     )
     parser.add_argument(
         "--n-processes",
@@ -994,73 +1010,80 @@ Output Files:
     elif args.verbose >= 3:
         logger.add(sys.stdout, level="DEBUG")
 
-    metrics_path = pathlib.Path(args.metrics)
     output_dir = pathlib.Path(args.output_dir)
+    n_ff = len(args.metrics)
 
-    if not metrics_path.exists():
-        logger.error(f"Metrics file not found: {metrics_path}")
-        sys.exit(1)
+    # Generate labels if not provided
+    if args.labels:
+        labels = args.labels
+        if len(labels) != n_ff:
+            logger.error(
+                f"Number of labels ({len(labels)}) must match number of metrics files ({n_ff})"
+            )
+            sys.exit(1)
+    else:
+        # Use parent directory names as labels
+        labels = []
+        for metrics_path in args.metrics:
+            path = pathlib.Path(metrics_path)
+            labels.append(path.parent.name if path.parent.name != "." else path.stem)
 
-    # Load metrics
-    metrics = load_metrics(metrics_path)
+    # Load all metrics files
+    metrics_list = []
+    for metrics_path in args.metrics:
+        path = pathlib.Path(metrics_path)
+        if not path.exists():
+            logger.error(f"Metrics file not found: {path}")
+            sys.exit(1)
+        metrics_list.append(load_metrics(path))
+
+    logger.info(f"Loaded {n_ff} metrics file(s): {labels}")
 
     # Generate basic plots
-    generate_basic_plots(metrics, output_dir)
+    generate_basic_plots(metrics_list, labels, output_dir)
 
     # Handle parameter type analysis
-    param_summary = None
+    param_summaries: list[dict] = []
 
     if args.param_json:
-        # Load from explicitly provided JSON path
-        param_path = pathlib.Path(args.param_json)
-        if param_path.exists():
-            param_summary = load_parameter_type_summary(param_path)
-        else:
-            logger.warning(f"Parameter type JSON not found: {param_path}")
-
-    else:
-        # Auto-detect metrics_by_parameter_type.json in output directory
-        auto_param_path = output_dir / "metrics_by_parameter_type.json"
-        if auto_param_path.exists():
-            logger.info(f"Found existing parameter type analysis: {auto_param_path}")
-            param_summary = load_parameter_type_summary(auto_param_path)
-
-        elif args.database and args.offxml:
-            database_path = pathlib.Path(args.database)
-            offxml_path = pathlib.Path(args.offxml)
-
-            if not database_path.exists():
-                logger.error(f"Database not found: {database_path}")
-            elif not offxml_path.exists():
-                logger.error(f"Force field not found: {offxml_path}")
+        # Load from explicitly provided JSON paths
+        for param_path in args.param_json:
+            path = pathlib.Path(param_path)
+            if path.exists():
+                param_summaries.append(load_parameter_type_summary(path))
             else:
-                try:
-                    store = MoleculeStore(str(database_path))
-                    param_deviations = analyze_by_parameter_type(
-                        store, str(offxml_path), n_processes=args.n_processes
-                    )
-                    param_summary = compute_parameter_type_summary(param_deviations)
+                logger.warning(f"Parameter type JSON not found: {path}")
+                param_summaries.append({})
+    else:
+        # Try auto-detecting metrics_by_parameter_type.json next to each metrics file
+        for metrics_path in args.metrics:
+            metrics_dir = pathlib.Path(metrics_path).parent
+            auto_param_path = metrics_dir / "metrics_by_parameter_type.json"
+            if auto_param_path.exists():
+                logger.info(
+                    f"Found existing parameter type analysis: {auto_param_path}"
+                )
+                param_summaries.append(load_parameter_type_summary(auto_param_path))
+            else:
+                param_summaries.append({})
 
-                    # Save for future use
-                    param_output = output_dir / "metrics_by_parameter_type.json"
-                    with open(param_output, "w") as f:
-                        json.dump(param_summary, f, indent=2)
-                    logger.info(f"Saved parameter type analysis to: {param_output}")
-
-                except Exception as e:
-                    logger.error(f"Parameter type analysis failed: {e}")
-
-        elif args.database or args.offxml:
-            logger.warning(
-                "Both --database and --offxml are required for parameter type analysis"
-            )
+    # Filter out empty param summaries for plotting
+    has_param_data = any(bool(ps) for ps in param_summaries)
 
     # Generate parameter type plots if available
-    if param_summary:
-        generate_parameter_type_plots(param_summary, output_dir)
+    if has_param_data and len(labels) == 1:
+        generate_parameter_type_plots(param_summaries, labels, output_dir)
 
-    # Print summary (pass offxml for SMIRKS lookup if available)
-    print_summary(metrics, param_summary, args.offxml)
+    # Get offxml paths for SMIRKS lookup
+    offxml_paths = args.offxml if args.offxml else []
+
+    # Print summary
+    print_summary(
+        metrics_list,
+        labels,
+        param_summaries if has_param_data else None,
+        offxml_paths if offxml_paths else None,
+    )
 
     logger.info("Plot generation complete!")
 
