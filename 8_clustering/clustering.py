@@ -217,7 +217,7 @@ def extract_valence_params(
                 # Convert OpenFF Quantity to convenient unit
                 if hasattr(value, "m_as"):
                     if dst_col == "k" and handler_name == "Bonds":
-                        target = _UNIT.kilojoule / _UNIT.mole / (_UNIT.angstrom**2)
+                        target = "kilojoule / mol / angstrom ** 2"
                         val = value.m_as(target)
                     elif dst_col == "k" and handler_name == "Angles":
                         target = _UNIT.kilojoule / _UNIT.mole / (_UNIT.radian**2)
