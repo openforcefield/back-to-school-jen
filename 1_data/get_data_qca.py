@@ -65,28 +65,14 @@ import argparse
 import json
 import pathlib
 from typing import Union
-from collections import defaultdict
 
 import descent.targets.energy
-import torch
 import numpy as np
 from loguru import logger
 from openff.units import unit
 from tqdm import tqdm
 
 import qcportal
-from openff.qcsubmit.results import (
-    BasicResultCollection,
-    OptimizationResultCollection,
-    TorsionDriveResultCollection,
-)
-
-collection_types = {
-    "optimization": OptimizationResultCollection,
-    "singlepoint": BasicResultCollection,
-    "torsiondrive": TorsionDriveResultCollection,
-}
-
 
 HARTREE_TO_KCAL: float = (1 * unit.hartree * unit.avogadro_constant).m_as(
     unit.kilocalories_per_mole
@@ -94,104 +80,79 @@ HARTREE_TO_KCAL: float = (1 * unit.hartree * unit.avogadro_constant).m_as(
 BOHR_TO_ANGSTROM: float = (1.0 * unit.bohr).m_as(unit.angstrom)
 
 
-def retrieve_datasets(
-    dataset_names: list[str], dataset_type: str, spec_name: str = "default"
-) -> Union[
-    BasicResultCollection, OptimizationResultCollection, TorsionDriveResultCollection
-]:
-    """Downloads datasets from QCArchive and returns a QCSubmit result collection.
-
-    Connects to the QCArchive portal and retrieves the specified datasets
-    based on their type and specification name. Supports optimization,
-    singlepoint, and torsiondrive dataset types.
+def retrieve_data(
+    input_data: list[str],
+    input_type: str,
+    dataset_type: str,
+    spec_name: str = "default",
+) -> list[dict]:
+    """Retrieve data from QCArchive based on dataset names or record IDs.
 
     Parameters
     ----------
-    dataset_names : list[str]
-        List of dataset names to retrieve from QCArchive.
+    input_data : list[str]
+        List of dataset names or record IDs to retrieve from QCArchive.
+    input_type : str
+        Type of input data: "dataset" or "record".
     dataset_type : str
-        Type of dataset to retrieve. Must be one of: 'optimization',
-        'singlepoint', or 'torsiondrive'.
+        Type of dataset: "singlepoint" or "optimization".
     spec_name : str, optional
-        Specification name for the dataset retrieval, by default "default".
+        Specification name for dataset retrieval, by default "default".
 
     Returns
     -------
-    Union[BasicResultCollection, OptimizationResultCollection, TorsionDriveResultCollection]
-        QCSubmit result collection containing the retrieved dataset data.
-        The specific type depends on the dataset_type parameter.
+    list[dict]
+        List of records containing molecular data.
 
     Raises
     ------
-    KeyError
-        If dataset_type is not one of the supported types.
-
-    Notes
-    -----
-    This function requires an active internet connection to access the
-    QCArchive portal at https://api.qcarchive.molssi.org:443.
-
-    Examples
-    --------
-    >>> datasets = ["OpenFF Gen 2 Opt Set 1 Roche"]
-    >>> collection = retrieve_datasets(datasets, "optimization")
-    >>> print(f"Retrieved {len(collection.entries)} entries")
+    ValueError
+        If input_type is not "dataset" or "record".
+    ValueError
+        If dataset_type is not "singlepoint" or "optimization".
     """
-    if dataset_type not in collection_types:
-        raise KeyError(
-            f"{dataset_type} is not a valid dataset type. Must be one of: {list(collection_types.keys())}"
-        )
-    logger.info(
-        f"Fetching {dataset_type} datasets {dataset_names} from QCArchive with {collection_types[dataset_type]}"
-    )
+    if dataset_type not in ["singlepoint", "optimization"]:
+        raise ValueError("dataset_type must be 'singlepoint' or 'optimization'")
 
-    client = qcportal.PortalClient(
-        "https://api.qcarchive.molssi.org:443", cache_dir="."
-    )
-    result_collection = collection_types[dataset_type].from_server(
-        client=client,
-        datasets=dataset_names,
-        spec_name=spec_name,
-    )
-    return result_collection
+    client = qcportal.PortalClient("https://api.qcarchive.molssi.org:443")
+
+    if input_type == "dataset":
+        logger.info(f"Fetching {dataset_type} datasets {input_data} from QCArchive")
+        records = []
+        for dataset_name in input_data:
+            dataset = client.get_dataset(dataset_type, dataset_name)
+            records.extend(
+                [
+                    rec
+                    for _, _, rec in dataset.iterate_records(
+                        specification_name=[spec_name]
+                    )
+                ]
+            )
+    elif input_type == "record":
+        logger.info(f"Fetching records {input_data} from QCArchive")
+        records = [*client.query_records(record_id=input_data)]
+    else:
+        raise ValueError("input_type must be 'dataset' or 'record'")
+
+    return records
 
 
-def process_result_collection(
-    result_collection: Union[
-        BasicResultCollection,
-        OptimizationResultCollection,
-        TorsionDriveResultCollection,
-    ],
+def process_records(
+    records: list[dict],
     data_file: Union[str, pathlib.Path],
+    dataset_type: str,
 ) -> None:
-    """Process QCArchive result collection into a structured dataset.
-
-    Extracts molecular data (SMILES, coordinates, energies, forces) from the
-    QCArchive result collection and creates a structured dataset using the descent
-    library. For optimization and torsiondrive datasets, extracts data from
-    minimum energy conformations. Converts units from atomic units to kcal/mol
-    and Angstroms as appropriate.
+    """Process QCArchive records into a structured dataset.
 
     Parameters
     ----------
-    result_collection : Union[BasicResultCollection, OptimizationResultCollection, TorsionDriveResultCollection]
-        QCArchive result collection containing the molecular data. The collection
-        type determines how data is extracted (e.g., final geometries for
-        optimizations, grid points for torsiondrives).
+    records : list[dict]
+        List of records containing molecular data.
     data_file : Union[str, pathlib.Path]
-        Directory path where the processed dataset will be saved. The dataset
-        will be saved in HuggingFace datasets format with Arrow files.
-
-    Raises
-    ------
-    FileNotFoundError
-        If the output directory cannot be created.
-    KeyError
-        If expected properties ('return_energy', 'scf total gradient') are
-        missing from the result collection records.
-    AttributeError
-        If result collection records don't have expected attributes
-        (e.g., 'minimum_optimizations' for torsiondrive data).
+        Directory path where the processed dataset will be saved.
+    dataset_type : str
+        Type of dataset: "singlepoint" or "optimization".
 
     Notes
     -----
@@ -203,91 +164,54 @@ def process_result_collection(
     - Creates descent-compatible dataset entries
     - Saves dataset in HuggingFace format
     - Saves unique SMILES list as JSON file
-
-    For torsiondrive datasets, only minimum energy optimizations are extracted.
-    The function uses mapped SMILES to preserve atom ordering consistency.
-
-    Examples
-    --------
-    >>> collection = retrieve_datasets(["dataset_name"], "torsiondrive")
-    >>> process_result_collection(collection, "./processed_data")
     """
-
-    logger.info("Processing collection...")
+    logger.info("Processing records...")
     data_file = pathlib.Path(data_file)
-    data_by_smiles = defaultdict(list)
-    records_and_molecules = list(result_collection.to_records())
-    for record, _ in tqdm(records_and_molecules):  # lazily group by CMILES
-        if isinstance(result_collection, BasicResultCollection):
+    no_gradient = []
+    all_data = []
+
+    for record in tqdm(records):
+        rec_id = record.id
+        if dataset_type == "singlepoint":
             molecule = record.molecule
-            mapped_smiles = (
-                molecule.identifiers.canonical_isomeric_explicit_hydrogen_mapped_smiles
-            )
-            coords = molecule.geometry * BOHR_TO_ANGSTROM
-            energy = record.properties["return_energy"] * HARTREE_TO_KCAL
+        elif dataset_type == "optimization":
+            molecule = record.initial_molecule
+            record = record.trajectory[-1]
+        else:
+            raise ValueError("dataset_type must be 'singlepoint' or 'optimization'")
+
+        mapped_smiles = (
+            molecule.identifiers.canonical_isomeric_explicit_hydrogen_mapped_smiles
+        )
+        coords = molecule.geometry * BOHR_TO_ANGSTROM
+        energy = record.properties["return_energy"] * HARTREE_TO_KCAL
+        if "scf_total_gradient" not in record.properties:
+            no_gradient.append(rec_id)
+            forces = np.ones_like(coords) * np.nan
+        else:
             gradient = np.array(record.properties["scf_total_gradient"]).reshape(
                 (-1, 3)
             )
             forces = (-gradient) * HARTREE_TO_KCAL / BOHR_TO_ANGSTROM
-            entry = {
-                "coords": coords,
-                "energy": energy,
-                "forces": forces,
+        all_data.append(
+            {
+                "smiles": mapped_smiles,
+                "coords": [coords],
+                "energy": [energy],
+                "forces": [forces],
             }
-            data_by_smiles[mapped_smiles].append(entry)
-        elif isinstance(result_collection, OptimizationResultCollection):
-            last = record.trajectory[-1]
-            last_mol = last.molecule
-            mapped_smiles = (
-                last_mol.identifiers.canonical_isomeric_explicit_hydrogen_mapped_smiles
-            )
-            coords = last_mol.geometry * BOHR_TO_ANGSTROM
-            energy = last.properties["return_energy"] * HARTREE_TO_KCAL
-            gradient = np.array(last.properties["scf total gradient"]).reshape((-1, 3))
-            forces = (-gradient) * HARTREE_TO_KCAL / BOHR_TO_ANGSTROM
-            entry = {
-                "coords": coords,
-                "energy": energy,
-                "forces": forces,
-            }
-            data_by_smiles[mapped_smiles].append(entry)
-        if isinstance(result_collection, TorsionDriveResultCollection):
-            # take only the optimized grid points
-            for opt in record.minimum_optimizations.values():
-                last = opt.trajectory[-1]
-                last_mol = last.molecule
-                mapped_smiles = last_mol.identifiers.canonical_isomeric_explicit_hydrogen_mapped_smiles
-                coords = last_mol.geometry * BOHR_TO_ANGSTROM
-                energy = last.properties["return_energy"] * HARTREE_TO_KCAL
-                gradient = np.array(last.properties["scf total gradient"]).reshape(
-                    (-1, 3)
-                )
-                forces = (-gradient) * HARTREE_TO_KCAL / BOHR_TO_ANGSTROM
-                entry = {
-                    "coords": coords,
-                    "energy": energy,
-                    "forces": forces,
-                }
-                data_by_smiles[mapped_smiles].append(entry)
+        )
 
-    descent_entries = []
-    for mapped_smiles, entries in data_by_smiles.items():
-        entry = {
-            "smiles": mapped_smiles,
-            "coords": torch.tensor(np.stack([x["coords"] for x in entries], axis=0)),
-            "energy": torch.tensor(
-                np.stack([np.atleast_1d(x["energy"]) for x in entries], axis=0)
-            ),
-            "forces": torch.tensor(np.stack([x["forces"] for x in entries], axis=0)),
-        }
-        descent_entries.append(entry)
+    logger.warning(
+        f"There are {len(no_gradient)} records without gradients. Record IDs: {no_gradient}"
+    )
 
-    dataset = descent.targets.energy.create_dataset(entries=descent_entries)
+    dataset = descent.targets.energy.create_dataset(all_data)
     logger.info(f"Saving HuggingFace dataset to: {data_file.resolve()}")
     dataset.save_to_disk(data_file)
     unique_smiles = dataset.unique("smiles")
     logger.info(
-        f"Found {len(dataset)} ({len(unique_smiles)} unique) SMILES in requested datasets"
+        f"Found {len(dataset)} ({len(unique_smiles)} unique) SMILES in requested records"
     )
 
     filename = data_file / "smiles.json"
@@ -296,22 +220,69 @@ def process_result_collection(
         json.dump(list(unique_smiles), file)
 
 
+def load_record_ids(input_data: list[str]) -> list[str]:
+    """Load record IDs from a list or a text file.
+
+    Parameters
+    ----------
+    input_data : list[str]
+        List of record IDs or a single text file containing record IDs.
+
+    Returns
+    -------
+    list[str]
+        List of record IDs.
+
+    Raises
+    ------
+    FileNotFoundError
+        If the specified file does not exist.
+    ValueError
+        If the file format is invalid.
+    """
+    if len(input_data) == 1 and input_data[0].endswith(".txt"):
+        file_path = pathlib.Path(input_data[0])
+        if not file_path.exists():
+            raise FileNotFoundError(f"File not found: {file_path}")
+
+        with open(file_path, "r") as f:
+            lines = f.readlines()
+
+        # Extract record IDs, ignoring comments
+        record_ids = [
+            line.strip() for line in lines if not line.startswith("#") and line.strip()
+        ]
+        if not record_ids:
+            raise ValueError(f"No valid record IDs found in file: {file_path}")
+
+        logger.info(f"Loaded {len(record_ids)} record IDs from file: {file_path}")
+        return record_ids
+
+    # Assume input_data is already a list of record IDs
+    logger.info(f"Using {len(input_data)} record IDs provided directly")
+    return input_data
+
+
 def main(
-    datasets: list[str], dataset_type: str, data_file: Union[str, pathlib.Path]
+    input_data: list[str],
+    input_type: str,
+    dataset_type: str,
+    data_file: Union[str, pathlib.Path],
 ) -> None:
     """Main processing function for QCArchive data workflow.
 
     Orchestrates the complete QCArchive data processing workflow by retrieving
-    datasets from QCArchive and processing them into structured format for
-    machine learning applications.
+    data from QCArchive and processing it into structured format for
+    fitting applications.
 
     Parameters
     ----------
-    datasets : list[str]
-        List of QCArchive dataset names to retrieve and process.
+    input_data : list[str]
+        List of dataset names, record IDs, or a text file containing record IDs.
+    input_type : str
+        Type of input data: "dataset" or "record".
     dataset_type : str
-        Type of datasets to retrieve. Must be one of: 'optimization',
-        'singlepoint', or 'torsiondrive'.
+        Type of dataset: "singlepoint" or "optimization".
     data_file : Union[str, pathlib.Path]
         Output path for the processed dataset in HuggingFace format.
 
@@ -321,69 +292,61 @@ def main(
 
     Raises
     ------
-    KeyError
-        If an invalid dataset_type is specified.
-    ConnectionError
-        If unable to connect to QCArchive portal.
-    FileNotFoundError
-        If the output directory cannot be created.
-
-    Notes
-    -----
-    The function performs the following workflow:
-    1. Connects to QCArchive portal and retrieves specified datasets
-    2. Processes the result collection into descent-compatible format
-    3. Saves the processed data in HuggingFace datasets format
-    4. Creates a JSON file with unique SMILES strings
-
-    This function is typically called from the command-line interface but
-    can also be used programmatically when importing the module.
-
-    Examples
-    --------
-    >>> # Programmatic usage:
-    >>> datasets = ["OpenFF Gen 2 Opt Set 1 Roche"]
-    >>> main(datasets, "optimization", "./qcarchive_data")
-
-    >>> # Multiple datasets:
-    >>> datasets = ["Dataset 1", "Dataset 2"]
-    >>> main(datasets, "torsiondrive", "./processed_torsions")
+    ValueError
+        If input_type is not "dataset" or "record".
     """
-
-    result_collection = retrieve_datasets(datasets, dataset_type)
-    process_result_collection(result_collection, data_file)
+    if input_type == "record":
+        input_data = load_record_ids(input_data)
+    print(input_data)
+    records = retrieve_data(input_data, input_type, dataset_type)
+    process_records(records, data_file, dataset_type)
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="Download and process QCArchive datasets for molecular ML workflows.",
+        description="Download and process QCArchive data for molecular fitting workflows.",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-    # Process single optimization dataset
-    python get_data_qca.py --datasets "OpenFF Gen 2 Opt Set 1 Roche" \\
-                           --dataset_type optimization \\
+    # Process singlepoint datasets
+    python get_data_qca.py --input_data "OpenFF Gen 2 Opt Set 1 Roche" \
+                           --input_type dataset \
+                           --dataset_type singlepoint \
                            --data_file ./qcarchive_data
 
-    # Process multiple torsiondrive datasets
-    python get_data_qca.py --datasets "OpenFF Gen 2 Torsion Set 1 Roche" \\
-                                      "OpenFF Gen 2 Torsion Set 2 Coverage" \\
-                           --dataset_type torsiondrive \\
-                           --data_file ./torsion_data
+    # Process optimization datasets
+    python get_data_qca.py --input_data "OpenFF Gen 2 Opt Set 1 Roche" \
+                           --input_type dataset \
+                           --dataset_type optimization \
+                           --data_file ./qcarchive_data
+
+    # Process records from a text file
+    python get_data_qca.py --input_data record_ids.txt \
+                           --input_type record \
+                           --dataset_type singlepoint \
+                           --data_file ./record_data
         """,
     )
     parser.add_argument(
-        "--datasets",
+        "--input_data",
         type=str,
         nargs="+",
         required=True,
-        help="List of dataset names",
+        help="List of dataset names, record IDs, or a text file containing record IDs",
+    )
+    parser.add_argument(
+        "--input_type",
+        type=str,
+        required=True,
+        choices=["dataset", "record"],
+        help="Type of input data: 'dataset' or 'record'",
     )
     parser.add_argument(
         "--dataset_type",
         type=str,
         required=True,
-        help="Dataset type of all listed datasets",
+        choices=["singlepoint", "optimization"],
+        help="Type of dataset: 'singlepoint' or 'optimization'",
     )
     parser.add_argument(
         "--data_file",
@@ -393,4 +356,4 @@ Examples:
     )
     args = parser.parse_args()
 
-    main(args.datasets, args.dataset_type, args.data_file)
+    main(args.input_data, args.input_type, args.dataset_type, args.data_file)
