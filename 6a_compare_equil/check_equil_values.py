@@ -12,10 +12,12 @@ Command-line Arguments
 ----------------------
 --offxml : str
     Path to OFFXML force field file to analyze.
---train-data : str
-    Path to training dataset directory (HuggingFace format with SMILES and coordinates).
---val-data : str, optional
-    Path to validation dataset directory (HuggingFace format with SMILES and coordinates).
+--dataset-paths : str, nargs='+'
+    Paths to dataset directories (HuggingFace format with SMILES and coordinates).
+    Multiple paths can be provided, separated by spaces.
+--dataset-labels : str, nargs='+', optional
+    Labels for each dataset to use in plots. Must match the number of dataset paths.
+    If not provided, datasets will be labeled as 'Dataset 1', 'Dataset 2', etc.
 --output-dir : str, optional
     Directory for output plots (default: current directory).
 --n-processes : int, optional
@@ -27,44 +29,50 @@ Command-line Arguments
 
 Examples
 --------
-Basic usage with training data only:
+Basic usage with a single dataset:
 $ python check_equil_values.py \\
     --offxml ../4_make_offxmls/b_no_bond_with_ring_in_atom/openff_unconstrained.offxml \\
-    --train-data ../3_split_train_test/full_split_uci/data-train
+    --dataset-paths ../3_split_train_test/full_split_uci/data-train
 
-With both training and validation data:
+With multiple datasets and custom labels:
 $ python check_equil_values.py \\
     --offxml ../4_make_offxmls/b_no_bond_with_ring_in_atom/openff_unconstrained.offxml \\
-    --train-data ../3_split_train_test/full_split_uci/data-train \\
-    --val-data ../3_split_train_test/full_split_uci/data-test \\
+    --dataset-paths ../3_split_train_test/full_split_uci/data-train ../3_split_train_test/full_split_uci/data-test \\
+    --dataset-labels "Training" "Validation" \\
     --output-dir ./equilibrium_analysis
 
 With multiple parallel processes:
 $ python check_equil_values.py \\
     --offxml openff-2.2.1.offxml \\
-    --train-data ../3_split_train_test/full_split_uci/data-train \\
+    --dataset-paths ../3_split_train_test/full_split_uci/data-train \\
+    --n-processes 8
+
+With three or more datasets:
+$ python check_equil_values.py \\
+    --offxml openff-2.2.1.offxml \\
+    --dataset-paths data-train data-test data-external \\
+    --dataset-labels "Train" "Test" "External" \\
     --n-processes 8
 
 Output Structure
 ----------------
 Creates the following plots in output-dir/plots/:
-- bond_equilibrium_comparison.pdf    # Bond lengths: train (blue) & val (red) side-by-side
-- angle_equilibrium_comparison.pdf   # Angles: train (blue) & val (red) side-by-side
+- bond_equilibrium_comparison.pdf    # Bond lengths: all datasets side-by-side
+- angle_equilibrium_comparison.pdf   # Angles: all datasets side-by-side
 
 Creates the following cache files in output-dir/ic_values_cache/:
-- train_ic_values.json    # Cached internal coordinate values from training dataset
-- val_ic_values.json      # Cached internal coordinate values from validation dataset
+- dataset_0_ic_values.json    # Cached internal coordinate values from first dataset
+- dataset_1_ic_values.json    # Cached internal coordinate values from second dataset
+- ... (one file per dataset)
 
 If cache files exist, dataset analysis will be skipped and cached values will be used.
 To force reanalysis, delete the cache files.
 
-If validation data is not provided, plots show only training data.
-
 Each plot shows:
-- Box plots of observed values (blue=train, red=validation if available)
+- Box plots of observed values (different colors for each dataset)
 - Green diamond marker at the force field equilibrium value
 - Sample counts for each dataset
-- Parameters sorted by training set frequency (most common at top)
+- Parameters sorted by first dataset frequency (most common at top)
 """
 
 import argparse
@@ -859,28 +867,28 @@ def save_large_plot_with_fallback(
 
 
 def plot_equilibrium_comparison(
-    train_ic_values: dict[str, list[float]],
+    dataset_ic_values: list[dict[str, list[float]]],
+    dataset_labels: list[str],
     ff_params: dict[str, float],
     ic_type: str,
     output_path: pathlib.Path,
-    val_ic_values: dict[str, list[float]] | None = None,
     param_id_mapping: dict[str, str] | None = None,
 ) -> None:
     """Generate box plot comparing dataset IC values to force field equilibrium.
 
     Parameters
     ----------
-    train_ic_values : dict[str, list[float]]
-        Training observed internal coordinate values: {param_id: [values]}.
+    dataset_ic_values : list[dict[str, list[float]]]
+        List of observed internal coordinate values for each dataset.
+        Each dict has format: {param_id: [values]}.
+    dataset_labels : list[str]
+        Labels for each dataset to use in the plot legend.
     ff_params : dict[str, float]
         Force field equilibrium values: {param_id: equilibrium_value}.
     ic_type : str
         Type of internal coordinate: "Bond" or "Angle".
     output_path : pathlib.Path
         Path to save the plot.
-    val_ic_values : dict[str, list[float]], optional
-        Validation observed internal coordinate values: {param_id: [values]}.
-        If provided, will be plotted side-by-side with training data.
     param_id_mapping : dict[str, str], optional
         Mapping from param_id to simple_id (e.g., "b0", "a1").
         If provided, simple IDs will be used as y-axis labels.
@@ -888,24 +896,27 @@ def plot_equilibrium_comparison(
     Examples
     --------
     >>> plot_equilibrium_comparison(
-    ...     bond_values, bond_params, "Bond",
+    ...     [bond_values_train, bond_values_val],
+    ...     ["Training", "Validation"],
+    ...     bond_params, "Bond",
     ...     Path("./plots/bond_comparison.pdf")
     ... )
-    >>> plot_equilibrium_comparison(
-    ...     train_bond_values, bond_params, "Bond",
-    ...     Path("./plots/bond_comparison.pdf"),
-    ...     val_bond_values,
-    ...     param_id_mapping
-    ... )
     """
+    if len(dataset_ic_values) != len(dataset_labels):
+        raise ValueError(
+            f"Number of datasets ({len(dataset_ic_values)}) must match "
+            f"number of labels ({len(dataset_labels)})"
+        )
+
     logger.info(
-        f"Generating {ic_type} equilibrium comparison plot with {len(train_ic_values)} potentials..."
+        f"Generating {ic_type} equilibrium comparison plot with {len(dataset_labels)} datasets..."
     )
 
-    # Filter to only parameters with data in training set
+    # Filter to only parameters with data in first dataset (for consistency)
+    first_dataset_ic_values = dataset_ic_values[0]
     params_with_data = {
         param_id: values
-        for param_id, values in train_ic_values.items()
+        for param_id, values in first_dataset_ic_values.items()
         if param_id in ff_params and len(values) > 0
     }
 
@@ -913,7 +924,7 @@ def plot_equilibrium_comparison(
         logger.warning(f"No {ic_type} parameters with data to plot")
         return
 
-    # Sort by training count (most common first)
+    # Sort by first dataset count (most common first)
     sorted_params = sorted(
         params_with_data.items(),
         key=lambda x: len(x[1]),
@@ -921,94 +932,98 @@ def plot_equilibrium_comparison(
     )
 
     param_ids = [p[0] for p in sorted_params]
-    train_data_values = [p[1] for p in sorted_params]
-    train_counts = [len(p[1]) for p in sorted_params]
     equil_values = [ff_params[param_id] for param_id in param_ids]
 
-    # Get validation data if available
-    has_val_data = val_ic_values is not None
-    if has_val_data:
-        val_data_values = []
-        val_counts = []
-        for param_id in param_ids:
-            if param_id in val_ic_values and len(val_ic_values[param_id]) > 0:  # type: ignore[operator,index]
-                val_data_values.append(val_ic_values[param_id])  # type: ignore[index]
-                val_counts.append(len(val_ic_values[param_id]))  # type: ignore[index]
-            else:
-                val_data_values.append([])
-                val_counts.append(0)
+    # Collect data and counts for all datasets
+    all_dataset_values = []
+    all_dataset_counts = []
 
-        if all(len(vals) == 0 for vals in val_data_values):
-            logger.warning(
-                f"All validation data for {ic_type} is empty, plotting training only"
-            )
-            has_val_data = False
+    for dataset_ic_vals in dataset_ic_values:
+        dataset_values = []
+        dataset_counts = []
+        for param_id in param_ids:
+            if param_id in dataset_ic_vals and len(dataset_ic_vals[param_id]) > 0:
+                dataset_values.append(dataset_ic_vals[param_id])
+                dataset_counts.append(len(dataset_ic_vals[param_id]))
+            else:
+                dataset_values.append([])
+                dataset_counts.append(0)
+        all_dataset_values.append(dataset_values)
+        all_dataset_counts.append(dataset_counts)
 
     # Determine plot size based on number of parameters
     fig_height = 3 + len(params_with_data) * 0.4
     fig, ax = plt.subplots(figsize=(12, fig_height))
 
     # Set up positions for side-by-side box plots
-    # Each parameter gets a unit of space, with small offsets for train/val
+    # Each parameter gets a unit of space, with offsets for each dataset
     base_positions = np.arange(len(params_with_data))
 
-    if has_val_data:
-        # Offset for side-by-side plotting
-        train_offset = -0.2
-        val_offset = 0.2
-        box_width = 0.35
-        train_positions = base_positions + train_offset
-    else:
-        train_offset = 0
+    n_datasets = len(dataset_ic_values)
+
+    # Define color palette for up to 10 datasets
+    colors = [
+        ("lightblue", "blue", "darkblue", "o"),
+        ("lightcoral", "red", "darkred", "s"),
+        ("lightgreen", "green", "darkgreen", "^"),
+        ("lightyellow", "orange", "darkorange", "v"),
+        ("plum", "purple", "indigo", "D"),
+        ("lightcyan", "cyan", "darkcyan", "<"),
+        ("peachpuff", "brown", "saddlebrown", ">"),
+        ("lightgray", "gray", "black", "p"),
+        ("pink", "hotpink", "deeppink", "h"),
+        ("wheat", "gold", "darkgoldenrod", "*"),
+    ]
+
+    if n_datasets == 1:
         box_width = 0.6
-        train_positions = base_positions
+        offsets = [0]
+    else:
+        # Calculate offsets to space datasets evenly
+        box_width = 0.8 / n_datasets
+        total_width = box_width * n_datasets
+        offsets = np.linspace(
+            -total_width / 2 + box_width / 2,
+            total_width / 2 - box_width / 2,
+            n_datasets,
+        )
 
-    # Create horizontal box plot for training data
-    ax.boxplot(
-        train_data_values,
-        positions=train_positions,
-        vert=False,
-        widths=box_width,
-        patch_artist=True,
-        boxprops=dict(facecolor="lightblue", alpha=0.7, edgecolor="blue"),
-        medianprops=dict(color="darkblue", linewidth=2),
-        whiskerprops=dict(color="blue", linewidth=1),
-        capprops=dict(color="blue", linewidth=1),
-        flierprops=dict(marker="o", markerfacecolor="blue", markersize=3, alpha=0.5),
-    )
+    # Create box plots for each dataset
+    for dataset_idx, (dataset_values, dataset_label) in enumerate(
+        zip(all_dataset_values, dataset_labels)
+    ):
+        positions = base_positions + offsets[dataset_idx]
 
-    # Create horizontal box plot for validation data if available
-    if has_val_data:
-        val_positions = base_positions + val_offset
+        # Get colors for this dataset
+        facecolor, edgecolor, mediancolor, marker = colors[dataset_idx % len(colors)]
 
-        # Filter out empty validation data to avoid matplotlib errors
-        # For parameters with no validation data, we'll skip the boxplot but keep the position
-        filtered_val_data = []
-        filtered_val_positions = []
-        for i, (vals, pos) in enumerate(zip(val_data_values, val_positions)):
+        # Filter out empty data to avoid matplotlib errors
+        filtered_data = []
+        filtered_positions = []
+        for i, (vals, pos) in enumerate(zip(dataset_values, positions)):
             if len(vals) > 0:
-                filtered_val_data.append(vals)
-                filtered_val_positions.append(pos)
+                filtered_data.append(vals)
+                filtered_positions.append(pos)
 
-        # Only create boxplot if we have some non-empty validation data
-        if filtered_val_data:
+        # Only create boxplot if we have some non-empty data
+        if filtered_data:
             ax.boxplot(
-                filtered_val_data,
-                positions=filtered_val_positions,
+                filtered_data,
+                positions=filtered_positions,
                 vert=False,
                 widths=box_width,
                 patch_artist=True,
-                boxprops=dict(facecolor="lightcoral", alpha=0.7, edgecolor="red"),
-                medianprops=dict(color="darkred", linewidth=2),
-                whiskerprops=dict(color="red", linewidth=1),
-                capprops=dict(color="red", linewidth=1),
+                boxprops=dict(facecolor=facecolor, alpha=0.7, edgecolor=edgecolor),
+                medianprops=dict(color=mediancolor, linewidth=2),
+                whiskerprops=dict(color=edgecolor, linewidth=1),
+                capprops=dict(color=edgecolor, linewidth=1),
                 flierprops=dict(
-                    marker="s", markerfacecolor="red", markersize=3, alpha=0.5
+                    marker=marker, markerfacecolor=edgecolor, markersize=3, alpha=0.5
                 ),
             )
         else:
             logger.warning(
-                f"No validation data to plot for {ic_type} after filtering empty arrays"
+                f"No data to plot for {ic_type} in dataset '{dataset_label}' after filtering empty arrays"
             )
 
     # Overlay force field equilibrium values as green diamonds
@@ -1043,18 +1058,14 @@ def plot_equilibrium_comparison(
     else:
         display_ids = param_ids
 
-    if has_val_data:
-        labels_with_counts = [
-            f"{display_id}\n(train: {t_count}, val: {v_count})"
-            for display_id, t_count, v_count in zip(
-                display_ids, train_counts, val_counts
-            )
-        ]
-    else:
-        labels_with_counts = [
-            f"{display_id}\n(n={count})"
-            for display_id, count in zip(display_ids, train_counts)
-        ]
+    # Build labels with counts for all datasets
+    labels_with_counts = []
+    for i, display_id in enumerate(display_ids):
+        counts_str = ", ".join(
+            f"{label}: {all_dataset_counts[ds_idx][i]}"
+            for ds_idx, label in enumerate(dataset_labels)
+        )
+        labels_with_counts.append(f"{display_id}\n({counts_str})")
 
     ax.set_yticks(base_positions)
     ax.set_yticklabels(labels_with_counts, fontsize=10)
@@ -1063,25 +1074,25 @@ def plot_equilibrium_comparison(
     ax.invert_yaxis()
 
     # Add legend
-    if has_val_data:
-        # Create custom legend handles
-        legend_elements = [
-            Patch(facecolor="lightblue", edgecolor="blue", label="Training Data"),
-            Patch(facecolor="lightcoral", edgecolor="red", label="Validation Data"),
-            Line2D(
-                [0],
-                [0],
-                marker="D",
-                color="w",
-                markerfacecolor="darkgreen",
-                markeredgecolor="black",
-                markersize=8,
-                label="FF Equilibrium",
-            ),
-        ]
-        ax.legend(handles=legend_elements, loc="lower right", fontsize=10)
-    else:
-        ax.legend(loc="lower right", fontsize=10)
+    legend_elements = []
+    for dataset_idx, dataset_label in enumerate(dataset_labels):
+        facecolor, edgecolor, _, _ = colors[dataset_idx % len(colors)]
+        legend_elements.append(
+            Patch(facecolor=facecolor, edgecolor=edgecolor, label=dataset_label)
+        )
+    legend_elements.append(
+        Line2D(
+            [0],
+            [0],
+            marker="D",
+            color="w",
+            markerfacecolor="darkgreen",
+            markeredgecolor="black",
+            markersize=8,
+            label="FF Equilibrium",
+        )
+    )
+    ax.legend(handles=legend_elements, loc="lower right", fontsize=10)
 
     # Add grid for easier reading
     ax.grid(axis="x", alpha=0.3, linestyle="--")
@@ -1103,8 +1114,8 @@ def plot_equilibrium_comparison(
 
 def main(
     offxml: pathlib.Path | str,
-    train_data: pathlib.Path | str,
-    val_data: pathlib.Path | str | None = None,
+    dataset_paths: list[pathlib.Path | str],
+    dataset_labels: list[str] | None = None,
     output_dir: pathlib.Path | str = ".",
     n_processes: int | None = None,
     make_param_to_mol_mapping: bool = False,
@@ -1115,10 +1126,10 @@ def main(
     ----------
     offxml : pathlib.Path | str
         Path to OFFXML force field file.
-    train_data : pathlib.Path | str
-        Path to training dataset directory (HuggingFace format).
-    val_data : pathlib.Path | str, optional
-        Path to validation dataset directory (HuggingFace format).
+    dataset_paths : list[pathlib.Path | str]
+        Paths to dataset directories (HuggingFace format).
+    dataset_labels : list[str], optional
+        Labels for each dataset. If None, defaults to 'Dataset 1', 'Dataset 2', etc.
     output_dir : pathlib.Path | str, optional
         Output directory for plots (default: current directory).
     n_processes : int | None, optional
@@ -1130,29 +1141,40 @@ def main(
 
     Examples
     --------
-    >>> # Sequential processing (default)
-    >>> main("openff-2.2.1.offxml", "data-train", val_data="data-test")
+    >>> # Single dataset
+    >>> main("openff-2.2.1.offxml", ["data-train"])
 
-    >>> # Use specific number of processes
-    >>> main("openff-2.2.1.offxml", "data-train", n_processes=4)
+    >>> # Multiple datasets with labels
+    >>> main("openff-2.2.1.offxml", ["data-train", "data-test"],
+    ...      dataset_labels=["Training", "Validation"], n_processes=4)
 
-    >>> # Sequential processing
-    >>> main("openff-2.2.1.offxml", "data-train", n_processes=1)
+    >>> # Three datasets
+    >>> main("openff-2.2.1.offxml", ["data-train", "data-test", "data-external"],
+    ...      dataset_labels=["Train", "Test", "External"])
     """
     offxml = pathlib.Path(offxml)
-    train_data = pathlib.Path(train_data)
+    dataset_paths_resolved: list[pathlib.Path] = [
+        pathlib.Path(p) for p in dataset_paths
+    ]
     output_dir = pathlib.Path(output_dir)
 
-    if val_data is not None:
-        val_data = pathlib.Path(val_data)
+    # Generate default labels if not provided
+    if dataset_labels is None:
+        dataset_labels = [f"Dataset {i+1}" for i in range(len(dataset_paths_resolved))]
 
     # Validate inputs
     if not offxml.exists():
         raise FileNotFoundError(f"Force field not found: {offxml}")
-    if not train_data.exists():
-        raise FileNotFoundError(f"Training data not found: {train_data}")
-    if val_data is not None and not val_data.exists():
-        raise FileNotFoundError(f"Validation data not found: {val_data}")
+
+    if len(dataset_labels) != len(dataset_paths_resolved):
+        raise ValueError(
+            f"Number of dataset labels ({len(dataset_labels)}) must match "
+            f"number of dataset paths ({len(dataset_paths_resolved)})"
+        )
+
+    for i, dataset_path in enumerate(dataset_paths_resolved):
+        if not dataset_path.exists():
+            raise FileNotFoundError(f"Dataset {i+1} not found: {dataset_path}")
 
     # Load force field parameters
     logger.info(f"Loading force field: {offxml}")
@@ -1163,45 +1185,30 @@ def main(
     cache_dir = output_dir / "ic_values_cache"
     cache_dir.mkdir(parents=True, exist_ok=True)
 
-    # Define cache file paths
-    train_cache_file = cache_dir / "train_ic_values.json"
-    val_cache_file = cache_dir / "val_ic_values.json"
+    # Load or analyze all datasets
+    all_ic_values = []
+    for i, (dataset_path, dataset_label) in enumerate(
+        zip(dataset_paths_resolved, dataset_labels)
+    ):
+        cache_file = cache_dir / f"dataset_{i}_ic_values.json"
 
-    # Load or analyze training dataset
-    if train_cache_file.exists():
-        print(f"\nFound cached training IC values: {train_cache_file}")
-        print("Skipping training dataset analysis...")
-        train_ic_values = load_ic_values_from_json(train_cache_file)
-    else:
-        train_dataset = load_dataset(train_data)
-        print("\nAnalyzing training dataset...")
-        train_ic_values = analyze_dataset_internal_coordinates(
-            train_dataset, str(offxml), n_processes=n_processes
-        )
-        # Save to cache
-        save_ic_values_to_json(train_ic_values, train_cache_file)
-        # Clean up dataset reference to free file handles
-        del train_dataset
-        gc.collect()
-
-    # Optionally load or analyze validation dataset
-    val_ic_values = None
-    if val_data is not None:
-        if val_cache_file.exists():
-            print(f"\nFound cached validation IC values: {val_cache_file}")
-            print("Skipping validation dataset analysis...")
-            val_ic_values = load_ic_values_from_json(val_cache_file)
+        if cache_file.exists():
+            print(f"\nFound cached IC values for '{dataset_label}': {cache_file}")
+            print(f"Skipping '{dataset_label}' dataset analysis...")
+            ic_values = load_ic_values_from_json(cache_file)
         else:
-            val_dataset = load_dataset(val_data)
-            print("\nAnalyzing validation dataset...")
-            val_ic_values = analyze_dataset_internal_coordinates(
-                val_dataset, str(offxml), n_processes=n_processes
+            dataset = load_dataset(dataset_path)
+            print(f"\nAnalyzing '{dataset_label}' dataset...")
+            ic_values = analyze_dataset_internal_coordinates(
+                dataset, str(offxml), n_processes=n_processes
             )
             # Save to cache
-            save_ic_values_to_json(val_ic_values, val_cache_file)
+            save_ic_values_to_json(ic_values, cache_file)
             # Clean up dataset reference to free file handles
-            del val_dataset
+            del dataset
             gc.collect()
+
+        all_ic_values.append(ic_values)
 
     mappings_dir = output_dir / "parameter_mappings"
     mappings_dir.mkdir(parents=True, exist_ok=True)
@@ -1225,34 +1232,40 @@ def main(
         print("\nAnalyzing which molecules contain each parameter...")
         filename = mappings_dir / "parameter_to_molecules.json"
         if not os.path.isfile(filename):
-            train_dataset = load_dataset(train_data)
+            # Use first dataset for mapping
+            first_dataset = load_dataset(dataset_paths_resolved[0])
             save_parameter_molecule_mapping(
-                train_dataset,
+                first_dataset,
                 ff,
                 filename,
             )
-            del train_dataset
+            del first_dataset
             gc.collect()
 
-    # Generate combined plots (train + validation if available)
+    # Generate plots with all datasets
     print("\nGenerating plots...")
     plots_dir = output_dir / "plots"
     plots_dir.mkdir(parents=True, exist_ok=True)
+
+    # Extract bond data from all datasets
+    bond_data = [ic_vals["Bond"] for ic_vals in all_ic_values]
     plot_equilibrium_comparison(
-        train_ic_values["Bond"],
+        bond_data,
+        dataset_labels,
         ff_params["Bonds"],
         "Bond",
         plots_dir / "bond_equilibrium_comparison.pdf",
-        val_ic_values=val_ic_values["Bond"] if val_ic_values else None,
         param_id_mapping=bond_mapping,
     )
 
+    # Extract angle data from all datasets
+    angle_data = [ic_vals["Angle"] for ic_vals in all_ic_values]
     plot_equilibrium_comparison(
-        train_ic_values["Angle"],
+        angle_data,
+        dataset_labels,
         ff_params["Angles"],
         "Angle",
         plots_dir / "angle_equilibrium_comparison.pdf",
-        val_ic_values=val_ic_values["Angle"] if val_ic_values else None,
         param_id_mapping=angle_mapping,
     )
 
@@ -1265,38 +1278,46 @@ if __name__ == "__main__":
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-    Basic usage with training data:
+    Basic usage with a single dataset:
         python check_equil_values.py \\
             --offxml ../4_make_offxmls/b_no_bond_with_ring_in_atom/openff_unconstrained.offxml \\
-            --train-data ../3_split_train_test/full_split_uci/data-train
+            --dataset-paths ../3_split_train_test/full_split_uci/data-train
 
-    With training and validation data:
+    With multiple datasets and custom labels:
         python check_equil_values.py \\
             --offxml ../4_make_offxmls/b_no_bond_with_ring_in_atom/openff_unconstrained.offxml \\
-            --train-data ../3_split_train_test/full_split_uci/data-train \\
-            --val-data ../3_split_train_test/full_split_uci/data-test \\
+            --dataset-paths ../3_split_train_test/full_split_uci/data-train \\
+                            ../3_split_train_test/full_split_uci/data-test \\
+            --dataset-labels "Training" "Validation" \\
             --output-dir ./equilibrium_analysis
 
     With multiple parallel processes:
         python check_equil_values.py \\
             --offxml openff-2.2.1.offxml \\
-            --train-data data-train \\
+            --dataset-paths data-train data-test \\
+            --dataset-labels "Train" "Test" \\
             --n-processes 8
 
     In a SLURM script (recommended):
         python check_equil_values.py \\
             --offxml openff-2.2.1.offxml \\
-            --train-data data-train \\
+            --dataset-paths data-train data-test data-external \\
+            --dataset-labels "Train" "Test" "External" \\
             --n-processes ${SLURM_CPUS_PER_TASK}
 
 Output Files:
     plots/
-    ├── bond_equilibrium_comparison.pdf    # Bond comparison (train + val if provided)
-    └── angle_equilibrium_comparison.pdf   # Angle comparison (train + val if provided)
+    ├── bond_equilibrium_comparison.pdf    # Bond comparison (all datasets)
+    └── angle_equilibrium_comparison.pdf   # Angle comparison (all datasets)
 
     ic_values_cache/
-    ├── train_ic_values.json               # Cached training IC values (auto-generated)
-    └── val_ic_values.json                 # Cached validation IC values (auto-generated)
+    ├── dataset_0_ic_values.json           # Cached IC values for first dataset
+    ├── dataset_1_ic_values.json           # Cached IC values for second dataset
+    └── ...                                # (one file per dataset)
+
+    parameter_mappings/
+    ├── bond_parameter_mapping.csv         # Mapping of parameter IDs to SMIRKS
+    └── angle_parameter_mapping.csv        # Mapping of parameter IDs to SMIRKS
 
 Caching:
     The script automatically caches analyzed IC values to JSON files. If cache files
@@ -1304,12 +1325,10 @@ Caching:
     To force reanalysis, delete the cache files in ic_values_cache/.
 
 Each plot shows:
-    - Side-by-side box plots for training (blue) and validation (red) data
+    - Side-by-side box plots for all datasets (different colors)
     - Green diamond marker at the force field's equilibrium value
-    - Sample counts for both datasets: (train: N, val: M)
-    - Parameters sorted by training set frequency (most common at top)
-
-    If validation data is not provided, only training data is shown in blue.
+    - Sample counts for each dataset
+    - Parameters sorted by first dataset frequency (most common at top)
         """,
     )
     parser.add_argument(
@@ -1319,16 +1338,19 @@ Each plot shows:
         help="Path to OFFXML force field file",
     )
     parser.add_argument(
-        "--train-data",
+        "--dataset-paths",
         type=str,
+        nargs="+",
         required=True,
-        help="Path to training dataset directory (HuggingFace format)",
+        help="Paths to dataset directories (HuggingFace format). Separate multiple paths with spaces.",
     )
     parser.add_argument(
-        "--val-data",
+        "--dataset-labels",
         type=str,
+        nargs="+",
         default=None,
-        help="Path to validation dataset directory (HuggingFace format, optional)",
+        help="Labels for each dataset. Must match number of dataset paths. "
+        "If not provided, defaults to 'Dataset 1', 'Dataset 2', etc.",
     )
     parser.add_argument(
         "--output-dir",
@@ -1356,8 +1378,8 @@ Each plot shows:
     freeze_support()
     main(
         offxml=args.offxml,
-        train_data=args.train_data,
-        val_data=args.val_data,
+        dataset_paths=args.dataset_paths,
+        dataset_labels=args.dataset_labels,
         output_dir=args.output_dir,
         n_processes=args.n_processes,
         make_param_to_mol_mapping=args.make_param_to_mol_mapping,
