@@ -72,7 +72,7 @@ from .molecular_classes import MMComponent, SpecificityLevel
 def get_mm_components_from_huggingface(
     ds_row,
     component_type: type[MMComponent],
-    load_coords=False,
+    load_coords=True,
 ) -> list[MMComponent]:
     """
     Extract molecular mechanics components from HuggingFace dataset row.

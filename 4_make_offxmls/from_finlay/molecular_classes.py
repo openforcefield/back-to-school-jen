@@ -619,7 +619,7 @@ class Bond(MMComponent):
             length = np.linalg.norm(
                 np.array([pos1.x, pos1.y, pos1.z]) - np.array([pos2.x, pos2.y, pos2.z])
             )
-            lengths.append(length)
+            lengths.append(length * off_unit.angstroms)
         return lengths
 
 
@@ -762,7 +762,7 @@ class Angle(MMComponent):
             v2 = np.array([pos3.x, pos3.y, pos3.z]) - np.array([pos2.x, pos2.y, pos2.z])
             cos_theta = np.dot(v1, v2) / (np.linalg.norm(v1) * np.linalg.norm(v2))
             angle_rad = np.arccos(np.clip(cos_theta, -1.0, 1.0))
-            angles.append(np.degrees(angle_rad))
+            angles.append(np.degrees(angle_rad) * off_unit.degrees)
         return angles
 
 
@@ -1016,13 +1016,15 @@ class ImproperTorsion(MMComponent):
 
 
 def get_parameters_for_components(
-    components: list[MMComponent], forcefield: ForceField, max_samples: int = 10
+    components: list[MMComponent], forcefield: ForceField, max_samples: int = 50
 ) -> ParameterList:
     """
     Extract force field parameters for a list of MM components.
 
-    Retrieves parameters from a force field by labeling molecules containing
-    the components and extracting the relevant parameter values.
+    If RDKit molecule has conformers, real values are used. Otherwise,
+    this function retrieves parameters from a force field by labeling
+    molecules containing the components and extracting the relevant
+    parameter values.
 
     Parameters
     ----------
@@ -1030,7 +1032,7 @@ def get_parameters_for_components(
         List of molecular mechanics components to get parameters for.
     forcefield : openff.toolkit.ForceField
         Force field to extract parameters from.
-    max_samples : int, default 10
+    max_samples : int, default 50
         Maximum number of components to sample for parameter extraction.
         Used to limit computation time for large component lists.
 
@@ -1057,11 +1059,31 @@ def get_parameters_for_components(
         if len(components) <= max_samples
         else np.random.choice(components, max_samples, replace=False)
     )
+
     for c in subsampled_components:
         assigned_parameters = forcefield.label_molecules(c.mol.to_topology())[
             0
         ]  # As only one molecule
         tag_name = c.handler_class._TAGNAME
         if tag_name is not None:
-            parameters.append(assigned_parameters[tag_name][c.indices])
+            param = assigned_parameters[tag_name][c.indices]
+            parameters.append(param)
+
+            # Override with conformer-based values if available
+            if isinstance(c, Bond):
+                bond_lengths = c.get_bond_length()
+                if bond_lengths:
+                    parameters[-1].length = (
+                        np.mean([bl.m_as(off_unit.angstrom) for bl in bond_lengths])
+                        * off_unit.angstrom
+                    )
+
+            elif isinstance(c, Angle):
+                angles = c.get_angle()
+                if angles:
+                    parameters[-1].angle = (
+                        np.mean([a.m_as(off_unit.degree) for a in angles])
+                        * off_unit.degree
+                    )
+
     return cast(ParameterList, parameters)

@@ -147,6 +147,7 @@ def get_components_by_type(
     data_dir: str,
     specificity_json: str,
     n_workers: int | None = None,
+    cutoff_population: int = 10,
 ) -> dict[type[MMComponent], dict[int, dict[str, list[MMComponent]]]]:
     """
     Extract and organize molecular components from dataset.
@@ -157,8 +158,11 @@ def get_components_by_type(
         Path to HuggingFace dataset directory.
     specificity_json : str
         Path to JSON configuration file.
-    n_workers : int
-        Number of workers to parallelize processing
+    n_workers : int, optional
+        Number of workers to parallelize processing. Default is None.
+    cutoff_population : int, optional
+        Cutoff population below which types will be grouped at a higher specificity level.
+        Default is 10.
 
     Returns
     -------
@@ -195,7 +199,7 @@ def get_components_by_type(
         class_components_by_type = ffpmm.get_mm_components_by_specificity_by_type(
             components,
             specificity_levels_by_component[component_class],  # type: ignore[type-abstract]
-            cutoff_population=10,
+            cutoff_population=cutoff_population,
             n_workers=n_workers,
         )
 
@@ -411,6 +415,7 @@ def main(
     datasets: list[str],
     dataset_type: str,
     n_workers: int | None = None,
+    cutoff_population: int = 10,
 ) -> None:
     """
     Generate force field with custom parameters and test coverage.
@@ -433,6 +438,8 @@ def main(
         QCArchive dataset type.
     n_workers : int, optional
         Number of worker processes.
+    cutoff_population : int, optional
+        Cutoff population below which a specificity type will be discarded for a lower level of specificity.
 
     Examples
     --------
@@ -442,7 +449,10 @@ def main(
 
     smiles_dict = get_train_test_smiles_dict(filename_test_train_smiles)
     components_by_type = get_components_by_type(
-        data_dir, specificity_json, n_workers=n_workers
+        data_dir,
+        specificity_json,
+        n_workers=n_workers,
+        cutoff_population=cutoff_population,
     )
     write_forcefield_file(
         components_by_type, filename_offxml_out, filename_offxml_in, n_workers=n_workers
@@ -468,6 +478,7 @@ Examples:
             --filename-test-train-smiles splits.json \
             --datasets "OpenFF v1.0" \
             --datasets-type optimization \
+            --cutoff-pop 10 \
             -vv
 
     Verbosity levels:
@@ -537,6 +548,12 @@ Output:
         help="Number of worker processes",
     )
     parser.add_argument(
+        "--cutoff-pop",
+        type=int,
+        default=10,
+        help="Cutoff population below which a specificity type will be discarded for a lower level of specificity.",
+    )
+    parser.add_argument(
         "-v",
         "--verbose",
         action="count",
@@ -567,4 +584,5 @@ Output:
         args.datasets,
         args.datasets_type,
         args.n_workers,
+        args.cutoff_pop,
     )

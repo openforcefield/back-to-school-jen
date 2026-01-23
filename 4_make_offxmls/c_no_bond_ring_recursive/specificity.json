@@ -1,0 +1,16 @@
+{
+  "bond_specificities": {
+    "AtomStandardRing-BondGeneralizedRing": {
+      "atom_include_ring_info": true,
+      "bond_specificity": "WILDCARD",
+      "bond_include_ring_info": true
+    }
+  },
+  "angle_specificities": {
+    "AtomStandardRing-BondGeneralizedRing": {
+      "atom_include_ring_info": true,
+      "bond_include_ring_info": true,
+      "bond_specificity": "WILDCARD"
+    }
+  }
+}
