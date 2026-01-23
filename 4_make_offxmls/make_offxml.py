@@ -306,12 +306,12 @@ def get_train_test_smiles_dict(
     smiles_file_path: pathlib.Path | str,
 ) -> dict[str, list[str]]:
     """
-    Load train/test split molecular SMILES from JSON file.
+    Load molecular SMILES from JSON file.
 
     Parameters
     ----------
     smiles_file_path : str
-        Path to JSON file with train/test SMILES split.
+        Path to JSON file with train/test SMILES split, or a list of SMILES strings.
 
     Returns
     -------
@@ -328,10 +328,14 @@ def get_train_test_smiles_dict(
     logger.info(f"Reading test/train smiles from {str(smiles_file_path)}")
     with open(smiles_file_path, "r") as f:
         smiles_data = json.load(f)
-    logger.info(
-        f"In the training and test sets there are {len(smiles_data['train'])} and {len(smiles_data['test'])} SMILES strings respectively."
-    )
-    return {"train": smiles_data["train"], "test": smiles_data["test"]}
+    if isinstance(smiles_data, list):
+        logger.info(f"In the dataset has {len(smiles_data)} SMILES strings.")
+        return {"train": smiles_data}
+    else:
+        logger.info(
+            f"In the training and test sets there are {len(smiles_data['train'])} and {len(smiles_data['test'])} SMILES strings respectively."
+        )
+        return {"train": smiles_data["train"], "test": smiles_data["test"]}
 
 
 def test_coverage(
