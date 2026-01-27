@@ -1,3 +1,6 @@
+Tue Jan 27 11:36:43 AM PST 2026
+Running job 47909041 on host hpc3-21-20
+16 allocated CPUs
 2026-01-27 11:36:53.316 | INFO     | __main__:get_train_test_smiles_dict:331 - Reading test/train smiles from ../../3_split_train_test/full_split_uci/smiles_test_train.json
 2026-01-27 11:36:53.477 | INFO     | __main__:get_train_test_smiles_dict:334 - In the training and test sets there are 23109 and 1217 SMILES strings respectively.
 2026-01-27 11:36:53.477 | INFO     | __main__:load_specificity_config:86 - Configuration file contents from specificity.json:

@@ -14,7 +14,7 @@
 
 date
 hn=`hostname`
-echo "Running job on host $hn"
+echo "Running job ${SLURM_JOB_ID} on host $hn"
 ncpus=$SLURM_CPUS_ON_NODE
 echo "$ncpus allocated CPUs"
 
@@ -23,7 +23,7 @@ export OPENBLAS_NUM_THREADS=1
 export MKL_NUM_THREADS=1
 
 source ~/.bashrc
-micromamba activate bts
+mamba activate bts
 
 # Fit filtered training data
 python ../make_offxml.py --data-dir "../../3_split_train_test/full_split_uci/data-train" \
