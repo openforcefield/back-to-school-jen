@@ -147,6 +147,7 @@ def get_components_by_type(
     data_dir: str,
     specificity_json: str,
     n_workers: int | None = None,
+    min_n_structures: int = 10,
 ) -> dict[type[MMComponent], dict[int, dict[str, list[MMComponent]]]]:
     """
     Extract and organize molecular components from dataset.
@@ -159,6 +160,8 @@ def get_components_by_type(
         Path to JSON configuration file.
     n_workers : int
         Number of workers to parallelize processing
+    min_n_structures : int, optional
+        Minimum number of unique structures for a given specificity values. Default is 10.
 
     Returns
     -------
@@ -195,7 +198,7 @@ def get_components_by_type(
         class_components_by_type = ffpmm.get_mm_components_by_specificity_by_type(
             components,
             specificity_levels_by_component[component_class],  # type: ignore[type-abstract]
-            cutoff_population=10,
+            cutoff_population=min_n_structures,
             n_workers=n_workers,
         )
 
@@ -406,6 +409,7 @@ def main(
     filename_test_train_smiles: pathlib.Path | str,
     datasets: list[str],
     dataset_type: str,
+    min_n_structures: int = 10,
     n_workers: int | None = None,
 ) -> None:
     """
@@ -427,6 +431,8 @@ def main(
         QCArchive dataset names for testing.
     dataset_type : str
         QCArchive dataset type.
+    min_n_structures : int, optional
+        Minimum number of unique structures for a given specificity values. Default is 10.
     n_workers : int, optional
         Number of worker processes.
 
@@ -438,7 +444,10 @@ def main(
 
     smiles_dict = get_train_test_smiles_dict(filename_test_train_smiles)
     components_by_type = get_components_by_type(
-        data_dir, specificity_json, n_workers=n_workers
+        data_dir,
+        specificity_json,
+        n_workers=n_workers,
+        min_n_structures=min_n_structures,
     )
     write_forcefield_file(
         components_by_type, filename_offxml_out, filename_offxml_in, n_workers=n_workers
@@ -533,6 +542,12 @@ Output:
         help="Number of worker processes",
     )
     parser.add_argument(
+        "--min-n-structures",
+        type=int,
+        default=10,
+        help="Minimum number of unique structures for a given specificity values.",
+    )
+    parser.add_argument(
         "-v",
         "--verbose",
         action="count",
@@ -562,5 +577,6 @@ Output:
         args.filename_test_train_smiles,
         args.datasets,
         args.datasets_type,
+        args.min_n_structures,
         args.n_workers,
     )
