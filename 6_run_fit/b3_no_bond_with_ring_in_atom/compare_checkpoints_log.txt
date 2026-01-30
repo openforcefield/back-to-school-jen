@@ -1,0 +1,121 @@
+2026-01-20 07:18:29.644 | INFO     | __main__:find_all_checkpoints:124 - Found 41 checkpoint files
+2026-01-20 07:18:29.644 | INFO     | __main__:find_all_checkpoints:125 - First checkpoint: force-field-epoch-0.pt
+2026-01-20 07:18:29.644 | INFO     | __main__:find_all_checkpoints:126 - Last checkpoint: final-force-field.pt
+2026-01-20 07:18:29.644 | INFO     | __main__:load_checkpoint:161 - Loading checkpoint: my-smee-fit/force-field-epoch-0.pt
+2026-01-20 07:18:38.446 | INFO     | __main__:load_checkpoint:161 - Loading checkpoint: my-smee-fit/final-force-field.pt
+2026-01-20 07:18:50.022 | INFO     | __main__:compare_force_fields:200 - Comparing Angles parameters...
+2026-01-20 07:18:50.936 | INFO     | __main__:compare_force_fields:200 - Comparing Bonds parameters...
+2026-01-20 07:18:51.138 | INFO     | __main__:find_all_checkpoints:124 - Found 41 checkpoint files
+2026-01-20 07:18:51.138 | INFO     | __main__:find_all_checkpoints:125 - First checkpoint: force-field-epoch-0.pt
+2026-01-20 07:18:51.139 | INFO     | __main__:find_all_checkpoints:126 - Last checkpoint: final-force-field.pt
+2026-01-20 07:18:51.139 | INFO     | __main__:generate_training_plots:440 - Tracking 40 parameters across 41 checkpoints...
+2026-01-20 07:31:16.125 | INFO     | __main__:parse_tensorboard_loss:370 - Reading TensorBoard events from: events.out.tfevents.1768487969.hpc3-gpu-l54-09
+/dfs9/dmobley-lab/jclark9/descent/back-to-school-jen/6_run_fit/b3_no_bond_with_ring_in_atom/../compare_checkpoints.py:479: MatplotlibDeprecationWarning: The get_cmap function was deprecated in Matplotlib 3.7 and will be removed in 3.11. Use ``matplotlib.colormaps[name]`` or ``matplotlib.colormaps.get_cmap()`` or ``pyplot.get_cmap()`` instead.
+  colors = plt.cm.get_cmap("viridis")(np.linspace(0, 1, top_n))
+2026-01-20 07:31:20.017 | INFO     | __main__:generate_training_plots:525 - Saved training progress plot to: checkpoint_analysis/training_progress.pdf
+2026-01-20 07:31:20.174 | INFO     | __main__:generate_training_plots:560 - Saved Angles k parameter plot to: checkpoint_analysis/parameter_evolution_angles_k.pdf
+2026-01-20 07:31:21.442 | INFO     | __main__:generate_training_plots:560 - Saved Angles angle parameter plot to: checkpoint_analysis/parameter_evolution_angles_angle.pdf
+2026-01-20 07:31:22.930 | INFO     | __main__:generate_training_plots:560 - Saved Bonds k parameter plot to: checkpoint_analysis/parameter_evolution_bonds_k.pdf
+2026-01-20 07:31:23.077 | INFO     | __main__:generate_training_plots:560 - Saved Bonds length parameter plot to: checkpoint_analysis/parameter_evolution_bonds_length.pdf
+2026-01-20 07:31:23.077 | INFO     | __main__:main:758 - Done!
+
+================================================================================
+CHECKPOINT COMPARISON REPORT
+================================================================================
+
+First checkpoint:  force-field-epoch-0.pt
+Last checkpoint:   final-force-field.pt
+
+--------------------------------------------------------------------------------
+Angles - k - Top 10 Parameters by Absolute Change
+-------------------------------------------------------------------------------- (units: kilocalorie_per_mole / radian ** 2)
+         First         Last      Δ (abs)      Δ (%) SMIRKS
+  -------------------------------------------------------------------------------------------------------
+    344.985504   157.265350   187.720154     54.41% [!#1;r5:1]~;@[#16X2;r5:2]~;@[!#1;r5:3]
+    361.926239   190.280090   171.646149     47.43% [#6X3;r6:1]~;@[#16X2;r7:2]~;@[#6X3;r6:3]
+    312.236389   141.031372   171.205017     54.83% [#6X3;r5:1]~;@[#8X2;r6:2]~;@[#6X3;r6:3]
+    238.530396    68.573975   169.956421     71.25% [#15X3;!r3;!r4;!r5;!r6;!r7;!r8:1]~[#8X2;!r3;!r4;!r5;!r6;!r7;!r8:2]~[#6X4;!r3;!r4;!r5;!r6;!r7;!r8:3]
+    100.272255   265.550751   165.278496    164.83% [#8X2;!r3;!r4;!r5;!r6;!r7;!r8:1]~[#6X4;r6:2]~[#8X2;!r3;!r4;!r5;!r6;!r7;!r8:3]
+    361.926239   197.395920   164.530319     45.46% [#6X3;!r3;!r4;!r5;!r6;!r7;!r8:1]~[#16X2;!r3;!r4;!r5;!r6;!r7;!r8:2]~[#6X3;r5:3]
+    312.236389   149.052689   163.183701     52.26% [#6X3;r6:1]~;@[#8X2;r7:2]~;@[#6X3;r7:3]
+    157.305328   319.995270   162.689941    103.42% [#8X1;!r3;!r4;!r5;!r6;!r7;!r8:1]~[#15X4;!r3;!r4;!r5;!r6;!r7;!r8:2]~[#8X2;!r3;!r4;!r5;!r6;!r7;!r8:3]
+    100.272255   262.949371   162.677116    162.24% [!#1;!r3;!r4;!r5;!r6;!r7;!r8:1]~[#6X4;r7:2]~[!#1;!r3;!r4;!r5;!r6;!r7;!r8:3]
+     98.908478   261.059662   162.151184    163.94% [!#1;!r3;!r4;!r5;!r6;!r7;!r8:1]~[#6X3;r6:2]~;@[!#1;r4:3]
+
+--------------------------------------------------------------------------------
+Angles - angle - Top 10 Parameters by Absolute Change
+-------------------------------------------------------------------------------- (units: degree)
+         First         Last      Δ (abs)      Δ (%) SMIRKS
+  -------------------------------------------------------------------------------------------------------
+    108.513394    20.958336    87.555058     80.69% [!#1;!r3;!r4;!r5;!r6;!r7;!r8:1]~[#15X3;!r3;!r4;!r5;!r6;!r7;!r8:2]~[!#1;!r3;!r4;!r5;!r6;!r7;!r8:3]
+     63.676740   141.458081    77.781340    122.15% [#16X2;r3:1]~;@[#6X4;r3:2]~;@[#6X4;r3:3]
+    107.861856   180.000005    72.138149     66.88% [!#1;!r3;!r4;!r5;!r6;!r7;!r8:1]~[#16X4;!r3;!r4;!r5;!r6;!r7;!r8:2]~[!#1;r4:3]
+    108.513394    36.632026    71.881368     66.24% [#8X2;!r3;!r4;!r5;!r6;!r7;!r8:1]~[#15X3;!r3;!r4;!r5;!r6;!r7;!r8:2]~[#8X2;!r3;!r4;!r5;!r6;!r7;!r8:3]
+    109.665845    39.186954    70.478892     64.27% [*:1]~[#15X3:2]~[*:3]
+    109.978354   180.000005    70.021651     63.67% [!#1;r5:1]~;@[#15X5;r5:2]~;@[!#1;r5:3]
+    109.665845   179.142379    69.476534     63.35% [!#1;!r3;!r4;!r5;!r6;!r7;!r8:1]~[#15X5;!r3;!r4;!r5;!r6;!r7;!r8:2]~[!#1;!r3;!r4;!r5;!r6;!r7;!r8:3]
+    109.665845   179.013753    69.347908     63.24% [#8X2;!r3;!r4;!r5;!r6;!r7;!r8:1]~[#15X5;!r3;!r4;!r5;!r6;!r7;!r8:2]~[#8X2;!r3;!r4;!r5;!r6;!r7;!r8:3]
+     63.676740   132.353999    68.677258    107.85% [#6X3;r3:1]~;@[#6X3;r3:2]~;@[#6X4;r3:3]
+    109.665845   174.897854    65.232009     59.48% [!#1;!r3;!r4;!r5;!r6;!r7;!r8:1]~[#15X5;r4:2]~;@[!#1;r4:3]
+
+--------------------------------------------------------------------------------
+Bonds - k - Top 10 Parameters by Absolute Change
+-------------------------------------------------------------------------------- (units: kilocalorie_per_mole / angstrom ** 2)
+         First         Last      Δ (abs)      Δ (%) SMIRKS
+  -------------------------------------------------------------------------------------------------------
+   2162.888916  1259.105347   903.783569     41.79% [#6X2;!r3;!r4;!r5;!r6;!r7;!r8:1]~[#6X2;!r3;!r4;!r5;!r6;!r7;!r8:2]
+   1553.383667   703.288147   850.095520     54.73% [#6X2;!r3;!r4;!r5;!r6;!r7;!r8:1]~[#7X2;!r3;!r4;!r5;!r6;!r7;!r8:2]
+   2549.464111  1736.139648   813.324463     31.90% [#7X1;!r3;!r4;!r5;!r6;!r7;!r8:1]~[#7X2;!r3;!r4;!r5;!r6;!r7;!r8:2]
+    995.415100   220.527115   774.887985     77.85% [#6X3;r5:1]~[#7X2;!r3;!r4;!r5;!r6;!r7;!r8:2]
+    995.415100   227.322464   768.092636     77.16% [#6X3;r7:1]~[#7X2;!r3;!r4;!r5;!r6;!r7;!r8:2]
+    926.177612   203.606308   722.571304     78.02% [#6X3:1]~;@[#7X2:2]
+    833.725891   119.625679   714.100212     85.65% [#6X3;!r3;!r4;!r5;!r6;!r7;!r8:1]~[#6X3;!r3;!r4;!r5;!r6;!r7;!r8:2]
+    992.276489   307.233307   685.043182     69.04% [#7X2;!r3;!r4;!r5;!r6;!r7;!r8:1]~[#7X2;!r3;!r4;!r5;!r6;!r7;!r8:2]
+   1133.890015   448.904663   684.985352     60.41% [#6X3;r7:1]~;@[#7X2;r7:2]
+    718.465088    53.044788   665.420300     92.62% [#6X3;r6:1]~[#7X2;!r3;!r4;!r5;!r6;!r7;!r8:2]
+
+--------------------------------------------------------------------------------
+Bonds - length - Top 10 Parameters by Absolute Change
+-------------------------------------------------------------------------------- (units: angstrom)
+         First         Last      Δ (abs)      Δ (%) SMIRKS
+  -------------------------------------------------------------------------------------------------------
+      1.333991     0.760076     0.573915     43.02% [#6X3;r5:1]~;@[#7X2;r7:2]
+      1.439666     1.046496     0.393170     27.31% [#6X3;r5:1]~[#6X3;r7:2]
+      1.442818     1.061985     0.380833     26.40% [#6X3;r5:1]~;@[#6X3;r7:2]
+      1.370446     0.994623     0.375823     27.42% [#7X2:1]~[#7X3:2]
+      1.665229     2.033793     0.368564     22.13% [#16X2:1]~[#7X2:2]
+      1.980902     1.614120     0.366782     18.52% [#17X1;!r3;!r4;!r5;!r6;!r7;!r8:1]~[#7X3;r5:2]
+      1.300819     0.970015     0.330805     25.43% [#7X2;r7:1]~;@[#7X2;r7:2]
+      1.980902     1.655459     0.325443     16.43% [#17X1;!r3;!r4;!r5;!r6;!r7;!r8:1]~[#7X3;!r3;!r4;!r5;!r6;!r7;!r8:2]
+      1.376975     1.052233     0.324742     23.58% [#6X3;!r3;!r4;!r5;!r6;!r7;!r8:1]~[#6X3;!r3;!r4;!r5;!r6;!r7;!r8:2]
+      1.398113     1.077045     0.321068     22.96% [#6X3;r7:1]~;@[#6X3;r7:2]
+
+================================================================================
+SUMMARY STATISTICS
+================================================================================
+
+Angles - k:
+  Total parameters:     2392
+  Parameters changed:   2392 (100.0%)
+  Mean absolute change: 42.474313 kilocalorie_per_mole / radian ** 2
+  Max absolute change:  187.720154 kilocalorie_per_mole / radian ** 2
+
+Angles - angle:
+  Total parameters:     2392
+  Parameters changed:   2391 (100.0%)
+  Mean absolute change: 7.851679 degree
+  Max absolute change:  87.555058 degree
+
+Bonds - k:
+  Total parameters:     545
+  Parameters changed:   545 (100.0%)
+  Mean absolute change: 133.369617 kilocalorie_per_mole / angstrom ** 2
+  Max absolute change:  903.783569 kilocalorie_per_mole / angstrom ** 2
+
+Bonds - length:
+  Total parameters:     545
+  Parameters changed:   545 (100.0%)
+  Mean absolute change: 0.048493 angstrom
+  Max absolute change:  0.573915 angstrom
+
+================================================================================
