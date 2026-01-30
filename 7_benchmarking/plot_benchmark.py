@@ -489,7 +489,7 @@ def generate_basic_plots(
     ax.set_ylabel("Count")
     ax.set_title("Deformation-Driven Energy Difference Distribution")
     ax.legend(loc="best")
-    ax.axvline(x=0, color="gray", linestyle="--", alpha=0.5)
+    ax.axvline(x=0, color="gray", linestyle="--", linewidth=1, alpha=0.5)
     fig.tight_layout()
     fig.savefig(plots_dir / "dde_histogram.pdf", bbox_inches="tight")
     plt.close(fig)
@@ -501,7 +501,7 @@ def generate_basic_plots(
         data = np.sort(ff_data[label]["rmsd"])
         if len(data) > 0:
             cdf = np.arange(1, len(data) + 1) / len(data)
-            ax.plot(data, cdf, "-", label=label, color=colors[i])
+            ax.plot(data, cdf, "-", label=label, linewidth=2, color=colors[i])
     ax.set_xlabel("RMSD (Å)")
     ax.set_ylabel("CDF")
     ax.set_title("Root Mean Square Deviation - Cumulative Distribution")
@@ -519,7 +519,7 @@ def generate_basic_plots(
         data = np.sort(ff_data[label]["tfd"])
         if len(data) > 0:
             cdf = np.arange(1, len(data) + 1) / len(data)
-            ax.plot(data, cdf, "-", label=label, color=colors[i])
+            ax.plot(data, cdf, "-", label=label, linewidth=1, color=colors[i])
     ax.set_xlabel("TFD")
     ax.set_ylabel("CDF")
     ax.set_title("Torsion Fingerprint Deviation - Cumulative Distribution")
@@ -557,6 +557,7 @@ def generate_basic_plots(
         ax.bar(x, means, width, yerr=stds, capsize=3, color=colors[:n_ff])
         ax.set_ylabel(f"ICRMSD ({unit})")
         ax.set_title(f"{ic_type} RMSD")
+        ax.set_ylim(ymin=0)
         ax.set_xticks(x)
         ax.set_xticklabels([lbl[:15] for lbl in labels], rotation=45, ha="right")
 
@@ -585,7 +586,9 @@ def generate_basic_plots(
             if len(data) > 0:
                 sorted_data = np.sort(data)
                 cdf = np.arange(1, len(sorted_data) + 1) / len(sorted_data)
-                ax.plot(sorted_data, cdf, "-", label=label, color=colors[i])
+                ax.plot(
+                    sorted_data, cdf, "-", label=label, linewidth=1, color=colors[i]
+                )
 
         ax.set_xlabel(f"{ic_type} RMSD ({unit})")
         ax.set_ylabel("CDF")
