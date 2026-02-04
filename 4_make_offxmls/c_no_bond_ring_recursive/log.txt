@@ -1,0 +1,39 @@
+2026-02-03 19:25:52.796 | INFO     | __main__:get_train_test_smiles_dict:340 - Reading test/train smiles from ../../3_split_train_test/full_split_uci/smiles_test_train.json
+2026-02-03 19:25:52.806 | INFO     | __main__:get_train_test_smiles_dict:343 - In the training and test sets there are 23109 and 1217 SMILES strings respectively.
+2026-02-03 19:25:52.806 | INFO     | __main__:load_specificity_config:86 - Configuration file contents from specificity.json:
+2026-02-03 19:25:52.807 | INFO     | __main__:load_specificity_config:89 - {
+  "bond_specificities": {
+    "AtomStandardRing-BondGeneralizedRing": {
+      "atom_include_ring_info": true,
+      "bond_specificity": "WILDCARD",
+      "bond_include_ring_info": true
+    }
+  }
+}
+
+2026-02-03 19:25:52.807 | INFO     | __main__:get_components_by_type:183 - Getting components by type:
+Traceback (most recent call last):
+  File "/Users/jenniferclark/bin/back-to-school-jen/4_make_offxmls/c_no_bond_ring_recursive/../make_offxml.py", line 581, in <module>
+    main(
+  File "/Users/jenniferclark/bin/back-to-school-jen/4_make_offxmls/c_no_bond_ring_recursive/../make_offxml.py", line 455, in main
+    components_by_type = get_components_by_type(
+                         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jenniferclark/bin/back-to-school-jen/4_make_offxmls/c_no_bond_ring_recursive/../make_offxml.py", line 184, in get_components_by_type
+    dataset = load_from_disk(data_dir)
+              ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jenniferclark/mamba/envs/bts/lib/python3.12/site-packages/datasets/load.py", line 1470, in load_from_disk
+    return Dataset.load_from_disk(dataset_path, keep_in_memory=keep_in_memory, storage_options=storage_options)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jenniferclark/mamba/envs/bts/lib/python3.12/site-packages/datasets/arrow_dataset.py", line 1773, in load_from_disk
+    dataset_size = estimate_dataset_size(
+                   ^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jenniferclark/mamba/envs/bts/lib/python3.12/site-packages/datasets/utils/file_utils.py", line 426, in estimate_dataset_size
+    return sum(path.stat().st_size for path in paths)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jenniferclark/mamba/envs/bts/lib/python3.12/site-packages/datasets/utils/file_utils.py", line 426, in <genexpr>
+    return sum(path.stat().st_size for path in paths)
+               ^^^^^^^^^^^
+  File "/Users/jenniferclark/mamba/envs/bts/lib/python3.12/pathlib.py", line 840, in stat
+    return os.stat(self, follow_symlinks=follow_symlinks)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/jenniferclark/bin/back-to-school-jen/4_make_offxmls/c_no_bond_ring_recursive/../../3_split_train_test/full_split_uci/data-train/data-00000-of-00005.arrow'

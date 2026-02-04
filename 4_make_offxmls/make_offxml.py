@@ -41,6 +41,7 @@ import json
 import pathlib
 import sys
 from collections import defaultdict
+from typing import Any
 
 import argparse
 from loguru import logger
@@ -147,6 +148,7 @@ def get_components_by_type(
     data_dir: str,
     specificity_json: str,
     n_workers: int | None = None,
+    cutoff_population: int = 10,
 ) -> dict[type[MMComponent], dict[int, dict[str, list[MMComponent]]]]:
     """
     Extract and organize molecular components from dataset.
@@ -159,6 +161,8 @@ def get_components_by_type(
         Path to JSON configuration file.
     n_workers : int
         Number of workers to parallelize processing
+    cutoff_population : int, optional
+        Minimum number of bonds in that category to keep that value to fit
 
     Returns
     -------
@@ -173,16 +177,29 @@ def get_components_by_type(
     """
     config = load_specificity_config(specificity_json)
     bond_specs, angle_specs = ffps.create_specificity_factories(config)
-    specificity_levels_by_component = ffps.create_specificity_levels(
-        bond_specs, angle_specs
-    )
+    specificities: dict[type[MMComponent], dict[str, Any]] = {}
+    if bond_specs is not None:
+        specificities[Bond] = bond_specs
+    if angle_specs is not None:
+        specificities[Angle] = angle_specs
+    if not specificities:
+        raise ValueError("No specificities have been defined for a new force field")
+    specificity_levels_by_component = ffps.create_specificity_levels(specificities)
 
     logger.info("Getting components by type:")
     dataset = load_from_disk(data_dir)
     components_by_type: dict[
         type[MMComponent], dict[int, dict[str, list[MMComponent]]]
     ] = {}
-    for component_class in [Bond, Angle]:
+    component_classes: list[type[MMComponent]] = [Bond, Angle]
+    for component_class in component_classes:
+        # Skip processing if no specificities are defined for this component
+        if not specificity_levels_by_component.get(component_class):
+            logger.info(
+                f"Skipping {component_class.__name__} - no specificities defined"
+            )
+            continue
+
         logger.info(f"\n{'=' * 20}\nProcessing {component_class.__name__}\n{'=' * 20}")
 
         components = ffpmm.get_all_mm_components(
@@ -195,7 +212,7 @@ def get_components_by_type(
         class_components_by_type = ffpmm.get_mm_components_by_specificity_by_type(
             components,
             specificity_levels_by_component[component_class],  # type: ignore[type-abstract]
-            cutoff_population=10,
+            cutoff_population=cutoff_population,
             n_workers=n_workers,
         )
 
@@ -248,15 +265,23 @@ def write_forcefield_file(
     filename_offxml_in = pathlib.Path(filename_offxml_in)
     logger.info(f"Reading template force field: {filename_offxml_in.resolve()}")
     new_ff = ForceField(str(filename_offxml_in))
-    for component_class, angles_by_type in components_by_type.items():
-        logger.info(f"\nAdding {component_class.__name__} parameters to force field...")
-        new_ff = ffps.add_types_to_ff(
-            new_ff,
-            angles_by_type,
-            component_class,
-            None,  # None for bonds and angles
-            n_workers=n_workers,
+
+    if not components_by_type:
+        logger.info(
+            "No new component types to add. Using original force field parameters."
         )
+    else:
+        for component_class, valence_by_type in components_by_type.items():
+            logger.info(
+                f"\nAdding {component_class.__name__} parameters to force field..."
+            )
+            new_ff = ffps.add_types_to_ff(
+                new_ff,
+                valence_by_type,
+                component_class,
+                None,  # None for bonds and angles
+                n_workers=n_workers,
+            )
 
     logger.info(f"Writing new force field: {filename_offxml_out.resolve()}")
     new_ff.to_file(str(filename_offxml_out.resolve()))
@@ -407,6 +432,7 @@ def main(
     datasets: list[str],
     dataset_type: str,
     n_workers: int | None = None,
+    cutoff_population: int = 10,
 ) -> None:
     """
     Generate force field with custom parameters and test coverage.
@@ -429,6 +455,8 @@ def main(
         QCArchive dataset type.
     n_workers : int, optional
         Number of worker processes.
+    cutoff_population : int, optional
+        Minimum number of bonds in that category to keep that value to fit
 
     Examples
     --------
@@ -438,7 +466,10 @@ def main(
 
     smiles_dict = get_train_test_smiles_dict(filename_test_train_smiles)
     components_by_type = get_components_by_type(
-        data_dir, specificity_json, n_workers=n_workers
+        data_dir,
+        specificity_json,
+        n_workers=n_workers,
+        cutoff_population=cutoff_population,
     )
     write_forcefield_file(
         components_by_type, filename_offxml_out, filename_offxml_in, n_workers=n_workers
@@ -533,6 +564,12 @@ Output:
         help="Number of worker processes",
     )
     parser.add_argument(
+        "--cutoff-population",
+        type=int,
+        default=10,
+        help="Minimum number of bonds in that category to keep that value to fit",
+    )
+    parser.add_argument(
         "-v",
         "--verbose",
         action="count",
@@ -563,4 +600,5 @@ Output:
         args.datasets,
         args.datasets_type,
         args.n_workers,
+        args.cutoff_population,
     )

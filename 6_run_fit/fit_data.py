@@ -67,10 +67,10 @@ Creates the following outputs in current working directory:
 
 import pathlib
 import math
+import random
 from collections import defaultdict
 import pickle
 
-from tqdm import tqdm
 import torch
 import argparse
 import smee
@@ -379,24 +379,33 @@ def write_metrics(
     loss: torch.Tensor,
     loss_energy: torch.Tensor,
     loss_forces: torch.Tensor,
+    loss_val: torch.Tensor,
+    loss_val_energy: torch.Tensor,
+    loss_val_forces: torch.Tensor,
     writer: tensorboardX.SummaryWriter,
 ) -> None:
-    """Write training metrics to console and TensorBoard.
+    """Write training and validation metrics to console and TensorBoard.
 
     Logs training progress including total loss, energy loss, force loss,
-    and corresponding RMSE values to both console output and TensorBoard
-    for monitoring and visualization.
+    and corresponding RMSE values for both training and validation sets
+    to both console output and TensorBoard for monitoring and visualization.
 
     Parameters
     ----------
     epoch : int
-        Current training epoch number.
+        Current training step (minibatch counter).
     loss : torch.Tensor
-        Total loss (energy + force loss) for the epoch.
+        Total training loss (energy + force loss) for the epoch.
     loss_energy : torch.Tensor
-        Energy-specific loss component for the epoch.
+        Energy-specific training loss component for the epoch.
     loss_forces : torch.Tensor
-        Force-specific loss component for the epoch.
+        Force-specific training loss component for the epoch.
+    loss_val : torch.Tensor
+        Total validation loss (energy + force loss) for the epoch.
+    loss_val_energy : torch.Tensor
+        Energy-specific validation loss component for the epoch.
+    loss_val_forces : torch.Tensor
+        Force-specific validation loss component for the epoch.
     writer : tensorboardX.SummaryWriter
         TensorBoard writer object for logging metrics.
 
@@ -407,25 +416,47 @@ def write_metrics(
     Notes
     -----
     TensorBoard metrics logged:
-    - loss: Total combined loss
-    - loss_energy: Energy component loss
-    - loss_forces: Force component loss
-    - rmse_energy: Square root of energy loss
-    - rmse_forces: Square root of force loss
+    - loss: Total combined training loss
+    - loss_energy: Energy component training loss
+    - loss_forces: Force component training loss
+    - loss_val: Total combined validation loss
+    - loss_val_energy: Energy component validation loss
+    - loss_val_forces: Force component validation loss
+    - rmse_energy: Square root of training energy loss
+    - rmse_forces: Square root of training force loss
+    - rmse_val_energy: Square root of validation energy loss
+    - rmse_val_forces: Square root of validation force loss
 
     Examples
     --------
     >>> with tensorboardX.SummaryWriter("logs") as writer:
-    ...     write_metrics(10, epoch_loss, energy_loss, force_loss, writer)
+    ...     write_metrics(10, train_loss, train_energy, train_force,
+    ...                   val_loss, val_energy, val_force, writer)
     """
-    logger.info(f"epoch={epoch} loss={loss.detach().item():.6f}", flush=True)
+    logger.info(
+        f"epoch={epoch} loss_train={loss.detach().item():.6f}, "
+        f"loss_val={loss_val.detach().item():.6f}",
+        flush=True,
+    )
 
     writer.add_scalar("loss", loss.detach().item(), epoch)
     writer.add_scalar("loss_energy", loss_energy.detach().item(), epoch)
     writer.add_scalar("loss_forces", loss_forces.detach().item(), epoch)
 
+    writer.add_scalar("loss_val", loss_val.detach().item(), epoch)
+    writer.add_scalar("loss_val_energy", loss_val_energy.detach().item(), epoch)
+    writer.add_scalar("loss_val_forces", loss_val_forces.detach().item(), epoch)
+
     writer.add_scalar("rmse_energy", math.sqrt(loss_energy.detach().item()), epoch)
     writer.add_scalar("rmse_forces", math.sqrt(loss_forces.detach().item()), epoch)
+
+    writer.add_scalar(
+        "rmse_val_energy", math.sqrt(loss_val_energy.detach().item()), epoch
+    )
+    writer.add_scalar(
+        "rmse_val_forces", math.sqrt(loss_val_forces.detach().item()), epoch
+    )
+
     writer.flush()
 
 
@@ -436,7 +467,8 @@ def train_forcefield(
     topologies: dict[str, smee.TensorTopology],
     n_epochs: int = 1000,
     learning_rate: float = 0.001,
-    batch_size: int = 500,
+    minibatch_size: int = 256,
+    val_filename_data: pathlib.Path | str | None = None,
     to_cuda: bool = False,
     output_dir: pathlib.Path | str = pathlib.Path("my-smee-fit"),
 ) -> pathlib.Path:
@@ -446,6 +478,8 @@ def train_forcefield(
     between predicted and reference energies and forces using gradient descent
     with the
     `Adam optimizer<https://docs.pytorch.org/docs/stable/generated/torch.optim.Adam.html>`_.
+    Uses minibatch gradient descent where the optimizer updates parameters after
+    each minibatch within an epoch.
 
     Parameters
     ----------
@@ -462,8 +496,13 @@ def train_forcefield(
         Number of training epochs (default: 1000).
     learning_rate : float, optional
         Learning rate for Adam optimizer (default: 0.001).
-    batch_size : int, optional
-        Number of molecular configurations per batch (default: 500).
+    minibatch_size : int, optional
+        Number of training examples per minibatch. The optimizer updates
+        parameters after processing each minibatch (default: 256).
+    val_filename_data : pathlib.Path | str | None, optional
+        Path to directory containing validation dataset in HuggingFace format.
+        If provided, validation loss will be tracked but will not influence
+        parameter updates (default: None).
     to_cuda : bool, optional
         If True, run training on GPU. If False, use CPU (default: False).
     output_dir : pathlib.Path | str, optional
@@ -498,17 +537,24 @@ def train_forcefield(
     """
 
     train_filename_data = pathlib.Path(train_filename_data)
-    logger.info(f"Loading dataset from: {train_filename_data.resolve()}")
-    dataset = datasets.Dataset.load_from_disk(train_filename_data)
+    logger.info(f"Loading training dataset from: {train_filename_data.resolve()}")
+    dataset_train = datasets.Dataset.load_from_disk(train_filename_data)
 
-    # Validate that all SMILES in the dataset have corresponding topologies
-    dataset_smiles = set(entry["smiles"] for entry in dataset)
+    # Load validation dataset if provided
+    dataset_val = None
+    if val_filename_data is not None:
+        val_filename_data = pathlib.Path(val_filename_data)
+        logger.info(f"Loading validation dataset from: {val_filename_data.resolve()}")
+        dataset_val = datasets.Dataset.load_from_disk(val_filename_data)
+
+    # Validate that all SMILES in the training dataset have corresponding topologies
+    dataset_train_smiles = set(entry["smiles"] for entry in dataset_train)
     topology_smiles = set(topologies.keys())
-    missing_smiles = dataset_smiles - topology_smiles
+    missing_smiles = dataset_train_smiles - topology_smiles
 
     if missing_smiles:
         logger.warning(
-            f"Found {len(missing_smiles)} SMILES in dataset without matching topologies. "
+            f"Found {len(missing_smiles)} SMILES in training dataset without matching topologies. "
             f"These molecules will be excluded from training."
         )
         for smiles in list(missing_smiles)[:5]:  # Log first 5 missing
@@ -516,21 +562,43 @@ def train_forcefield(
         if len(missing_smiles) > 5:
             logger.debug(f"... and {len(missing_smiles) - 5} more missing SMILES")
 
-        # Filter dataset to only include molecules with topologies
-        original_size = len(dataset)
-        dataset = dataset.filter(
+        # Filter training dataset to only include molecules with topologies
+        original_size = len(dataset_train)
+        dataset_train = dataset_train.filter(
             lambda example: example["smiles"] in topology_smiles,
-            desc="Filtering molecules with topologies",
+            desc="Filtering training molecules with topologies",
         )
         logger.info(
-            f"Dataset filtered: {original_size} -> {len(dataset)} molecules "
-            f"({len(dataset)/original_size*100:.1f}% retained)"
+            f"Training dataset filtered: {original_size} -> {len(dataset_train)} molecules "
+            f"({len(dataset_train)/original_size*100:.1f}% retained)"
         )
 
-        if len(dataset) == 0:
+        if len(dataset_train) == 0:
             raise ValueError(
-                "No molecules remaining after filtering! Check that the topology "
+                "No molecules remaining in training dataset after filtering! Check that the topology "
                 "dictionary was generated from the same dataset."
+            )
+
+    # Filter validation dataset if provided
+    if dataset_val is not None:
+        dataset_val_smiles = set(entry["smiles"] for entry in dataset_val)
+        missing_val_smiles = dataset_val_smiles - topology_smiles
+
+        if missing_val_smiles:
+            logger.warning(
+                f"Found {len(missing_val_smiles)} SMILES in validation dataset without matching topologies. "
+                f"These molecules will be excluded from validation."
+            )
+
+            # Filter validation dataset to only include molecules with topologies
+            original_val_size = len(dataset_val)
+            dataset_val = dataset_val.filter(
+                lambda example: example["smiles"] in topology_smiles,
+                desc="Filtering validation molecules with topologies",
+            )
+            logger.info(
+                f"Validation dataset filtered: {original_val_size} -> {len(dataset_val)} molecules "
+                f"({len(dataset_val)/original_val_size*100:.1f}% retained)"
             )
 
     # Determine target device - use CPU by default for consistency
@@ -590,69 +658,114 @@ def train_forcefield(
     trainable_parameters = trainable.to_values()
 
     logger.info("Start training...")
+    logger.info(f"Training dataset size: {len(dataset_train)}")
+    if dataset_val is not None:
+        logger.info(f"Validation dataset size: {len(dataset_val)}")
+
     with tensorboardX.SummaryWriter(str(directory)) as writer:
         optimizer = torch.optim.Adam(
             [trainable_parameters], lr=learning_rate, amsgrad=True
         )
-        dataset_indices = list(range(len(dataset)))
+        dataset_train_indices = list(range(len(dataset_train)))
 
         for i in range(n_epochs):
-            ff = trainable.to_force_field(trainable_parameters).to(device_str)
+            # Shuffle indices at the start of each epoch to randomize minibatch order
+            random.shuffle(dataset_train_indices)
 
-            epoch_loss = torch.zeros(size=(1,), device=device)
-            energy_loss = torch.zeros(size=(1,), device=device)
-            force_loss = torch.zeros(size=(1,), device=device)
-            grad = None
+            # Calculate number of minibatches per epoch
+            n_minibatches = math.ceil(len(dataset_train) / minibatch_size)
 
-            for batch_ids in tqdm(
-                more_itertools.batched(dataset_indices, batch_size),
-                desc="Calculating energies",
-                ncols=80,
-                total=math.ceil(len(dataset) / batch_size),
+            # Iterate through minibatches within the epoch
+            for j, minibatch_ids in enumerate(
+                more_itertools.batched(dataset_train_indices, minibatch_size)
             ):
-                batch = dataset.select(indices=batch_ids)
-                # Prepare batch for the target device (CPU or CUDA)
-                device_batch = prepare_batch_for_device(batch, device_str)
-                true_batch_size = len(
-                    dataset
-                )  # because loss between batches are combined
+                logger.info(f"Epoch {i}, minibatch {j+1} of {n_minibatches}")
+
+                # Select minibatch from training data
+                minibatch = dataset_train.select(indices=list(minibatch_ids))
+
+                # Convert to force field for this minibatch
+                ff = trainable.to_force_field(trainable_parameters).to(device_str)
+
+                # Prepare minibatch for the target device (CPU or CUDA)
+                device_minibatch = prepare_batch_for_device(minibatch, device_str)
+
+                # Compute predictions and losses for entire minibatch
                 e_ref, e_pred, f_ref, f_pred = descent.targets.energy.predict(
-                    device_batch, ff, topologies, "mean"
+                    device_minibatch, ff, topologies, "mean"
                 )
-                # L2 loss
-                batch_loss_energy = ((e_pred - e_ref) ** 2).sum() / true_batch_size
-                batch_loss_force = ((f_pred - f_ref) ** 2).sum() / true_batch_size
+
+                # L2 loss normalized by minibatch size
+                minibatch_size_actual = len(minibatch)
+                minibatch_energy_loss = (
+                    (e_pred - e_ref) ** 2
+                ).sum() / minibatch_size_actual
+                minibatch_force_loss = (
+                    (f_pred - f_ref) ** 2
+                ).sum() / minibatch_size_actual
 
                 # Equal sum of L2 loss on energies and forces
-                batch_loss = batch_loss_energy + batch_loss_force
+                minibatch_loss = minibatch_energy_loss + minibatch_force_loss
 
-                (batch_grad,) = torch.autograd.grad(
-                    batch_loss, trainable_parameters, create_graph=True
+                # Compute gradient for this minibatch
+                (grad,) = torch.autograd.grad(
+                    minibatch_loss, trainable_parameters, create_graph=True
                 )
-                batch_grad = batch_grad.detach()
-                if grad is None:
-                    grad = batch_grad
-                else:
-                    grad += batch_grad
+                grad = grad.detach()
 
-                # keep sum of squares to report MSE at the end
-                epoch_loss += batch_loss.detach()
-                energy_loss += batch_loss_energy.detach()
-                force_loss += batch_loss_force.detach()
+                # Set gradient and update parameters
+                trainable_parameters.grad = grad
+                optimizer.step()
+                optimizer.zero_grad()
 
-            trainable_parameters.grad = grad
+                # Compute validation loss if validation data provided
+                val_loss = torch.zeros(size=(1,), device=device)
+                val_energy_loss = torch.zeros(size=(1,), device=device)
+                val_force_loss = torch.zeros(size=(1,), device=device)
 
-            write_metrics(
-                epoch=i,
-                loss=epoch_loss,
-                loss_energy=energy_loss,
-                loss_forces=force_loss,
-                writer=writer,
-            )
+                if dataset_val is not None:
+                    # Recompute force field with updated parameters for validation
+                    ff_val = trainable.to_force_field(trainable_parameters).to(
+                        device_str
+                    )
 
-            optimizer.step()
-            optimizer.zero_grad()
+                    # Process entire validation dataset at once
+                    device_val_batch = prepare_batch_for_device(dataset_val, device_str)
+                    val_dataset_size = len(dataset_val)
 
+                    (
+                        e_ref_val,
+                        e_pred_val,
+                        f_ref_val,
+                        f_pred_val,
+                    ) = descent.targets.energy.predict(
+                        device_val_batch, ff_val, topologies, "mean"
+                    )
+
+                    # Compute validation losses (no gradient computation)
+                    val_energy_loss = (
+                        (e_pred_val - e_ref_val) ** 2
+                    ).sum() / val_dataset_size
+                    val_force_loss = (
+                        (f_pred_val - f_ref_val) ** 2
+                    ).sum() / val_dataset_size
+                    val_loss = val_energy_loss + val_force_loss
+
+                # Write metrics for this minibatch
+                # Use step counter to track minibatch progress
+                epoch_step = i * n_minibatches + j
+                write_metrics(
+                    epoch=epoch_step,
+                    loss=minibatch_loss,
+                    loss_energy=minibatch_energy_loss,
+                    loss_forces=minibatch_force_loss,
+                    loss_val=val_loss,
+                    loss_val_energy=val_energy_loss,
+                    loss_val_forces=val_force_loss,
+                    writer=writer,
+                )
+
+            # Save checkpoint at the end of each epoch
             if i % 10 == 0:
                 torch.save(
                     trainable.to_force_field(trainable_parameters),
@@ -796,7 +909,7 @@ def main(
     offxml: pathlib.Path | str,
     n_epochs: int = 1000,
     learning_rate: float = 0.001,
-    batch_size: int = 500,
+    minibatch_size: int = 500,
     to_cuda: bool = False,
 ) -> None:
     """Main workflow for force field parameter optimization.
@@ -821,7 +934,7 @@ def main(
         Learning rate for
         `Adam optimizer<https://docs.pytorch.org/docs/stable/generated/torch.optim.Adam.html>`_
         (default: 0.001).
-    batch_size : int, optional
+    minibatch_size : int, optional
         Batch size for training (default: 500).
     to_cuda : bool
         If true, the pytorch objects for the force field and topology objects are
@@ -859,7 +972,7 @@ def main(
     ...     "openff-2.2.1.offxml",
     ...     n_epochs=2000,
     ...     learning_rate=0.0005,
-    ...     batch_size=256
+    ...     minibatch_size=256
     ... )
     """
     filename_data = pathlib.Path(filename_data)
@@ -876,7 +989,7 @@ def main(
         topologies,
         n_epochs=n_epochs,
         learning_rate=learning_rate,
-        batch_size=batch_size,
+        minibatch_size=minibatch_size,
         to_cuda=to_cuda,
     )
 
@@ -949,6 +1062,6 @@ Examples:
         args.offxml,
         n_epochs=args.n_epochs,
         learning_rate=args.learning_rate,
-        batch_size=args.batch_size,
+        minibatch_size=args.batch_size,
         to_cuda=args.to_cuda,
     )
