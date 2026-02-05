@@ -1,0 +1,49 @@
+2026-02-04 13:58:36.794 | INFO     | __main__:load_smee_outputs:347 - Loading SMEE force field from: ../../5_setup_train_ff_topologies/2026_02_03_uci_c/smee_force_field.pkl
+2026-02-04 13:58:41.708 | INFO     | __main__:load_smee_outputs:357 - Loading dict with SMILES and SMEE topologies from: ../../5_setup_train_ff_topologies/2026_02_03_uci_c/smee_topology_dict.pkl
+2026-02-04 13:59:35.098 | INFO     | __main__:train_forcefield:540 - Loading training dataset from: /dfs9/dmobley-lab/jclark9/descent/back-to-school-jen/3_split_train_test/full_split_uci/data-train
+2026-02-04 13:59:36.114 | INFO     | __main__:train_forcefield:547 - Loading validation dataset from: /dfs9/dmobley-lab/jclark9/descent/back-to-school-jen/3_split_train_test/full_split_uci/data-test
+2026-02-04 13:59:48.961 | WARNING  | __main__:train_forcefield:556 - Found 4 SMILES in training dataset without matching topologies. These molecules will be excluded from training.
+2026-02-04 13:59:48.961 | DEBUG    | __main__:train_forcefield:561 - Missing topology for SMILES: [I:1][P:21]([I:2])([c:18]1[c:12]([H:31])[c:6]([H:25])[c:3]([H:22])[c:7]([H:26])[c:13]1[H:32])([c:19]1[c:14]([H:33])[c:8]([H:27])[c:4]([H:23])[c:9]([H:28])[c:15]1[H:34])[c:20]1[c:16]([H:35])[c:10]([H:29])[c:5]([H:24])[c:11]([H:30])[c:17]1[H:36]
+2026-02-04 13:59:48.961 | DEBUG    | __main__:train_forcefield:561 - Missing topology for SMILES: [I:1][P:13]([S:2][C:6]([H:14])([H:15])[H:16])([N:3]([C:7]([H:17])([H:18])[H:19])[C:8]([H:20])([H:21])[H:22])([N:4]([C:9]([H:23])([H:24])[H:25])[C:10]([H:26])([H:27])[H:28])[N:5]([C:11]([H:29])([H:30])[H:31])[C:12]([H:32])([H:33])[H:34]
+2026-02-04 13:59:48.961 | DEBUG    | __main__:train_forcefield:561 - Missing topology for SMILES: [Br:1][S:4][c:16]1[c:13]([H:25])[c:9]([H:21])[c:8]([H:20])[c:12]([H:24])[c:15]1/[N:3]=[N:2]/[c:14]1[c:10]([H:22])[c:6]([H:18])[c:5]([H:17])[c:7]([H:19])[c:11]1[H:23]
+2026-02-04 13:59:48.961 | DEBUG    | __main__:train_forcefield:561 - Missing topology for SMILES: [F:1][P:4]([F:2])[I:3]
+Filtering training molecules with topologies:   0%|          | 0/23109 [00:00<?, ? examples/s]Filtering training molecules with topologies:   9%|▊         | 2000/23109 [00:00<00:01, 14765.24 examples/s]Filtering training molecules with topologies:  17%|█▋        | 4000/23109 [00:00<00:01, 16790.78 examples/s]Filtering training molecules with topologies:  26%|██▌       | 6000/23109 [00:00<00:00, 17693.05 examples/s]Filtering training molecules with topologies:  35%|███▍      | 8000/23109 [00:00<00:00, 18103.24 examples/s]Filtering training molecules with topologies:  43%|████▎     | 10000/23109 [00:00<00:00, 18323.99 examples/s]Filtering training molecules with topologies:  52%|█████▏    | 12000/23109 [00:00<00:00, 18383.32 examples/s]Filtering training molecules with topologies:  61%|██████    | 14000/23109 [00:00<00:00, 18362.22 examples/s]Filtering training molecules with topologies:  74%|███████▎  | 17000/23109 [00:00<00:00, 18798.94 examples/s]Filtering training molecules with topologies:  82%|████████▏ | 19000/23109 [00:01<00:00, 18623.60 examples/s]Filtering training molecules with topologies:  91%|█████████ | 21000/23109 [00:01<00:00, 18582.19 examples/s]Filtering training molecules with topologies: 100%|█████████▉| 23000/23109 [00:01<00:00, 18627.69 examples/s]Filtering training molecules with topologies: 100%|██████████| 23109/23109 [00:01<00:00, 18180.74 examples/s]
+2026-02-04 13:59:50.316 | INFO     | __main__:train_forcefield:571 - Training dataset filtered: 23109 -> 23105 molecules (100.0% retained)
+2026-02-04 13:59:51.345 | WARNING  | __main__:train_forcefield:588 - Found 44 SMILES in validation dataset without matching topologies. These molecules will be excluded from validation.
+Filtering validation molecules with topologies:   0%|          | 0/1217 [00:00<?, ? examples/s]Filtering validation molecules with topologies: 100%|██████████| 1217/1217 [00:00<00:00, 14599.42 examples/s]
+2026-02-04 13:59:51.511 | INFO     | __main__:train_forcefield:599 - Validation dataset filtered: 1217 -> 1173 molecules (96.4% retained)
+2026-02-04 13:59:51.983 | INFO     | __main__:train_forcefield:616 - Using device: cuda
+2026-02-04 13:59:51.991 | INFO     | __main__:train_forcefield:628 - Topology Angles particle_idxs device: cuda:0
+2026-02-04 13:59:51.991 | INFO     | __main__:train_forcefield:628 - Topology Bonds particle_idxs device: cuda:0
+2026-02-04 13:59:51.991 | INFO     | __main__:train_forcefield:628 - Topology ImproperTorsions particle_idxs device: cuda:0
+2026-02-04 13:59:51.991 | INFO     | __main__:train_forcefield:628 - Topology ProperTorsions particle_idxs device: cuda:0
+Traceback (most recent call last):
+  File "/dfs9/dmobley-lab/jclark9/descent/back-to-school-jen/6_run_fit/c_bond_generalized/../fit_data.py", line 1069, in <module>
+    main(
+  File "/dfs9/dmobley-lab/jclark9/descent/back-to-school-jen/6_run_fit/c_bond_generalized/../fit_data.py", line 989, in main
+    optimized_ff_path = train_forcefield(
+                        ^^^^^^^^^^^^^^^^^
+  File "/dfs9/dmobley-lab/jclark9/descent/back-to-school-jen/6_run_fit/c_bond_generalized/../fit_data.py", line 632, in train_forcefield
+    scale_mean_parameter_values = get_parameter_scales(str(offxml))
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dfs9/dmobley-lab/jclark9/descent/back-to-school-jen/6_run_fit/c_bond_generalized/../fit_data.py", line 191, in get_parameter_scales
+    ff = ForceField(offxml)
+         ^^^^^^^^^^^^^^^^^^
+  File "/data/homezvol2/jclark9/miniforge3/envs/bts/lib/python3.12/site-packages/openff/toolkit/typing/engines/smirnoff/forcefield.py", line 336, in __init__
+    self.parse_sources(sources, allow_cosmetic_attributes=allow_cosmetic_attributes)
+  File "/data/homezvol2/jclark9/miniforge3/envs/bts/lib/python3.12/site-packages/openff/toolkit/typing/engines/smirnoff/forcefield.py", line 790, in parse_sources
+    smirnoff_data = self.parse_smirnoff_from_source(source)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/homezvol2/jclark9/miniforge3/envs/bts/lib/python3.12/site-packages/openff/toolkit/typing/engines/smirnoff/forcefield.py", line 1045, in parse_smirnoff_from_source
+    raise OSError(msg)
+OSError: Source '../../4_make_offxmls/c_no_bond_ring_recursive/openff-2.3.0-fit-bond-ring-no-bond-type.offxml' could not be read. If this is a file, ensure that the path is correct.
+Looked in the following paths and found no files named '../../4_make_offxmls/c_no_bond_ring_recursive/openff-2.3.0-fit-bond-ring-no-bond-type.offxml':
+    /dfs9/dmobley-lab/jclark9/descent/back-to-school-jen/6_run_fit/c_bond_generalized
+    /data/homezvol2/jclark9/miniforge3/envs/bts/lib/python3.12/site-packages/openforcefields/offxml
+    /data/homezvol2/jclark9/miniforge3/envs/bts/lib/python3.12/site-packages/openff/amber_ff_ports/offxml
+If '../../4_make_offxmls/c_no_bond_ring_recursive/openff-2.3.0-fit-bond-ring-no-bond-type.offxml' is present as a file, ensure it is in a known SMIRNOFF encoding.
+Valid formats are: ['XML']
+Parsing failed while trying to parse source as a file with the following exception and message:
+<class 'openff.toolkit.utils.exceptions.SMIRNOFFParseError'>
+not well-formed (invalid token): line 1, column 2
+

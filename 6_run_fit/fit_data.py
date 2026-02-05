@@ -907,6 +907,7 @@ def main(
     filename_ff: pathlib.Path | str,
     filename_topo: pathlib.Path | str,
     offxml: pathlib.Path | str,
+    val_filename_data: pathlib.Path | str | None = None,
     n_epochs: int = 1000,
     learning_rate: float = 0.001,
     minibatch_size: int = 500,
@@ -928,6 +929,9 @@ def main(
         Path to saved SMEE topologies dictionary .pkl file.
     offxml : pathlib.Path | str
         Path to reference OFFXML force field file for output structure.
+    val_filename_data : pathlib.Path | str | None = None
+        Path to directory containing validation dataset in HuggingFace format.
+        Must contain dataset_info.json, state.json, and .arrow files.
     n_epochs : int, optional
         Number of training epochs (default: 1000).
     learning_rate : float, optional
@@ -990,6 +994,7 @@ def main(
         n_epochs=n_epochs,
         learning_rate=learning_rate,
         minibatch_size=minibatch_size,
+        val_filename_data=val_filename_data,
         to_cuda=to_cuda,
     )
 
@@ -1031,6 +1036,12 @@ Examples:
         help="Path and filename of .offxml file",
     )
     parser.add_argument(
+        "--val-data-dir",
+        type=str,
+        default=None,
+        help="Directory to HuggingFace structured data",
+    )
+    parser.add_argument(
         "--n-epochs",
         type=int,
         default=1000,
@@ -1060,6 +1071,7 @@ Examples:
         args.filename_forcefield,
         args.filename_topo_dict,
         args.offxml,
+        val_filename_data=args.val_data_dir,
         n_epochs=args.n_epochs,
         learning_rate=args.learning_rate,
         minibatch_size=args.batch_size,
