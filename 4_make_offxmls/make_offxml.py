@@ -474,6 +474,7 @@ def main(
     write_forcefield_file(
         components_by_type, filename_offxml_out, filename_offxml_in, n_workers=n_workers
     )
+    assert ForceField(filename_offxml_out)
 
     qca_dict = get_qca_smiles_dict(datasets, dataset_type)
     smiles_dict.update(qca_dict)
