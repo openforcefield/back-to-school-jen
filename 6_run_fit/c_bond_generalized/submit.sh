@@ -33,8 +33,8 @@ python -c "import torch; print(f'CUDA available: {torch.cuda.is_available()}'); 
 python ../fit_data.py --data-dir "../../3_split_train_test/full_split_uci/data-train" \
                       --filename-forcefield "../../5_setup_train_ff_topologies/2026_02_03_uci_c/smee_force_field.pkl" \
                       --filename-topo-dict "../../5_setup_train_ff_topologies/2026_02_03_uci_c/smee_topology_dict.pkl" \
-                      --offxml "../../4_make_offxmls/c_no_bond_ring_recursive/openff-2.3.0-fit-bond-ring-no-bond-type.offxml" \
+                      --offxml "../../4_make_offxmls/c_no_bond_ring_recursive/openff-2.3.0-fit-bond_ring-no-bond-type.offxml" \
 		      --val-data-dir "../../3_split_train_test/full_split_uci/data-test" \
-                      --n-epochs 400 \
+                      --n-epochs 40 \
 		      --to-cuda true \
                       --learning-rate 0.005 2>&1 | tee log.txt

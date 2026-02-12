@@ -178,16 +178,17 @@ def get_parameter_scales(offxml: str) -> dict[str, dict[str, float]]:
             "k": unit.kilocalorie_per_mole / unit.angstrom**2,
             "length": unit.angstrom,
         },
-        "Angles": {
-            "k": unit.kilocalorie_per_mole / unit.radian**2,
-            "angle": unit.radian,
-        },
+        #        "Angles": {
+        #            "k": unit.kilocalorie_per_mole / unit.radian**2,
+        #            "angle": unit.radian,
+        #        },
     }
 
     PARAMETER_COLS = {
         "Bonds": ["k", "length"],
-        "Angles": ["k", "angle"],
+        #        "Angles": ["k", "angle"],
     }
+    logger.info(offxml)
     ff = ForceField(offxml)
 
     scales = {}
@@ -640,13 +641,13 @@ def train_forcefield(
             include=[],
             exclude=[],
         ),
-        "Angles": descent.train.ParameterConfig(
-            cols=["k", "angle"],
-            scales=scale_mean_parameter_values["Angles"],
-            limits=parameter_limits["Angles"],
-            include=[],
-            exclude=[],
-        ),
+        #        "Angles": descent.train.ParameterConfig(
+        #            cols=["k", "angle"],
+        #            scales=scale_mean_parameter_values["Angles"],
+        #            limits=parameter_limits["Angles"],
+        #            include=[],
+        #            exclude=[],
+        #        ),
     }
     trainable = descent.train.Trainable(
         force_field=smee_force_field, parameters=PARAMETERS, attributes={}
