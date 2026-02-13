@@ -19,8 +19,8 @@ Command-line Arguments
 --kwargs-angles : str, optional
     Clustering algorithm keyword arguments for angles as a Python dict string
     (e.g. '{"min_cluster_size": 10, "min_samples": 5}').
---no-show : flag
-    If provided, matplotlib windows will not be shown interactively.
+--show : flag
+    If provided, matplotlib windows will be shown interactively.
 
 Examples
 --------
@@ -100,6 +100,8 @@ from matplotlib.figure import Figure
 from openff.toolkit import ForceField
 from openff.units import unit as _UNIT
 from sklearn.cluster import DBSCAN
+import re
+import periodictable as pt
 
 
 def load_offxml(offxml_path: pathlib.Path | str) -> ForceField:
@@ -471,6 +473,111 @@ def plot_and_cluster(
     return annotated
 
 
+def _element_from_smirks_token(token: str) -> str | None:
+    """Extract an element symbol from the contents of a SMIRKS atom bracket.
+
+    Examples of token inputs: '#6X4:1', 'C', 'NH2:1', '*:1'
+    """
+    # Check for atomic number pattern like #6
+    m = re.search(r"#(\d+)", token)
+    if m:
+        try:
+            num = int(m.group(1))
+            # Use periodictable package to get element symbol
+            el = pt.elements[num]
+            return getattr(el, "symbol", f"Z{num}")
+        except Exception:
+            return None
+
+    # Check for explicit element symbol at start
+    m = re.match(r"^([A-Z][a-z]?)", token)
+    if m:
+        return m.group(1)
+
+    # Fallback: wildcard or unspecified
+    if token.startswith("*"):
+        return "*"
+
+    return None
+
+
+def _parse_smirks_elements(smirks: str) -> list[str]:
+    """Return list of element symbols found in SMIRKS bracket atoms (order preserved).
+
+    If parsing fails, returns an empty list.
+    """
+    tokens = re.findall(r"\[([^\]]+)\]", smirks or "")
+    elems: list[str] = []
+    for t in tokens:
+        el = _element_from_smirks_token(t)
+        if el:
+            elems.append(el)
+    return elems
+
+
+def plot_k_vs_eq_by_element_pairs(
+    entries: list[dict], handler_name: str, output_dir: pathlib.Path, show: bool = False
+) -> None:
+    """Plot k vs equilibrium distance for each element-element pair (Bonds only).
+
+    Creates one PDF per element-element combination found in `entries` and
+    saves them to `output_dir` with filenames of the form
+    `bonds_k_vs_length_<EL1>_<EL2>.pdf` where EL1 and EL2 are element symbols.
+    """
+    if handler_name != "Bonds":
+        logger.debug(
+            "Element-element k vs equilibrium plotting currently implemented for Bonds only."
+        )
+        return
+
+    if not entries:
+        logger.debug("No bond entries to plot by element pairs.")
+        return
+
+    groups: dict[tuple[str, str], list[tuple[float, float, str]]] = {}
+    for e in entries:
+        smi = e.get("smirks", "") or ""
+        ks = e.get("k", float("nan"))
+        length = e.get("length", float("nan"))
+        elems = _parse_smirks_elements(smi)
+        if len(elems) >= 2:
+            el1, el2 = elems[0], elems[1]
+        else:
+            # Try splitting on - or : as fallback
+            parts = re.split(r"[-:.]", smi)
+            el1 = elems[0] if elems else (parts[0] if parts else "X")
+            el2 = elems[1] if len(elems) > 1 else (parts[1] if len(parts) > 1 else "X")
+
+        # Canonicalize pair as alphabetical to group e.g. C-H and H-C together
+        e1s, e2s = str(el1), str(el2)
+        if e1s <= e2s:
+            pair: tuple[str, str] = (e1s, e2s)
+        else:
+            pair = (e2s, e1s)
+        groups.setdefault(pair, []).append((length, ks, smi))
+
+    for pair, values in sorted(groups.items()):
+        pair_label = f"{pair[0]}-{pair[1]}"
+        safe_pair = re.sub(r"[^A-Za-z0-9_]+", "_", pair_label)
+        fig, ax = plt.subplots(figsize=(6, 4))
+        lengths = [v[0] for v in values]
+        ks_vals = [v[1] for v in values]
+        ax.scatter(lengths, ks_vals, alpha=0.8)
+        ax.set_xlabel("Length (Å)")
+        ax.set_ylabel("k (kJ / mol / Å²)")
+        ax.set_yscale("log")
+        ax.set_title(f"Bonds: k vs length for {pair_label} ({len(values)} params)")
+        ax.grid(True, alpha=0.3)
+        out_plot = output_dir / f"bonds_k_vs_length_{safe_pair}.pdf"
+        fig.tight_layout()
+        fig.savefig(out_plot, dpi=150, bbox_inches="tight")
+        logger.info(f"Saved element-pair plot to: {out_plot}")
+        if show:
+            plt.show()
+        else:
+            plt.close(fig)
+
+
 def main(
     offxml: pathlib.Path | str,
     output_dir: pathlib.Path | str = pathlib.Path("./clusters"),
@@ -543,6 +650,12 @@ def main(
         {"k": "k", "length": "length"},
     )
     logger.info(f"Found {len(bonds)} bond parameters")
+
+    # Additionally: plot k vs equilibrium distance grouped by element-element pairs
+    try:
+        plot_k_vs_eq_by_element_pairs(bonds, "Bonds", output_dir, show=show)
+    except Exception:
+        logger.exception("Failed to generate element-pair plots for bonds")
 
     logger.info("Extracting angle parameters...")
     angles = extract_valence_params(
@@ -628,9 +741,9 @@ Examples:
         help="Clustering kwargs for angles as Python dict string (e.g. '{\"min_cluster_size\": 10}')",
     )
     parser.add_argument(
-        "--no-show",
+        "--show",
         action="store_true",
-        help="Do not show matplotlib windows",
+        help="Show matplotlib windows",
     )
 
     args = parser.parse_args()
@@ -658,5 +771,5 @@ Examples:
         method=args.method,
         kwargs_bonds=kwargs_bonds,
         kwargs_angles=kwargs_angles,
-        show=not args.no_show,
+        show=args.show,
     )
