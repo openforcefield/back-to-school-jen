@@ -1,0 +1,127 @@
+2026-02-04 15:06:10.831 | INFO     | __main__:get_train_test_smiles_dict:353 - Reading test/train smiles from ../../3_split_train_test/full_split_uci/smiles_test_train.json
+2026-02-04 15:06:10.974 | INFO     | __main__:get_train_test_smiles_dict:356 - In the training and test sets there are 23109 and 1217 SMILES strings respectively.
+2026-02-04 15:06:10.974 | INFO     | __main__:load_specificity_config:87 - Configuration file contents from specificity.json:
+2026-02-04 15:06:10.989 | INFO     | __main__:load_specificity_config:90 - {
+  "bond_specificities": {
+    "AtomStandardRing-BondGeneralizedRing": {
+      "atom_include_ring_info": true,
+      "bond_specificity": "WILDCARD",
+      "bond_include_ring_info": true
+    }
+  }
+}
+
+2026-02-04 15:06:10.990 | INFO     | __main__:get_components_by_type:189 - Getting components by type:
+2026-02-04 15:06:11.773 | INFO     | __main__:get_components_by_type:203 - 
+====================
+Processing Bond
+====================
+2026-02-04 15:06:11.773 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:274 - Unwanted SMIRKS to filter: None
+2026-02-04 15:06:11.773 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:275 - Using 48 workers for parallel processing
+2026-02-04 15:06:11.774 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:287 - Processing 23109 molecules from HuggingFace Dataset
+Warning: bond stereochemistry may be assigned incorrectly for molecule 
+2026-02-04 15:07:43.784 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 1156/23109 molecules (5.0%)
+2026-02-04 15:07:56.691 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 2311/23109 molecules (10.0%)
+Warning: bond stereochemistry may be assigned incorrectly for molecule 
+Warning: bond stereochemistry may be assigned incorrectly for molecule 
+2026-02-04 15:08:05.939 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 3467/23109 molecules (15.0%)
+Warning: bond stereochemistry may be assigned incorrectly for molecule 
+Warning: bond stereochemistry may be assigned incorrectly for molecule 
+Warning: bond stereochemistry may be assigned incorrectly for molecule 
+Warning: bond stereochemistry may be assigned incorrectly for molecule 
+Warning: bond stereochemistry may be assigned incorrectly for molecule 
+Warning: bond stereochemistry may be assigned incorrectly for molecule 
+2026-02-04 15:08:14.546 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 4622/23109 molecules (20.0%)
+Warning: bond stereochemistry may be assigned incorrectly for molecule 
+Warning: bond stereochemistry may be assigned incorrectly for molecule 
+Warning: bond stereochemistry may be assigned incorrectly for molecule 
+Warning: bond stereochemistry may be assigned incorrectly for molecule 
+Warning: bond stereochemistry may be assigned incorrectly for molecule 
+Warning: bond stereochemistry may be assigned incorrectly for molecule 
+2026-02-04 15:08:25.028 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 5778/23109 molecules (25.0%)
+Warning: bond stereochemistry may be assigned incorrectly for molecule 
+2026-02-04 15:08:33.764 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 6933/23109 molecules (30.0%)
+Warning: bond stereochemistry may be assigned incorrectly for molecule 
+Warning: bond stereochemistry may be assigned incorrectly for molecule 
+Warning: bond stereochemistry may be assigned incorrectly for molecule 
+Warning: bond stereochemistry may be assigned incorrectly for molecule 
+Warning: bond stereochemistry may be assigned incorrectly for molecule 
+2026-02-04 15:08:40.344 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 8089/23109 molecules (35.0%)
+Warning: bond stereochemistry may be assigned incorrectly for molecule 
+Warning: bond stereochemistry may be assigned incorrectly for molecule 
+Warning: bond stereochemistry may be assigned incorrectly for molecule 
+Warning: bond stereochemistry may be assigned incorrectly for molecule 
+Warning: bond stereochemistry may be assigned incorrectly for molecule 
+2026-02-04 15:08:51.634 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 9244/23109 molecules (40.0%)
+Warning: bond stereochemistry may be assigned incorrectly for molecule 
+Warning: bond stereochemistry may be assigned incorrectly for molecule 
+Warning: bond stereochemistry may be assigned incorrectly for molecule 
+2026-02-04 15:08:58.113 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 10400/23109 molecules (45.0%)
+Warning: bond stereochemistry may be assigned incorrectly for molecule 
+2026-02-04 15:09:11.536 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 11555/23109 molecules (50.0%)
+2026-02-04 15:09:18.471 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 12710/23109 molecules (55.0%)
+Warning: bond stereochemistry may be assigned incorrectly for molecule 
+2026-02-04 15:09:26.615 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 13866/23109 molecules (60.0%)
+Warning: bond stereochemistry may be assigned incorrectly for molecule 
+2026-02-04 15:09:32.657 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 15021/23109 molecules (65.0%)
+Warning: bond stereochemistry may be assigned incorrectly for molecule 
+Warning: bond stereochemistry may be assigned incorrectly for molecule 
+Warning: bond stereochemistry may be assigned incorrectly for molecule 
+2026-02-04 15:09:41.475 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 16177/23109 molecules (70.0%)
+Warning: bond stereochemistry may be assigned incorrectly for molecule 
+2026-02-04 15:09:47.309 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 17332/23109 molecules (75.0%)
+Warning: bond stereochemistry may be assigned incorrectly for molecule 
+2026-02-04 15:09:57.698 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 18488/23109 molecules (80.0%)
+2026-02-04 15:10:03.443 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 19643/23109 molecules (85.0%)
+Warning: bond stereochemistry may be assigned incorrectly for molecule 
+Warning: bond stereochemistry may be assigned incorrectly for molecule 
+2026-02-04 15:10:09.386 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 20799/23109 molecules (90.0%)
+2026-02-04 15:10:20.525 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 21954/23109 molecules (95.0%)
+2026-02-04 15:10:26.171 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:316 - Filtered out 0 unwanted components.
+2026-02-04 15:10:26.172 | INFO     | __main__:get_components_by_type:210 - Found 917178 Bonds.
+2026-02-04 15:10:26.248 | INFO     | from_finlay.process_mmcomponents:get_mm_components_by_specificity_by_type:552 - Getting Components by Type with Specificity 0: 0:AtomStandardRing-BondGeneralizedRing
+2026-02-04 15:10:26.282 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:433 - Processing 917178 components with 48 workers
+2026-02-04 15:12:00.587 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 45859/917178 components (5.0%)
+2026-02-04 15:12:18.120 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 91718/917178 components (10.0%)
+2026-02-04 15:12:56.420 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 137577/917178 components (15.0%)
+2026-02-04 15:13:11.371 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 183436/917178 components (20.0%)
+2026-02-04 15:13:23.849 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 229295/917178 components (25.0%)
+2026-02-04 15:13:36.373 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 275154/917178 components (30.0%)
+2026-02-04 15:13:55.174 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 321013/917178 components (35.0%)
+2026-02-04 15:14:03.533 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 366872/917178 components (40.0%)
+2026-02-04 15:14:12.304 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 412731/917178 components (45.0%)
+2026-02-04 15:14:22.323 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 458589/917178 components (50.0%)
+2026-02-04 15:14:32.348 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 504448/917178 components (55.0%)
+2026-02-04 15:14:52.375 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 550307/917178 components (60.0%)
+2026-02-04 15:15:02.130 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 596166/917178 components (65.0%)
+2026-02-04 15:15:12.171 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 642025/917178 components (70.0%)
+2026-02-04 15:15:22.830 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 687884/917178 components (75.0%)
+2026-02-04 15:15:33.279 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 733743/917178 components (80.0%)
+2026-02-04 15:15:44.130 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 779602/917178 components (85.0%)
+2026-02-04 15:16:07.023 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 825461/917178 components (90.0%)
+2026-02-04 15:16:17.691 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 871320/917178 components (95.0%)
+2026-02-04 15:16:25.944 | INFO     | from_finlay.process_mmcomponents:get_mm_components_by_specificity_by_type:562 - Finding component types that are too specific...
+2026-02-04 15:16:25.966 | INFO     | __main__:summarize_all_types:116 - Total unique component types at specificity level 0: 799
+2026-02-04 15:16:25.966 | INFO     | __main__:summarize_all_types:119 - Most common component types:
+2026-02-04 15:16:25.966 | INFO     | __main__:summarize_all_types:123 - [#1X1;!r3;!r4;!r5;!r6;!r7;!r8:1]~[#6X4;!r3;!r4;!r5;!r6;!r7;!r8:2]: 152763
+2026-02-04 15:16:25.966 | INFO     | __main__:summarize_all_types:123 - [#6X3;r6:1]~;@[#6X3;r6:2]: 141168
+2026-02-04 15:16:25.967 | INFO     | __main__:summarize_all_types:123 - [#1X1;!r3;!r4;!r5;!r6;!r7;!r8:1]~[#6X3;r6:2]: 92961
+2026-02-04 15:16:25.967 | INFO     | __main__:summarize_all_types:123 - [#1X1;!r3;!r4;!r5;!r6;!r7;!r8:1]~[#6X4;r6:2]: 46371
+2026-02-04 15:16:25.967 | INFO     | __main__:summarize_all_types:123 - [#6X3;r5:1]~;@[#6X3;r5:2]: 26530
+2026-02-04 15:16:25.967 | INFO     | __main__:summarize_all_types:123 - [#6X4;!r3;!r4;!r5;!r6;!r7;!r8:1]~[#6X4;!r3;!r4;!r5;!r6;!r7;!r8:2]: 23716
+2026-02-04 15:16:25.967 | INFO     | __main__:summarize_all_types:123 - [#1X1;!r3;!r4;!r5;!r6;!r7;!r8:1]~[#6X4;r5:2]: 22533
+2026-02-04 15:16:25.967 | INFO     | __main__:summarize_all_types:123 - [#6X4;r6:1]~;@[#6X4;r6:2]: 19618
+2026-02-04 15:16:25.967 | INFO     | __main__:summarize_all_types:123 - [#6X3;r6:1]~;@[#7X2;r6:2]: 18291
+2026-02-04 15:16:25.967 | INFO     | __main__:summarize_all_types:123 - [#1X1;!r3;!r4;!r5;!r6;!r7;!r8:1]~[#7X3;!r3;!r4;!r5;!r6;!r7;!r8:2]: 17994
+2026-02-04 15:16:25.967 | INFO     | __main__:summarize_all_types:127 - % of component types with count < 5: 34.79%
+2026-02-04 15:16:25.967 | INFO     | __main__:summarize_all_types:130 - % of component types with count = 1: 16.15%
+2026-02-04 15:16:25.967 | INFO     | __main__:summarize_all_types:140 - 
+==================================================
+Total unique component types, Bond, across all specificity levels: 799
+==================================================
+2026-02-04 15:16:25.967 | INFO     | __main__:get_components_by_type:198 - Skipping Angle - no specificities defined
+2026-02-04 15:16:27.116 | INFO     | __main__:write_forcefield_file:266 - Reading template force field: /dfs9/dmobley-lab/jclark9/descent/back-to-school-jen/forcefields/openff_unconstrained-2.3.0-rc2.offxml
+2026-02-04 15:16:27.864 | INFO     | __main__:write_forcefield_file:275 - 
+Adding Bond parameters to force field...
+2026-02-04 15:16:27.932 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:538 - Using None workers to assemble the force field.
+2026-02-04 15:16:29.100 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:577 - Adding parameters for specificity 0...

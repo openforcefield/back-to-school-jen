@@ -372,25 +372,24 @@ def parse_tensorboard_loss(checkpoint_dir: pathlib.Path) -> dict | None:
     ea = EventAccumulator(str(event_file))
     ea.Reload()
 
-    # Look for loss scalar
+    # Collect all scalar tags that include training and validation loss
     scalar_tags = ea.Tags().get("scalars", [])
-    loss_tag = None
-    for tag in scalar_tags:
-        if "loss" in tag.lower():
-            loss_tag = tag
-            break
+    loss_tags = [t for t in scalar_tags if t.lower() in ["loss", "loss_val"]]
 
-    if not loss_tag:
+    if not loss_tags:
         logger.warning(
             f"No loss scalar found in TensorBoard. Available tags: {scalar_tags}"
         )
         return None
 
-    events = ea.Scalars(loss_tag)
-    epochs = [e.step for e in events]
-    losses = [e.value for e in events]
+    scalars: dict = {}
+    for tag in loss_tags:
+        events = ea.Scalars(tag)
+        epochs = [e.step for e in events]
+        values = [e.value for e in events]
+        scalars[tag] = {"epochs": epochs, "values": values}
 
-    return {"epochs": epochs, "loss": losses, "tag": loss_tag}
+    return {"scalars": scalars}
 
 
 def generate_training_plots(
@@ -449,7 +448,7 @@ def generate_training_plots(
     n_rows = 1 + sum(
         len(x) for x in results.values()
     )  # Loss + one row per handler/parameter combination
-    fig, axes = plt.subplots(n_rows, 1, figsize=(12, 4 * n_rows), sharex=True)
+    fig, axes = plt.subplots(n_rows, 1, figsize=(12, 4 * n_rows))
 
     if n_rows == 1:
         axes = [axes]
@@ -457,12 +456,22 @@ def generate_training_plots(
     # Plot 1: Loss vs Epoch
     ax = axes[0]
     if loss_history:
-        ax.plot(loss_history["epochs"], loss_history["loss"], "b-", linewidth=1.5)
+        for tag, data in loss_history["scalars"].items():
+            epochs = data["epochs"]
+            values = data["values"]
+            # choose style for validation vs training
+            if "val" in tag.lower() or "validation" in tag.lower():
+                style = "r-"
+            else:
+                style = "b-"
+            ax.plot(epochs, values, style, linewidth=1.5, label=tag)
+
         ax.set_xlabel("Epoch")
         ax.set_ylabel("Loss")
-        ax.set_title(f"Training Loss ({loss_history['tag']})")
+        ax.set_title("Loss vs Epoch")
         ax.set_yscale("log")
         ax.grid(True, alpha=0.3)
+        ax.legend()
     else:
         ax.text(
             0.5,
@@ -473,7 +482,7 @@ def generate_training_plots(
             transform=ax.transAxes,
             fontsize=12,
         )
-        ax.set_title("Training Loss")
+        ax.set_title("Loss vs Epoch")
 
     # Plot parameters by handler
     colors = plt.cm.get_cmap("viridis")(np.linspace(0, 1, top_n))
