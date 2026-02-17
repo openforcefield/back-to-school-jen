@@ -33,7 +33,7 @@ python ../make_offxml.py --data-dir "../../1_data/uci/raw-spice" \
                          --filename-test-train-smiles "../../3_split_train_test/test_split/smiles_test_train.json" \
                          -vvv \
 			 -n $ncpus \
-                         --cutoff-pop 1 \
+                         --cutoff-population 1 \
                          --datasets "OpenFF Industry Benchmark Season 1 v1.2" \
                          --datasets-type optimization 2>&1 | tee log.txt
 
