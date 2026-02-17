@@ -178,15 +178,15 @@ def get_parameter_scales(offxml: str) -> dict[str, dict[str, float]]:
             "k": unit.kilocalorie_per_mole / unit.angstrom**2,
             "length": unit.angstrom,
         },
-        #        "Angles": {
-        #            "k": unit.kilocalorie_per_mole / unit.radian**2,
-        #            "angle": unit.radian,
-        #        },
+        "Angles": {
+            "k": unit.kilocalorie_per_mole / unit.radian**2,
+            "angle": unit.radian,
+        },
     }
 
     PARAMETER_COLS = {
         "Bonds": ["k", "length"],
-        #        "Angles": ["k", "angle"],
+        "Angles": ["k", "angle"],
     }
     logger.info(f"Loading force field from OFFXML: {offxml}")
     ff = ForceField(offxml)
@@ -470,6 +470,7 @@ def train_forcefield(
     learning_rate: float = 0.001,
     minibatch_size: int = 256,
     val_filename_data: pathlib.Path | str | None = None,
+    valence_types: list[str] = ["Bonds", "Angles"],
     descent_reference: str = "mean",
     to_cuda: bool = False,
     output_dir: pathlib.Path | str = pathlib.Path("my-smee-fit"),
@@ -501,6 +502,10 @@ def train_forcefield(
     minibatch_size : int, optional
         Number of training examples per minibatch. The optimizer updates
         parameters after processing each minibatch (default: 256).
+    valence_types : list[str], optional
+        List of valence parameter handler names to include in optimization.
+        Only handlers in this list will be added to `PARAMETERS`. Defaults to
+        ["Bonds", "Angles"].
     descent_reference : str, optional
         Reference passed to `descent.targets.energy.predict`. Valid values are
         "mean" (default) or "min". Controls how reference energy is computed.
@@ -641,24 +646,37 @@ def train_forcefield(
     scale_mean_parameter_values = get_parameter_scales(str(offxml))
     parameter_limits = get_parameter_limits()
 
-    PARAMETERS = {
-        "Bonds": descent.train.ParameterConfig(
-            cols=["k", "length"],
-            scales=scale_mean_parameter_values["Bonds"],
-            limits=parameter_limits["Bonds"],
-            include=[],
-            exclude=[],
-        ),
-    }
+    # Normalize valence_types input and validate against supported handlers
+    if isinstance(valence_types, str):
+        valence_types = [valence_types]
+    supported_handlers = set(scale_mean_parameter_values.keys()) & set(
+        parameter_limits.keys()
+    )
+    invalid = [v for v in valence_types if v not in supported_handlers]
+    if invalid:
+        raise ValueError(
+            f"Unsupported valence_types: {invalid}. Supported handlers: {sorted(supported_handlers)}"
+        )
 
-    # Conditionally include angle parameters if present in the parameter configuration.
-    # This avoids relying on commented-out code and automatically enables angle training
-    # when the force field and scaling information contain angle terms.
-    if "Angles" in scale_mean_parameter_values and "Angles" in parameter_limits:
-        PARAMETERS["Angles"] = descent.train.ParameterConfig(
-            cols=["k", "angle"],
-            scales=scale_mean_parameter_values["Angles"],
-            limits=parameter_limits["Angles"],
+    # Build PARAMETERS only for requested valence handlers
+    PARAMETERS: dict[str, descent.train.ParameterConfig] = {}
+    for handler_name in valence_types:
+        if handler_name == "Bonds":
+            cols = ["k", "length"]
+        elif handler_name == "Angles":
+            cols = ["k", "angle"]
+        else:
+            # Fallback: infer columns from available scales
+            cols = list(scale_mean_parameter_values.get(handler_name, {}).keys())
+            if not cols:
+                raise ValueError(
+                    f"No known parameter columns for handler '{handler_name}'"
+                )
+
+        PARAMETERS[handler_name] = descent.train.ParameterConfig(
+            cols=cols,
+            scales=scale_mean_parameter_values[handler_name],
+            limits=parameter_limits[handler_name],
             include=[],
             exclude=[],
         )
@@ -927,6 +945,7 @@ def main(
     n_epochs: int = 1000,
     learning_rate: float = 0.001,
     minibatch_size: int = 500,
+    valence_types: list[str] = ["Bonds", "Angles"],
     descent_reference: str = "mean",
     to_cuda: bool = False,
 ) -> None:
@@ -957,6 +976,10 @@ def main(
         (default: 0.001).
     minibatch_size : int, optional
         Batch size for training (default: 500).
+    valence_types : list[str], optional
+        List of valence parameter handler names to include in optimization.
+        Only handlers in this list will be added to `PARAMETERS`. Defaults to
+        ["Bonds", "Angles"].
     descent_reference : str, optional
         Reference passed to `descent.targets.energy.predict` ("mean" or "min").
         Defaults to "mean".
@@ -1014,6 +1037,7 @@ def main(
         n_epochs=n_epochs,
         learning_rate=learning_rate,
         minibatch_size=minibatch_size,
+        valence_types=valence_types,
         descent_reference=descent_reference,
         val_filename_data=val_filename_data,
         to_cuda=to_cuda,
@@ -1081,6 +1105,13 @@ Examples:
         help="Batch size",
     )
     parser.add_argument(
+        "--valence-types",
+        nargs="+",
+        choices=["Bonds", "Angles"],
+        default=["Bonds", "Angles"],
+        help="Valence parameter handler names to include in optimization (default: Bonds Angles)",
+    )
+    parser.add_argument(
         "--descent-reference",
         type=str,
         choices=["mean", "min"],
@@ -1103,6 +1134,7 @@ Examples:
         n_epochs=args.n_epochs,
         learning_rate=args.learning_rate,
         minibatch_size=args.batch_size,
+        valence_types=args.valence_types,
         descent_reference=args.descent_reference,
         to_cuda=args.to_cuda,
     )
