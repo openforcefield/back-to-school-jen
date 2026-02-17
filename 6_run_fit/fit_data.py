@@ -470,6 +470,7 @@ def train_forcefield(
     learning_rate: float = 0.001,
     minibatch_size: int = 256,
     val_filename_data: pathlib.Path | str | None = None,
+    descent_reference: str = "mean",
     to_cuda: bool = False,
     output_dir: pathlib.Path | str = pathlib.Path("my-smee-fit"),
 ) -> pathlib.Path:
@@ -500,6 +501,9 @@ def train_forcefield(
     minibatch_size : int, optional
         Number of training examples per minibatch. The optimizer updates
         parameters after processing each minibatch (default: 256).
+    descent_reference : str, optional
+        Reference passed to `descent.targets.energy.predict`. Valid values are
+        "mean" (default) or "min". Controls how reference energy is computed.
     val_filename_data : pathlib.Path | str | None, optional
         Path to directory containing validation dataset in HuggingFace format.
         If provided, validation loss will be tracked but will not influence
@@ -608,6 +612,10 @@ def train_forcefield(
     device_str = "cuda" if to_cuda else "cpu"
     device = torch.device(device_str)
 
+    # Validate descent_reference early to fail fast if misconfigured
+    if descent_reference not in ("mean", "min"):
+        raise ValueError("descent_reference must be 'mean' or 'min'")
+
     # Ensure force field and topologies are on the target device before creating Trainable
     smee_force_field = smee_force_field.to(device_str)
     topologies = {
@@ -700,7 +708,7 @@ def train_forcefield(
 
                 # Compute predictions and losses for entire minibatch
                 e_ref, e_pred, f_ref, f_pred = descent.targets.energy.predict(
-                    device_minibatch, ff, topologies, "mean"
+                    device_minibatch, ff, topologies, descent_reference
                 )
 
                 # L2 loss normalized by minibatch size
@@ -747,7 +755,7 @@ def train_forcefield(
                         f_ref_val,
                         f_pred_val,
                     ) = descent.targets.energy.predict(
-                        device_val_batch, ff_val, topologies, "mean"
+                        device_val_batch, ff_val, topologies, descent_reference
                     )
 
                     # Compute validation losses (no gradient computation)
@@ -919,6 +927,7 @@ def main(
     n_epochs: int = 1000,
     learning_rate: float = 0.001,
     minibatch_size: int = 500,
+    descent_reference: str = "mean",
     to_cuda: bool = False,
 ) -> None:
     """Main workflow for force field parameter optimization.
@@ -948,6 +957,9 @@ def main(
         (default: 0.001).
     minibatch_size : int, optional
         Batch size for training (default: 500).
+    descent_reference : str, optional
+        Reference passed to `descent.targets.energy.predict` ("mean" or "min").
+        Defaults to "mean".
     to_cuda : bool
         If true, the pytorch objects for the force field and topology objects are
         converted to be GPU compatible (default: False).
@@ -1002,6 +1014,7 @@ def main(
         n_epochs=n_epochs,
         learning_rate=learning_rate,
         minibatch_size=minibatch_size,
+        descent_reference=descent_reference,
         val_filename_data=val_filename_data,
         to_cuda=to_cuda,
     )
@@ -1068,6 +1081,13 @@ Examples:
         help="Batch size",
     )
     parser.add_argument(
+        "--descent-reference",
+        type=str,
+        choices=["mean", "min"],
+        default="mean",
+        help="Descent reference passed to descent.targets.energy.predict ('mean' or 'min')",
+    )
+    parser.add_argument(
         "--to-cuda",
         type=bool,
         default=False,
@@ -1083,5 +1103,6 @@ Examples:
         n_epochs=args.n_epochs,
         learning_rate=args.learning_rate,
         minibatch_size=args.batch_size,
+        descent_reference=args.descent_reference,
         to_cuda=args.to_cuda,
     )
