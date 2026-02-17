@@ -1,0 +1,9 @@
+Fri Jan 23 02:21:10 PM PST 2026
+Running job on host hpc3-21-20
+16 allocated CPUs
+Traceback (most recent call last):
+  File "/dfs9/dmobley-lab/jclark9/descent/back-to-school-jen/4_make_offxmls/c_no_bond_ring_recursive/../make_offxml.py", line 46, in <module>
+    from loguru import logger
+ModuleNotFoundError: No module named 'loguru'
+\nRun complete
+Fri Jan 23 02:21:11 PM PST 2026
