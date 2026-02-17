@@ -52,7 +52,7 @@ from rdkit import Chem
 from openff.toolkit import ForceField
 from openff.toolkit.typing.engines.smirnoff.parameters import ParameterType
 
-from .molecular_classes import MMComponent, SpecificityLevel, Bond, Angle
+from .molecular_classes import MMComponent, SpecificityLevel
 
 
 class TerminalBehavior(Enum):
@@ -605,7 +605,7 @@ def add_types_to_ff(
 
 def create_specificity_factories(
     config: dict
-) -> tuple[dict[str, SMIRKSFactory], dict[str, SMIRKSFactory]]:
+) -> tuple[dict[str, SMIRKSFactory] | None, dict[str, SMIRKSFactory] | None]:
     """
     Create SMIRKSFactory objects from configuration dictionary.
 
@@ -674,32 +674,35 @@ def create_specificity_factories(
 
         return SMIRKSFactory(**factory_args)
 
-    bond_specificities = {
-        name: config_to_factory(spec_config)
-        for name, spec_config in config["bond_specificities"].items()
-    }
+    if "bond_specificities" in config:
+        bond_specificities = {
+            name: config_to_factory(spec_config)
+            for name, spec_config in config["bond_specificities"].items()
+        }
+    else:
+        bond_specificities = None
 
-    angle_specificities = {
-        name: config_to_factory(spec_config)
-        for name, spec_config in config["angle_specificities"].items()
-    }
+    if "angle_specificities" in config:
+        angle_specificities = {
+            name: config_to_factory(spec_config)
+            for name, spec_config in config["angle_specificities"].items()
+        }
+    else:
+        angle_specificities = None
 
     return bond_specificities, angle_specificities
 
 
 def create_specificity_levels(
-    bond_specificities: dict[str, SMIRKSFactory],
-    angle_specificities: dict[str, SMIRKSFactory],
+    specificities_by_component: dict[type[MMComponent], dict[str, SMIRKSFactory]]
 ) -> dict[type[MMComponent], dict[int, SpecificityLevel]]:
     """
     Create SPECIFICITY_LEVELS_BY_COMPONENT from specificity dictionaries.
 
     Parameters
     ----------
-    bond_specificities : dict[str, SMIRKSFactory]
-        Named bond factory objects.
-    angle_specificities : dict[str, SMIRKSFactory]
-        Named angle factory objects.
+    specificities_by_component : dict[type[MMComponent], dict[str, SMIRKSFactory]]
+        Mapping of component types to their specificity dictionaries.
 
     Returns
     -------
@@ -708,19 +711,20 @@ def create_specificity_levels(
 
     Examples
     --------
-    >>> bond_specs = {"Standard": SMIRKSFactory()}
-    >>> angle_specs = {"Terminal": SMIRKSFactory()}
-    >>> levels = create_specificity_levels(bond_specs, angle_specs)
+    >>> specificities = {
+    ...     Bond: {"Standard": SMIRKSFactory()},
+    ...     Angle: {"Terminal": SMIRKSFactory()}
+    ... }
+    >>> levels = create_specificity_levels(specificities)
     >>> levels[Bond][0].name
     '0:Standard'
     """
-    return {
-        Bond: {
+    specificities: dict[type[MMComponent], dict[int, SpecificityLevel]] = {}
+
+    for component_class, specificity_dict in specificities_by_component.items():
+        specificities[component_class] = {
             i: factory.create_specificity_level(f"{i}:" + name)
-            for i, (name, factory) in enumerate(bond_specificities.items())
-        },
-        Angle: {
-            i: factory.create_specificity_level(f"{i}:" + name)
-            for i, (name, factory) in enumerate(angle_specificities.items())
-        },
-    }
+            for i, (name, factory) in enumerate(specificity_dict.items())
+        }
+
+    return specificities

@@ -23,6 +23,10 @@ Command-line Arguments
     Path(s) to OFFXML force field file(s) (required for parameter type analysis).
 --param-json : str, optional
     Path(s) to existing metrics_by_parameter_type.json (alternative to database+offxml).
+--plot-difference : flag, optional
+    If set and multiple metrics files are provided, subtract values from the first-listed
+    force field from all subsequent force fields before plotting. Useful to visualize
+    differences relative to a reference.
 
 Examples
 --------
@@ -59,6 +63,9 @@ from yammbs import MoleculeStore
 from yammbs.analysis import get_internal_coordinate_differences
 
 logger.remove()
+
+LINEWIDTH = 2
+ALPHA = 0.4
 
 
 def load_metrics(metrics_path: pathlib.Path) -> dict:
@@ -413,6 +420,7 @@ def generate_basic_plots(
     metrics_list: list[dict],
     labels: list[str],
     output_dir: pathlib.Path,
+    plot_difference: bool = False,
 ) -> None:
     """Generate basic benchmark plots from metrics.json files.
 
@@ -431,6 +439,7 @@ def generate_basic_plots(
     output_dir = pathlib.Path(output_dir)
     plots_dir = output_dir / "plots"
     plots_dir.mkdir(parents=True, exist_ok=True)
+    suffix = "_diff" if plot_difference else ""
 
     if labels is None:
         labels = [f"FF_{i+1}" for i in range(len(metrics_list))]
@@ -439,97 +448,242 @@ def generate_basic_plots(
             f"Number of metrics files ({len(metrics_list)}) must match number of labels ({len(labels)})"
         )
 
-    # Generate colors for each force field
+    # Generate colors and style cycles for accessibility (not relying on color alone)
     n_ff = len(labels)
     colors = plt.cm.tab10(np.linspace(0, 1, max(n_ff, 1)))
+    line_styles = ["-", "--", ":", "-."]
+    hatches = ["", "//", "\\\\", "xx", ".."]
 
-    # Extract metrics by force field label
-    ff_data: dict[str, dict[str, list[float]]] = {}
+    # Extract metrics by force field label. Use dicts keyed by record id so
+    # we can compute differences between matching records when requested.
+    ff_data: dict[str, dict[str, dict]] = {}
     for metrics, label in zip(metrics_list, labels):
         ff_metrics = metrics.get("metrics", metrics)
         ff_data[label] = {
-            "dde": [],
-            "rmsd": [],
-            "tfd": [],
-            "icrmsd_bond": [],
-            "icrmsd_angle": [],
-            "icrmsd_dihedral": [],
-            "icrmsd_improper": [],
+            "dde": {},
+            "rmsd": {},
+            "tfd": {},
+            "icrmsd_bond": {},
+            "icrmsd_angle": {},
+            "icrmsd_dihedral": {},
+            "icrmsd_improper": {},
         }
         # Iterate through all force fields in this metrics file
         for ff_name, records in ff_metrics.items():
-            for _, metric in records.items():
-                if isinstance(metric, dict):
-                    if metric.get("dde") is not None:
-                        ff_data[label]["dde"].append(metric["dde"])
-                    if metric.get("rmsd") is not None:
-                        ff_data[label]["rmsd"].append(metric["rmsd"])
-                    if metric.get("tfd") is not None:
-                        ff_data[label]["tfd"].append(metric["tfd"])
-                    if metric.get("icrmsd"):
-                        icrmsd = metric["icrmsd"]
-                        if icrmsd.get("Bond") is not None:
-                            ff_data[label]["icrmsd_bond"].append(icrmsd["Bond"])
-                        if icrmsd.get("Angle") is not None:
-                            ff_data[label]["icrmsd_angle"].append(icrmsd["Angle"])
-                        if icrmsd.get("Dihedral") is not None:
-                            ff_data[label]["icrmsd_dihedral"].append(icrmsd["Dihedral"])
-                        if icrmsd.get("Improper") is not None:
-                            ff_data[label]["icrmsd_improper"].append(icrmsd["Improper"])
+            for rec_id, metric in records.items():
+                if not isinstance(metric, dict):
+                    continue
+                if metric.get("dde") is not None:
+                    ff_data[label]["dde"][rec_id] = metric["dde"]
+                if metric.get("rmsd") is not None:
+                    ff_data[label]["rmsd"][rec_id] = metric["rmsd"]
+                if metric.get("tfd") is not None:
+                    ff_data[label]["tfd"][rec_id] = metric["tfd"]
+                if metric.get("icrmsd"):
+                    icrmsd = metric["icrmsd"]
+                    if icrmsd.get("Bond") is not None:
+                        ff_data[label]["icrmsd_bond"][rec_id] = icrmsd["Bond"]
+                    if icrmsd.get("Angle") is not None:
+                        ff_data[label]["icrmsd_angle"][rec_id] = icrmsd["Angle"]
+                    if icrmsd.get("Dihedral") is not None:
+                        ff_data[label]["icrmsd_dihedral"][rec_id] = icrmsd["Dihedral"]
+                    if icrmsd.get("Improper") is not None:
+                        ff_data[label]["icrmsd_improper"][rec_id] = icrmsd["Improper"]
+
+    # Helper function to align data by record ID and optionally compute differences
+    def get_aligned_data(metric_key: str, plot_diff: bool) -> dict[str, np.ndarray]:
+        """Extract and align metric data across all force fields by record ID.
+
+        Parameters
+        ----------
+        metric_key : str
+            Key in ff_data (e.g., "dde", "rmsd", "tfd", "icrmsd_bond").
+        plot_diff : bool
+            If True and multiple FFs, compute differences relative to first FF.
+
+        Returns
+        -------
+        dict[str, np.ndarray]
+            Mapping of label to aligned data array.
+        """
+        # Find common record IDs across all force fields
+        if plot_diff and n_ff > 1:
+            common_rec_ids = set(ff_data[labels[0]][metric_key].keys())
+            for label in labels[1:]:
+                common_rec_ids &= set(ff_data[label][metric_key].keys())
+        else:
+            # Use all records from each FF independently
+            common_rec_ids = None
+
+        result: dict[str, np.ndarray] = {}
+        for i, label in enumerate(labels):
+            if common_rec_ids is not None:
+                # Extract only common records
+                data = np.array(
+                    [
+                        ff_data[label][metric_key][rec_id]
+                        for rec_id in sorted(common_rec_ids)
+                    ]
+                )
+            else:
+                # Use all available records for this FF
+                data = np.array(list(ff_data[label][metric_key].values()))
+
+            # Compute differences relative to first FF if requested
+            if plot_diff and i > 0 and common_rec_ids is not None:
+                data0 = result[labels[0]]
+                assert len(data) == len(
+                    data0
+                ), "Data lengths should match after alignment"
+                data = data - data0
+
+            result[label] = data
+
+        return result
 
     # Plot 1: DDE Histogram
     fig, ax = plt.subplots(figsize=(10, 6))
-    for i, label in enumerate(labels):
-        data = np.array(ff_data[label]["dde"])
+    dde_data = get_aligned_data("dde", plot_difference)
+    # Determine which labels to actually plot (skip reference when showing diffs)
+    if plot_difference and n_ff > 1:
+        plot_indices = list(range(1, n_ff))
+    else:
+        plot_indices = list(range(0, n_ff))
+
+    logger.info(
+        f"plot_difference={plot_difference}, n_ff={n_ff}, plot_indices={plot_indices}"
+    )
+
+    for i in plot_indices:
+        label = labels[i]
+        data = dde_data[label]
         data = data[np.isfinite(data)]
         if len(data) > 0:
             counts, bins = np.histogram(data, bins=np.linspace(-15, 15, 31))
-            ax.stairs(counts, bins, label=label, color=colors[i])
+            ax.stairs(
+                counts,
+                bins,
+                label=label,
+                color=colors[i % len(colors)],
+                linestyle=line_styles[i % len(line_styles)],
+            )
     ax.set_xlabel("DDE (kcal/mol)")
     ax.set_ylabel("Count")
-    ax.set_title("Deformation-Driven Energy Difference Distribution")
+    if plot_difference:
+        ax.set_title(f"Deformation-Driven Energy Distribution Relative to {labels[0]}")
+    else:
+        ax.set_title("Deformation-Driven Energy Distribution")
     ax.legend(loc="best")
-    ax.axvline(x=0, color="gray", linestyle="--", linewidth=1, alpha=0.5)
+    # Draw a zero reference line when plotting differences so viewers can see
+    # positive/negative deviations. Do not add a legend entry (label=None).
+    if plot_difference:
+        ax.axvline(
+            x=0,
+            color="black",
+            linestyle="--",
+            linewidth=LINEWIDTH,
+            label=None,
+            alpha=ALPHA,
+        )
+        # Use a symmetric log scale on y to show orders-of-magnitude differences
+        try:
+            ax.set_yscale("symlog", linthresh=1)
+            logger.info("DDE histogram: using symlog y-scale for difference plot")
+        except Exception:
+            logger.debug("Could not set symlog y-scale for DDE histogram")
+    else:
+        ax.axvline(x=0, color="gray", linestyle="--", linewidth=LINEWIDTH, alpha=ALPHA)
     fig.tight_layout()
-    fig.savefig(plots_dir / "dde_histogram.pdf", bbox_inches="tight")
+    fig.savefig(plots_dir / f"dde_histogram{suffix}.pdf", bbox_inches="tight")
     plt.close(fig)
-    logger.info(f"Saved: {plots_dir / 'dde_histogram.pdf'}")
+    logger.info(f"Saved: {plots_dir / f'dde_histogram{suffix}.pdf'}")
 
     # Plot 2: RMSD CDF
     fig, ax = plt.subplots(figsize=(10, 6))
-    for i, label in enumerate(labels):
-        data = np.sort(ff_data[label]["rmsd"])
+    rmsd_data = get_aligned_data("rmsd", plot_difference)
+    for i in plot_indices:
+        label = labels[i]
+        data = np.sort(rmsd_data[label])
         if len(data) > 0:
             cdf = np.arange(1, len(data) + 1) / len(data)
-            ax.plot(data, cdf, "-", label=label, linewidth=2, color=colors[i])
+            ls = line_styles[i % len(line_styles)]
+            ax.plot(
+                data,
+                cdf,
+                linestyle=ls,
+                label=label,
+                linewidth=LINEWIDTH,
+                color=colors[i % len(colors)],
+            )
     ax.set_xlabel("RMSD (Å)")
     ax.set_ylabel("CDF")
     ax.set_title("Root Mean Square Deviation - Cumulative Distribution")
     ax.set_xlim(0, 3.0)
-    ax.set_ylim(0, 1.05)
+    if not plot_difference:
+        ax.set_ylim(0, 1.05)
+    else:
+        # vertical zero line for difference plots
+        ax.axvline(
+            x=0,
+            color="black",
+            linestyle="--",
+            linewidth=LINEWIDTH,
+            label=None,
+            alpha=ALPHA,
+        )
+        try:
+            ax.set_xscale("symlog", linthresh=1e-3)
+            logger.info("RMSD CDF: using symlog x-scale for difference plot")
+        except Exception:
+            logger.debug("Could not set symlog x-scale for RMSD CDF")
     ax.legend(loc="best")
     fig.tight_layout()
-    fig.savefig(plots_dir / "rmsd_cdf.pdf", bbox_inches="tight")
+    fig.savefig(plots_dir / f"rmsd_cdf{suffix}.pdf", bbox_inches="tight")
     plt.close(fig)
-    logger.info(f"Saved: {plots_dir / 'rmsd_cdf.pdf'}")
+    logger.info(f"Saved: {plots_dir / f'rmsd_cdf{suffix}.pdf'}")
 
     # Plot 3: TFD CDF
     fig, ax = plt.subplots(figsize=(10, 6))
-    for i, label in enumerate(labels):
-        data = np.sort(ff_data[label]["tfd"])
+    tfd_data = get_aligned_data("tfd", plot_difference)
+    for i in plot_indices:
+        label = labels[i]
+        data = np.sort(tfd_data[label])
         if len(data) > 0:
             cdf = np.arange(1, len(data) + 1) / len(data)
-            ax.plot(data, cdf, "-", label=label, linewidth=1, color=colors[i])
+            ls = line_styles[i % len(line_styles)]
+            ax.plot(
+                data,
+                cdf,
+                linestyle=ls,
+                label=label,
+                linewidth=LINEWIDTH,
+                color=colors[i % len(colors)],
+            )
     ax.set_xlabel("TFD")
     ax.set_ylabel("CDF")
     ax.set_title("Torsion Fingerprint Deviation - Cumulative Distribution")
     ax.set_xlim(0, 0.5)
-    ax.set_ylim(0, 1.05)
+    if not plot_difference:
+        ax.set_ylim(0, 1.05)
+    else:
+        ax.axvline(
+            x=0,
+            color="black",
+            linestyle="--",
+            linewidth=LINEWIDTH,
+            label=None,
+            alpha=ALPHA,
+        )
+        try:
+            ax.set_xscale("symlog", linthresh=1e-4)
+            logger.info("TFD CDF: using symlog x-scale for difference plot")
+        except Exception:
+            logger.debug("Could not set symlog x-scale for TFD CDF")
     ax.legend(loc="best")
     fig.tight_layout()
-    fig.savefig(plots_dir / "tfd_cdf.pdf", bbox_inches="tight")
+    fig.savefig(plots_dir / f"tfd_cdf{suffix}.pdf", bbox_inches="tight")
     plt.close(fig)
-    logger.info(f"Saved: {plots_dir / 'tfd_cdf.pdf'}")
+    logger.info(f"Saved: {plots_dir / f'tfd_cdf{suffix}.pdf'}")
 
     # Plot 4: ICRMSD Comparison Bar Chart
     ic_types = ["Bond", "Angle", "Dihedral", "Improper"]
@@ -537,35 +691,63 @@ def generate_basic_plots(
     ic_units = ["Å", "°", "°", "°"]
 
     fig, axes = plt.subplots(1, 4, figsize=(16, 4))
-    x = np.arange(n_ff)
+    plot_n = len(plot_indices)
+    x = np.arange(plot_n)
     width = 0.6
 
     for idx, (ic_type, ic_key, unit) in enumerate(zip(ic_types, ic_keys, ic_units)):
         ax = axes[idx]
+        ic_data = get_aligned_data(ic_key, plot_difference)
         means = []
         stds = []
-        for label in labels:
-            data = np.array(ff_data[label][ic_key])
-            data = data[np.isfinite(data)]
-            if len(data) > 0:
+        for idx_i, i in enumerate(plot_indices):
+            label = labels[i]
+            data = ic_data[label]
+            data = data[np.isfinite(data)] if data.size > 0 else np.array([])
+            if data.size > 0:
                 means.append(np.mean(data))
                 stds.append(np.std(data))
             else:
                 means.append(0)
                 stds.append(0)
 
-        ax.bar(x, means, width, yerr=stds, capsize=3, color=colors[:n_ff])
+        bars = ax.bar(
+            x,
+            means,
+            width,
+            yerr=stds,
+            capsize=3,
+            color=[colors[i % len(colors)] for i in plot_indices],
+        )
+        # add hatches to bars to avoid using color only
+        for bi, bar in enumerate(bars):
+            hatch = hatches[bi % len(hatches)]
+            bar.set_hatch(hatch)
+            bar.set_edgecolor("black")
+        # Draw horizontal zero reference for difference plots (bar heights)
+        if plot_difference:
+            ax.axhline(
+                y=0,
+                color="black",
+                linestyle="--",
+                linewidth=LINEWIDTH,
+                label=None,
+                alpha=ALPHA,
+            )
         ax.set_ylabel(f"ICRMSD ({unit})")
         ax.set_title(f"{ic_type} RMSD")
-        ax.set_ylim(ymin=0)
+        if not plot_difference:
+            ax.set_ylim(ymin=0)
         ax.set_xticks(x)
-        ax.set_xticklabels([lbl[:15] for lbl in labels], rotation=45, ha="right")
+        ax.set_xticklabels(
+            [labels[i] for i in plot_indices], rotation=45, ha="right", fontsize=8
+        )
 
     fig.suptitle("Internal Coordinate RMSD by Type", fontsize=14)
     fig.tight_layout()
-    fig.savefig(plots_dir / "icrmsd_comparison.pdf", bbox_inches="tight")
+    fig.savefig(plots_dir / f"icrmsd_comparison{suffix}.pdf", bbox_inches="tight")
     plt.close(fig)
-    logger.info(f"Saved: {plots_dir / 'icrmsd_comparison.pdf'}")
+    logger.info(f"Saved: {plots_dir / f'icrmsd_comparison{suffix}.pdf'}")
 
     # Plot 5: ICRMSD CDFs by type
     fig, axes = plt.subplots(2, 2, figsize=(12, 10))
@@ -580,28 +762,56 @@ def generate_basic_plots(
 
     for idx, (ic_type, ic_key, unit) in enumerate(zip(ic_types, ic_keys, ic_units)):
         ax = axes[idx]
-        for i, label in enumerate(labels):
-            data = np.array(ff_data[label][ic_key])
+        ic_data = get_aligned_data(ic_key, plot_difference)
+        for i in plot_indices:
+            label = labels[i]
+            data = ic_data[label]
             data = data[np.isfinite(data)]
-            if len(data) > 0:
+            if data.size > 0:
                 sorted_data = np.sort(data)
                 cdf = np.arange(1, len(sorted_data) + 1) / len(sorted_data)
+                ls = line_styles[i % len(line_styles)]
                 ax.plot(
-                    sorted_data, cdf, "-", label=label, linewidth=1, color=colors[i]
+                    sorted_data,
+                    cdf,
+                    linestyle=ls,
+                    label=label,
+                    linewidth=LINEWIDTH,
+                    color=colors[i % len(colors)],
                 )
 
         ax.set_xlabel(f"{ic_type} RMSD ({unit})")
         ax.set_ylabel("CDF")
         ax.set_title(f"{ic_type} Internal Coordinate RMSD")
         ax.set_xlim(xlims[ic_key])
-        ax.set_ylim(0, 1.05)
+        if not plot_difference:
+            ax.set_ylim(0, 1.05)
+        else:
+            # vertical zero reference for difference plots
+            ax.axvline(
+                x=0,
+                color="black",
+                linestyle="--",
+                linewidth=LINEWIDTH,
+                label=None,
+                alpha=ALPHA,
+            )
+            # Try symmetric log on x to expose orders-of-magnitude differences while
+            # allowing negative values near zero.
+            try:
+                ax.set_xscale("symlog", linthresh=1e-6)
+                logger.info(
+                    f"ICRMSD CDF ({ic_key}): using symlog x-scale for difference plot"
+                )
+            except Exception:
+                logger.debug(f"Could not set symlog x-scale for ICRMSD CDF {ic_key}")
         ax.legend(loc="best", fontsize=8)
 
     fig.suptitle("Internal Coordinate RMSD - Cumulative Distributions", fontsize=14)
     fig.tight_layout()
-    fig.savefig(plots_dir / "icrmsd_by_type.pdf", bbox_inches="tight")
+    fig.savefig(plots_dir / f"icrmsd_by_type{suffix}.pdf", bbox_inches="tight")
     plt.close(fig)
-    logger.info(f"Saved: {plots_dir / 'icrmsd_by_type.pdf'}")
+    logger.info(f"Saved: {plots_dir / f'icrmsd_by_type{suffix}.pdf'}")
 
     logger.info(f"Basic plots saved to: {plots_dir}")
 
@@ -610,6 +820,7 @@ def generate_parameter_type_plots(
     param_summaries: list[dict[str, dict[str, dict[str, float]]]],
     labels: list[str] | None = None,
     output_dir: pathlib.Path | str = ".",
+    plot_difference: bool = False,
 ) -> None:
     """Generate plots showing deviations by parameter type (SMIRKS).
 
@@ -637,6 +848,39 @@ def generate_parameter_type_plots(
 
     n_ff = len(labels)
     colors = plt.cm.tab10(np.linspace(0, 1, max(n_ff, 1)))
+    hatches = ["", "//", "\\\\", "xx", ".."]
+
+    # If plotting differences, build a display copy of summaries where each
+    # subsequent FF (index > 0) has its means subtracted by the first FF's mean
+    display_summaries = []
+    if plot_difference and len(param_summaries) > 1:
+        base = param_summaries[0]
+        for idx, summary in enumerate(param_summaries):
+            if idx == 0:
+                display_summaries.append(summary)
+                continue
+            # Build a new adjusted summary
+            adjusted: dict[str, dict[str, dict[str, float]]] = {}
+            for ic_type, smirks_dict in summary.items():
+                adjusted[ic_type] = {}
+                base_dict = base.get(ic_type, {})
+                for param_id, stats in smirks_dict.items():
+                    base_mean = base_dict.get(param_id, {}).get("mean")
+                    if base_mean is None:
+                        adjusted_mean = stats.get("mean", 0.0)
+                    else:
+                        adjusted_mean = stats.get("mean", 0.0) - base_mean
+                    # Copy other stats as-is (counts, std may not be meaningful for diffs)
+                    adjusted[ic_type][param_id] = {
+                        "mean": adjusted_mean,
+                        "std": stats.get("std", 0.0),
+                        "count": stats.get("count", 0),
+                        "min": stats.get("min", 0.0),
+                        "max": stats.get("max", 0.0),
+                    }
+            display_summaries.append(adjusted)
+    else:
+        display_summaries = param_summaries
 
     ic_type_info = {
         "Bond": {"unit": "Å", "title": "Bond Length Deviations"},
@@ -644,6 +888,13 @@ def generate_parameter_type_plots(
         "Dihedral": {"unit": "°", "title": "Dihedral Angle Deviations"},
         "Improper": {"unit": "°", "title": "Improper Torsion Deviations"},
     }
+
+    # Decide which FF indices to plot (skip base when showing differences)
+    suffix = "_diff" if plot_difference else ""
+    if plot_difference and n_ff > 1:
+        plot_indices = list(range(1, n_ff))
+    else:
+        plot_indices = list(range(0, n_ff))
 
     for ic_type, info in ic_type_info.items():
         # Collect all unique parameter IDs across all force fields
@@ -669,9 +920,11 @@ def generate_parameter_type_plots(
         fig, ax = plt.subplots(figsize=(14, fig_height))
 
         y = np.arange(len(all_params_sorted))
-        bar_height = 0.8 / n_ff
+        bar_height = 0.8 / max(1, len(plot_indices))
 
-        for ff_idx, (param_summary, label) in enumerate(zip(param_summaries, labels)):
+        for idx_pos, ff_idx in enumerate(plot_indices):
+            param_summary = display_summaries[ff_idx]
+            label = labels[ff_idx]
             ic_data = param_summary.get(ic_type, {})
             means = []
             stds = []
@@ -683,33 +936,62 @@ def generate_parameter_type_plots(
                     means.append(0)
                     stds.append(0)
 
-            y_positions = y - 0.4 + bar_height * (ff_idx + 0.5)
-            ax.barh(
+            y_positions = y - 0.4 + bar_height * (idx_pos + 0.5)
+            bar = ax.barh(
                 y_positions,
                 means,
                 xerr=stds,
                 height=bar_height,
                 label=label,
-                color=colors[ff_idx],
-                alpha=0.8,
+                color=colors[ff_idx % len(colors)],
+                alpha=ALPHA,
                 capsize=1,
             )
+            # add hatch for accessibility
+            for b in bar:
+                b.set_edgecolor("black")
+                b.set_hatch(hatches[idx_pos % len(hatches)])
 
         ax.set_xlabel(f"Mean Absolute Deviation ({info['unit']})")
         ax.set_ylabel("SMIRKS Parameter ID")
         ax.set_title(f"{info['title']} by Parameter Type")
         ax.set_yticks(y)
         ax.set_yticklabels(all_params_sorted, fontsize=7)
-        ax.set_xlim(left=0)
+        if plot_difference:
+            # Expand x-limits to include negative values when plotting differences
+            all_means_vals = []
+            for ps in display_summaries:
+                vals = [v["mean"] for v in ps.get(ic_type, {}).values()]
+                all_means_vals.extend(vals)
+            if all_means_vals:
+                minv = min(all_means_vals)
+                maxv = max(all_means_vals)
+                margin = max((maxv - minv) * 0.05, 1e-6)
+                ax.set_xlim(minv - margin, maxv + margin)
+            # Draw zero reference line
+            ax.axvline(
+                x=0,
+                color="black",
+                linestyle="--",
+                linewidth=LINEWIDTH,
+                label=None,
+                alpha=ALPHA,
+            )
+        else:
+            ax.set_xlim(left=0)
         ax.invert_yaxis()
         ax.legend(loc="lower right")
 
         fig.tight_layout()
+        fig.tight_layout()
         fig.savefig(
-            plots_dir / f"deviation_by_{ic_type.lower()}_type.pdf", bbox_inches="tight"
+            plots_dir / f"deviation_by_{ic_type.lower()}_type{suffix}.pdf",
+            bbox_inches="tight",
         )
         plt.close(fig)
-        logger.info(f"Saved: {plots_dir / f'deviation_by_{ic_type.lower()}_type.pdf'}")
+        logger.info(
+            f"Saved: {plots_dir / f'deviation_by_{ic_type.lower()}_type{suffix}.pdf'}"
+        )
 
     # Summary plot: All IC types comparison across force fields
     fig, axes = plt.subplots(2, 2, figsize=(14, 12))
@@ -717,9 +999,10 @@ def generate_parameter_type_plots(
 
     for idx, (ic_type, info) in enumerate(ic_type_info.items()):
         ax = axes[idx]
-
         has_data = False
-        for ff_idx, (param_summary, label) in enumerate(zip(param_summaries, labels)):
+        for idx_pos, ff_idx in enumerate(plot_indices):
+            param_summary = display_summaries[ff_idx]
+            label = labels[ff_idx]
             if ic_type not in param_summary or not param_summary[ic_type]:
                 continue
             has_data = True
@@ -729,15 +1012,28 @@ def generate_parameter_type_plots(
 
             if all_means:
                 weighted_mean = np.average(all_means, weights=all_counts)
-                ax.hist(
+                patches = ax.hist(
                     all_means,
                     bins=30,
                     weights=all_counts,
-                    color=colors[ff_idx],
-                    alpha=0.5,
-                    edgecolor=colors[ff_idx],
+                    color=colors[ff_idx % len(colors)],
+                    alpha=ALPHA,
+                    edgecolor="black",
                     label=f"{label} (μ={weighted_mean:.3f})",
                 )
+                # Apply hatch pattern to histogram bars for accessibility
+                for p in patches[2]:
+                    p.set_hatch(hatches[idx_pos % len(hatches)])
+                    # Draw zero reference for difference plots
+                    if plot_difference:
+                        ax.axvline(
+                            x=0,
+                            color="black",
+                            linestyle="--",
+                            linewidth=LINEWIDTH,
+                            label=None,
+                            alpha=ALPHA,
+                        )
 
         if not has_data:
             ax.text(
@@ -756,9 +1052,11 @@ def generate_parameter_type_plots(
 
     fig.suptitle("Internal Coordinate Deviation Distributions by Type", fontsize=14)
     fig.tight_layout()
-    fig.savefig(plots_dir / "deviation_summary_all_types.pdf", bbox_inches="tight")
+    fig.savefig(
+        plots_dir / f"deviation_summary_all_types{suffix}.pdf", bbox_inches="tight"
+    )
     plt.close(fig)
-    logger.info(f"Saved: {plots_dir / 'deviation_summary_all_types.pdf'}")
+    logger.info(f"Saved: {plots_dir / f'deviation_summary_all_types{suffix}.pdf'}")
 
     logger.info(f"Parameter type plots saved to: {plots_dir}")
 
@@ -994,6 +1292,17 @@ Output Files:
         help="Number of parallel processes for parameter type analysis (default: 1)",
     )
     parser.add_argument(
+        "--plot-difference",
+        action="store_true",
+        default=False,
+        help=(
+            "If set and multiple metrics files are provided, subtract the values "
+            "from the first-listed force field from all subsequent force fields "
+            "before plotting. Useful to visualize differences relative to a "
+            "reference. Default: False"
+        ),
+    )
+    parser.add_argument(
         "-v",
         "--verbose",
         action="count",
@@ -1042,8 +1351,10 @@ Output Files:
 
     logger.info(f"Loaded {n_ff} metrics file(s): {labels}")
 
-    # Generate basic plots
-    generate_basic_plots(metrics_list, labels, output_dir)
+    # Generate basic plots (may plot differences if requested)
+    generate_basic_plots(
+        metrics_list, labels, output_dir, plot_difference=args.plot_difference
+    )
 
     # Handle parameter type analysis
     param_summaries: list[dict] = []
@@ -1074,8 +1385,9 @@ Output Files:
     has_param_data = any(bool(ps) for ps in param_summaries)
 
     # Generate parameter type plots if available
-    if has_param_data and len(labels) == 1:
-        generate_parameter_type_plots(param_summaries, labels, output_dir)
+    if has_param_data:
+        if len(labels) == 1:
+            generate_parameter_type_plots(param_summaries, labels, output_dir)
 
     # Get offxml paths for SMIRKS lookup
     offxml_paths = args.offxml if args.offxml else []
