@@ -188,7 +188,7 @@ def get_parameter_scales(offxml: str) -> dict[str, dict[str, float]]:
         "Bonds": ["k", "length"],
         #        "Angles": ["k", "angle"],
     }
-    logger.info(offxml)
+    logger.info(f"Loading force field from OFFXML: {offxml}")
     ff = ForceField(offxml)
 
     scales = {}
@@ -641,14 +641,19 @@ def train_forcefield(
             include=[],
             exclude=[],
         ),
-        #        "Angles": descent.train.ParameterConfig(
-        #            cols=["k", "angle"],
-        #            scales=scale_mean_parameter_values["Angles"],
-        #            limits=parameter_limits["Angles"],
-        #            include=[],
-        #            exclude=[],
-        #        ),
     }
+
+    # Conditionally include angle parameters if present in the parameter configuration.
+    # This avoids relying on commented-out code and automatically enables angle training
+    # when the force field and scaling information contain angle terms.
+    if "Angles" in scale_mean_parameter_values and "Angles" in parameter_limits:
+        PARAMETERS["Angles"] = descent.train.ParameterConfig(
+            cols=["k", "angle"],
+            scales=scale_mean_parameter_values["Angles"],
+            limits=parameter_limits["Angles"],
+            include=[],
+            exclude=[],
+        )
     trainable = descent.train.Trainable(
         force_field=smee_force_field, parameters=PARAMETERS, attributes={}
     )
@@ -669,6 +674,8 @@ def train_forcefield(
         )
         dataset_train_indices = list(range(len(dataset_train)))
 
+        # Seed the Python RNG to ensure reproducible minibatch ordering across runs
+        random.seed(42)
         for i in range(n_epochs):
             # Shuffle indices at the start of each epoch to randomize minibatch order
             random.shuffle(dataset_train_indices)
