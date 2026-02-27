@@ -611,6 +611,14 @@ def train_forcefield(
                 f"({len(dataset_val)/original_val_size*100:.1f}% retained)"
             )
 
+            if len(dataset_val) == 0:
+                logger.warning(
+                    "No molecules remaining in validation dataset after filtering! "
+                    "Validation will be skipped. Check that the topology dictionary "
+                    "was generated from the same dataset."
+                )
+                dataset_val = None
+
     # Determine target device - use CPU by default for consistency
     # The trainable will create parameters on the same device as the force field
     # Use string device specifier for compatibility with smee's .to() method
