@@ -23,14 +23,14 @@ export OPENBLAS_NUM_THREADS=1
 export MKL_NUM_THREADS=1
 
 source ~/.bashrc
-micromamba activate bts
+mamba activate bts
 
 # Fit filtered training data
 python ../make_offxml.py --data-dir "../../3_split_train_test/full_split_uci/data-train" \
                          --specificity-json "specificity.json" \
 			 -n $ncpus \
                          --filename-offxml-in "../../forcefields/openff_unconstrained-2.3.0-rc2.offxml" \
-                         --filename-offxml-out "openff-2.2.1-ring-no-bond.offxml" \
+                         --filename-offxml-out "openff-2.3.0-ring-no-bond.offxml" \
                          --filename-test-train-smiles "../../3_split_train_test/full_split_uci/smiles_test_train.json" \
                          -vvv \
                          --datasets "OpenFF Industry Benchmark Season 1 v1.2" \
