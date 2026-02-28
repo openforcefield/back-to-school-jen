@@ -1,0 +1,10 @@
+{
+  "bond_specificities": {
+    "AtomRec2Ring-BondGeneralizedRing": {
+      "atom_include_ring_info": true,
+      "atom_recursion_level": 2,
+      "bond_specificity": "WILDCARD",
+      "bond_include_ring_info": true
+    }
+  }
+}

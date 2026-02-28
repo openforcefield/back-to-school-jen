@@ -397,13 +397,21 @@ class MMComponent(ABC):
 
         atoms_fwd = [
             specificity_level.get_atom_smirks(
-                at_idx, at_id, self.rdkit_mol, self.terminal_atom_indices
+                at_idx,
+                at_id,
+                self.rdkit_mol,
+                self.terminal_atom_indices,
+                skip_ids=list(idxs),
             )
             for at_idx, at_id in zip(idxs, range(n))
         ]
         atoms_bwd = [
             specificity_level.get_atom_smirks(
-                at_idx, at_id, self.rdkit_mol, self.terminal_atom_indices
+                at_idx,
+                at_id,
+                self.rdkit_mol,
+                self.terminal_atom_indices,
+                skip_ids=list(idxs),
             )
             for at_idx, at_id in zip(reversed(idxs), range(n))
         ]
@@ -953,7 +961,11 @@ class ImproperTorsion(MMComponent):
 
         atoms = [
             specificity_level.get_atom_smirks(
-                at_idx, at_id, self.rdkit_mol, self.terminal_atom_indices
+                at_idx,
+                at_id,
+                self.rdkit_mol,
+                self.terminal_atom_indices,
+                skip_ids=list(idxs),
             )
             for at_idx, at_id in zip(idxs, range(n))
         ]
