@@ -707,6 +707,11 @@ def create_specificity_factories(
                 TerminalBehavior, factory_args["atom_terminal_behavior"]
             )
 
+        if "atom_bonded_behavior" in factory_args:
+            factory_args["atom_bonded_behavior"] = getattr(
+                TerminalBehavior, factory_args["atom_bonded_behavior"]
+            )
+
         if "bond_specificity" in factory_args:
             factory_args["bond_specificity"] = getattr(
                 BondSpecificity, factory_args["bond_specificity"]
