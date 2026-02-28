@@ -450,16 +450,6 @@ class SMIRKSFactory:
             pattern_parts = [ds["atomic_num"], ds["degree"], ring_part]
             base_pattern = f"[{''.join(pattern_parts)}:{at_id + 1}]"
 
-        if config.recursion_level > 0:
-            recursions = get_atom_recursive_smirks(
-                at_idx,
-                mol,
-                recursion_level=config.recursion_level,
-                return_recursions=True,
-                skip_ids=skip_ids,
-            )
-            base_pattern = base_pattern[:-1] + "".join(recursions) + "]"
-
         # Handle bonded atom information
         if config.bonded_atom_behavior == BondedAtomBehavior.NONE:
             return base_pattern
@@ -483,7 +473,17 @@ class SMIRKSFactory:
                 return_recursions=True,
                 skip_ids=skip_ids,
             )
-            base_pattern = base_pattern[:-1] + "".join(recursions) + "]"
+
+        # Handle terminal behavior
+        if is_terminal and config.terminal_behavior == TerminalBehavior.WILDCARD:
+            base_pattern = f"[*{ring_part}{'' if config.recursion_level == 0 else ''.join(recursions)}:{at_id + 1}]"
+        elif is_terminal and config.terminal_behavior == TerminalBehavior.H_NO_H:
+            atomic_num = ds["atomic_num"] if ds["atomic_num"] == "#1" else "!#1"
+            base_pattern = f"[{atomic_num}{ring_part}{'' if config.recursion_level == 0 else ''.join(recursions)}:{at_id + 1}]"
+        else:
+            # Standard pattern construction
+            pattern_parts = [ds["atomic_num"], ds["degree"], ring_part]
+            base_pattern = f"[{''.join(pattern_parts)}{'' if config.recursion_level == 0 else ''.join(recursions)}:{at_id + 1}]"
 
         return base_pattern
 
