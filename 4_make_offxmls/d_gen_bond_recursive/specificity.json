@@ -3,6 +3,7 @@
     "AtomRec2Ring-BondGeneralizedRing": {
       "atom_include_ring_info": true,
       "atom_recursion_level": 2,
+      "atom_bonded_behavior": "EXPLICIT_ATOMS",
       "bond_specificity": "WILDCARD",
       "bond_include_ring_info": true
     }
