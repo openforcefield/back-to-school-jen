@@ -569,14 +569,21 @@ class SMIRKSFactory:
 
         # Handle terminal behavior
         if is_terminal and config.terminal_behavior == TerminalBehavior.WILDCARD:
-            base_pattern = f"[*{ring_part}{'' if config.recursion_level == 0 else ''.join(recursions)}:{at_id + 1}]"
+            atom_base = f"*{ring_part}"
         elif is_terminal and config.terminal_behavior == TerminalBehavior.H_NO_H:
             atomic_num = ds["atomic_num"] if ds["atomic_num"] == "#1" else "!#1"
-            base_pattern = f"[{atomic_num}{ring_part}{'' if config.recursion_level == 0 else ''.join(recursions)}:{at_id + 1}]"
+            atom_base = f"{atomic_num}{ring_part}"
         else:
-            # Standard pattern construction
-            pattern_parts = [ds["atomic_num"], ds["degree"], ring_part]
-            base_pattern = f"[{''.join(pattern_parts)}{'' if config.recursion_level == 0 else ''.join(recursions)}:{at_id + 1}]"
+            atom_base = f"{ds['atomic_num']}{ds['degree']}{ring_part}"
+
+        # Wrap each neighbour fragment as &$([atom_base]bond[neighbor]) so the
+        # result is valid recursive SMARTS, e.g. [#6X3&$([#6X3]:[#6X3]):2].
+        if config.recursion_level > 0 and recursions:
+            rec_str = "".join(f"&$([{atom_base}]{r})" for r in recursions)
+        else:
+            rec_str = ""
+
+        base_pattern = f"[{atom_base}{rec_str}:{at_id + 1}]"
 
         return base_pattern
 
