@@ -204,7 +204,7 @@ def get_atom_descriptors(at_idx: int, mol: Chem.Mol) -> dict[str, str]:
     # Format charge
     descriptors["charge"] = (
         f"+{descriptors['charge']}"
-        if descriptors["charge"] >= 0
+        if descriptors["charge"] > 0
         else str(descriptors["charge"])
     )
 
@@ -262,7 +262,6 @@ def get_atom_recursive_smirks(
     mol: Chem.Mol,
     recursion_level: int = 1,
     return_recursions: bool = False,
-    skip_ids: list[int] | None = None,
     include_bond_order: bool = True,
 ) -> str | list[str]:
     """
@@ -285,25 +284,25 @@ def get_atom_recursive_smirks(
     return_recursions : bool, default=False
         When True, return the list of ``&$(...)`` recursion strings instead of the
         fully assembled atom SMIRKS.  Used internally by :func:`SMIRKSFactory._generate_atom_smirks`.
-    skip_ids : list[int] | None, default=None
-        Atom indices to exclude from the neighbor loop (prevents back-traversal).
 
     Returns
     -------
     str | list[str]
         Full atom SMIRKS string (``return_recursions=False``) such as
-        ``[#6X4+0&$([#6X4+0]~[#7X4+1])]``, or the raw list of recursion strings
+        ``[$([#6X4]~[#7X4+1])]``, or the raw list of recursion strings
         (``return_recursions=True``) such as ``["&$([#6X4+0]~[#7X4+1])", ...]``.
 
     Examples
     --------
     >>> from rdkit import Chem
     >>> mol = Chem.AddHs(Chem.MolFromSmiles("CN"))
-    >>> get_atom_recursive_smirks(0, mol, recursion_level=1, skip_ids=[1])
+    >>> get_atom_recursive_smirks(0, mol, recursion_level=1)
     '[#6X4+0&$([#6X4+0]~[#1X1+0])&$([#6X4+0]~[#1X1+0])&$([#6X4+0]~[#1X1+0])]'
     """
     ds = get_atom_descriptors(idx, mol)
-    base = f"[{ds['atomic_num']}{ds['degree']}{ds['charge']}]"
+    if ds["charge"] == str(0):
+        ds["charge"] = ""  # remove charge
+    base = f"[{ds['atomic_num']}{ds['degree']}]"
 
     if recursion_level <= 0:
         if return_recursions:
@@ -315,13 +314,10 @@ def get_atom_recursive_smirks(
     recursions = []
     for bonded_atom in bonded_atoms:
         bonded_idx = bonded_atom.GetIdx()
-        if skip_ids is not None and bonded_idx in skip_ids:
-            continue
         neighbor = get_atom_recursive_smirks(
             bonded_idx,
             mol,
             recursion_level=recursion_level - 1,
-            skip_ids=[idx],
             include_bond_order=include_bond_order,
         )
         # include explicit bond order between the current atom and the neighbor
@@ -331,13 +327,18 @@ def get_atom_recursive_smirks(
         else:
             bond_smarts = "~"  # always wildcard when order not requested
 
-        recursions.append(f"&$({base}{bond_smarts}{neighbor})")
+        recursions.append(f"{bond_smarts}{neighbor}")
+
+    # Sort so that chemically equivalent atoms produce the same string
+    # regardless of the arbitrary neighbor iteration order from RDKit.
+    recursions.sort()
 
     if return_recursions:
         return recursions
     else:
         if recursions:
-            base = base[:-1] + "".join(recursions) + "]"
+            rec_str = "".join(f"({r})" for r in recursions[:-1]) + recursions[-1]
+            base = "[$(" + base + rec_str + ")]"
         return base
 
 
@@ -418,7 +419,6 @@ class SMIRKSFactory:
         at_id: int,
         mol: Chem.Mol,
         terminal_idxs: tuple[int, int],
-        skip_ids: list[int] | None = None,
     ) -> str:
         """
         Generate atom SMIRKS pattern.
@@ -441,7 +441,11 @@ class SMIRKSFactory:
         """
         mol = Chem.AddHs(mol, explicitOnly=False)
         return self._generate_atom_smirks(
-            at_idx, at_id, mol, terminal_idxs, self.atom_config, skip_ids=skip_ids
+            at_idx,
+            at_id,
+            mol,
+            terminal_idxs,
+            self.atom_config,
         )
 
     def get_bond_smirks(
@@ -506,7 +510,6 @@ class SMIRKSFactory:
         mol: Chem.Mol,
         terminal_idxs: tuple[int, int],
         config: AtomSMIRKSConfig,
-        skip_ids: list[int] | None = None,
     ) -> str:
         """
         Core atom SMIRKS generation logic.
@@ -515,6 +518,8 @@ class SMIRKSFactory:
         into a single configurable implementation.
         """
         ds = get_atom_descriptors(at_idx, mol)
+        if ds["charge"] == str(0):
+            ds["charge"] = ""
         is_terminal = at_id in terminal_idxs
         ring_part = ds["ring_info"] if config.include_ring_info else ""
 
@@ -559,7 +564,6 @@ class SMIRKSFactory:
                 mol,
                 recursion_level=config.recursion_level,
                 return_recursions=True,
-                skip_ids=skip_ids,
                 include_bond_order=include_bond_order,
             )
 

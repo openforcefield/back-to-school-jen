@@ -401,7 +401,6 @@ class MMComponent(ABC):
                 at_id,
                 self.rdkit_mol,
                 self.terminal_atom_indices,
-                skip_ids=list(idxs),
             )
             for at_idx, at_id in zip(idxs, range(n))
         ]
@@ -411,7 +410,6 @@ class MMComponent(ABC):
                 at_id,
                 self.rdkit_mol,
                 self.terminal_atom_indices,
-                skip_ids=list(idxs),
             )
             for at_idx, at_id in zip(reversed(idxs), range(n))
         ]
@@ -965,7 +963,6 @@ class ImproperTorsion(MMComponent):
                 at_id,
                 self.rdkit_mol,
                 self.terminal_atom_indices,
-                skip_ids=list(idxs),
             )
             for at_idx, at_id in zip(idxs, range(n))
         ]
