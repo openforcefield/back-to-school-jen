@@ -576,10 +576,9 @@ class SMIRKSFactory:
         else:
             atom_base = f"{ds['atomic_num']}{ds['degree']}{ring_part}"
 
-        # Wrap each neighbour fragment as &$([atom_base]bond[neighbor]) so the
-        # result is valid recursive SMARTS, e.g. [#6X3&$([#6X3]:[#6X3]):2].
         if config.recursion_level > 0 and recursions:
-            rec_str = "".join(f"&$([{atom_base}]{r})" for r in recursions)
+            branches = "".join(f"({r})" for r in recursions)
+            rec_str = f"&$([{atom_base}]{branches})"
         else:
             rec_str = ""
 
