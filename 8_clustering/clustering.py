@@ -556,18 +556,60 @@ def plot_k_vs_eq_by_element_pairs(
             pair = (e2s, e1s)
         groups.setdefault(pair, []).append((length, ks, smi))
 
+    # Bond order color mapping
+    bond_order_colors = {
+        1: "#1f77b4",
+        2: "#ff7f0e",
+        3: "#2ca02c",
+    }  # single, double, triple
+    bond_order_labels = {1: "Single Bond", 2: "Double Bond", 3: "Triple Bond"}
+    default_color = "#7f7f7f"
+
+    def get_bond_order_from_smirks(smirks):
+        # Extract bond order from the symbol between the two atom brackets
+        # Example: [#6X4:1]-[#6X4:2] (single), [#6X3:1]=[#8X1:2] (double), [#7:1]#[#7:2] (triple)
+        m = re.match(r"\[[^\]]+\](.|~)\[[^\]]+\]", smirks)
+        if m:
+            bond_symbol = m.group(1)
+            if bond_symbol == "-":
+                return 1
+            elif bond_symbol == "=":
+                return 2
+            elif bond_symbol == "#":
+                return 3
+            else:
+                return 1  # fallback to single if unknown
+        return 1  # fallback to single if not matched
+
     for pair, values in sorted(groups.items()):
         pair_label = f"{pair[0]}-{pair[1]}"
         safe_pair = re.sub(r"[^A-Za-z0-9_]+", "_", pair_label)
         fig, ax = plt.subplots(figsize=(6, 4))
-        lengths = [v[0] for v in values]
-        ks_vals = [v[1] for v in values]
-        ax.scatter(lengths, ks_vals, alpha=0.8)
+        legend_handles = []
+        used_orders = set()
+        for length, k_val, smi in values:
+            bond_order = get_bond_order_from_smirks(smi)
+            color = bond_order_colors.get(bond_order, default_color)
+            label = bond_order_labels.get(bond_order, "Other")
+            if bond_order not in used_orders:
+                legend_handles.append(
+                    plt.Line2D([0], [0], color=color, lw=2, label=label)
+                )
+                used_orders.add(bond_order)
+            ax.scatter(length, k_val, color=color, alpha=0.8, zorder=2)
         ax.set_xlabel("Length (Å)")
         ax.set_ylabel("k (kJ / mol / Å²)")
         ax.set_yscale("log")
         ax.set_title(f"Bonds: k vs length for {pair_label} ({len(values)} params)")
         ax.grid(True, alpha=0.3)
+        if legend_handles:
+            ax.legend(
+                handles=legend_handles,
+                loc="center left",
+                bbox_to_anchor=(1.02, 0.5),
+                title="Bond Order",
+                fontsize=10,
+            )
         out_plot = output_dir / f"bonds_k_vs_length_{safe_pair}.pdf"
         fig.tight_layout()
         fig.savefig(out_plot, dpi=150, bbox_inches="tight")
