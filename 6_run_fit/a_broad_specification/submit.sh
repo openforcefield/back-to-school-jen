@@ -32,9 +32,11 @@ echo "$(which python)"
 python -c "import torch; print(f'CUDA available: {torch.cuda.is_available()}'); print(f'CUDA version: {torch.version.cuda}'); print(f'Number of GPUs: {torch.cuda.device_count()}')"
 
 python ../fit_data.py --data-dir "../../3_split_train_test/full_split_uci/data-train" \
-                      --filename-forcefield "../../5_setup_train_ff_topologies/2025_12_08_uci_off_a/smee_force_field.pkl" \
-                      --filename-topo-dict "../../5_setup_train_ff_topologies/2025_12_08_uci_off_a/smee_topology_dict.pkl" \
-                      --offxml "../../4_make_offxmls/a_broad_specification/openff-2.2.1-ring-no-bond.offxml" \
-                      --n-epochs 1000 \
-		      --to-cuda true \
-                      --learning-rate 0.001 2>&1 | tee log.txt
+                      --filename-forcefield "../../5_setup_train_ff_topologies/2026_02_20_uci_off_a/smee_force_field.pkl" \
+                      --filename-topo-dict "../../5_setup_train_ff_topologies/2026_02_20_uci_off_a/smee_topology_dict.pkl" \
+                      --offxml "../../4_make_offxmls/a_broad_specification/openff-2.3.0-ring-no-bond.offxml" \
+		      --val-data-dir "../../3_split_train_test/full_split_uci/data-test" \
+                      --n-epochs 40 \
+                      --to-cuda true \
+                      --valence-types "Bonds" \
+                      --learning-rate 0.005 2>&1 | tee log.txt

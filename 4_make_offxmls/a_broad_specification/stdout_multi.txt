@@ -1,67 +1,11 @@
-Thu Nov  6 07:12:31 AM PST 2025
-Running job on host hpc3-23-00
+Tue Feb 17 09:49:02 AM PST 2026
+Running job on host hpc3-23-01
 16 allocated CPUs
-2025-11-06 07:12:39.030 | INFO     | __main__:get_train_test_smiles_dict:327 - Reading test/train smiles from ../../3_split_train_test/full_split_uci/smiles_test_train.json
-2025-11-06 07:12:39.205 | INFO     | __main__:get_train_test_smiles_dict:330 - In the training and test sets there are 23109 and 1217 SMILES strings respectively.
-2025-11-06 07:12:39.205 | INFO     | __main__:load_specificity_config:85 - Configuration file contents from specificity.json:
-2025-11-06 07:12:39.220 | INFO     | __main__:load_specificity_config:88 - {
+2026-02-17 09:57:46.158 | INFO     | __main__:get_train_test_smiles_dict:353 - Reading test/train smiles from ../../3_split_train_test/full_split_uci/smiles_test_train.json
+2026-02-17 09:57:50.822 | INFO     | __main__:get_train_test_smiles_dict:356 - In the training and test sets there are 23109 and 1217 SMILES strings respectively.
+2026-02-17 09:57:50.822 | INFO     | __main__:load_specificity_config:87 - Configuration file contents from specificity.json:
+2026-02-17 09:57:50.866 | INFO     | __main__:load_specificity_config:90 - {
   "bond_specificities": {
-    "AtomStandardNoRing-BondGeneralizedNoRing": {
-      "atom_include_ring_info": false,
-      "bond_specificity": "WILDCARD",
-      "bond_include_ring_info": false
-    },
-    "AtomStandardNoRing_-BondGeneralizedRing": {
-      "atom_include_ring_info": false,
-      "bond_specificity": "WILDCARD",
-      "bond_include_ring_info": true
-    },
-    "AtomStandardRing-BondGeneralizedRing": {
-      "atom_include_ring_info": true,
-      "bond_specificity": "WILDCARD",
-      "bond_include_ring_info": true
-    },
-    "AtomStandardRing-BondStandardRing": {
-      "atom_include_ring_info": true,
-      "bond_include_ring_info": true,
-      "bond_specificity": "STANDARD"
-    }
-  },
-  "angle_specificities": {
-    "AtomTerminalWildcardNoRing-BondGeneralizedNoRing": {
-      "atom_include_ring_info": false,
-      "atom_terminal_behavior": "WILDCARD",
-      "bond_include_ring_info": false,
-      "bond_specificity": "WILDCARD"
-    },
-    "AtomTerminalHnoHRing-BondGeneralizedNoRing": {
-      "atom_include_ring_info": true,
-      "atom_terminal_behavior": "H_NO_H",
-      "bond_include_ring_info": false,
-      "bond_specificity": "WILDCARD"
-    },
-    "AtomStandardRing-BondGeneralizedNoRing": {
-      "atom_include_ring_info": true,
-      "bond_include_ring_info": false,
-      "bond_specificity": "WILDCARD"
-    },
-    "AtomTerminalHnoHRing-BondGeneralizedRing": {
-      "atom_include_ring_info": true,
-      "atom_terminal_behavior": "H_NO_H",
-      "bond_include_ring_info": true,
-      "bond_specificity": "WILDCARD"
-    },
-    "AtomStandardRing-BondStandardNoRing": {
-      "atom_include_ring_info": true,
-      "atom_terminal_behavior": "H_NO_H",
-      "bond_include_ring_info": false,
-      "bond_specificity": "STANDARD"
-    },
-    "AtomStandardRing-BondGeneralizedRing": {
-      "atom_include_ring_info": true,
-      "bond_include_ring_info": true,
-      "bond_specificity": "WILDCARD"
-    },
     "AtomStandardRing-BondStandardRing": {
       "atom_include_ring_info": true,
       "bond_include_ring_info": true,
@@ -70,649 +14,344 @@ Running job on host hpc3-23-00
   }
 }
 
-2025-11-06 07:12:39.221 | INFO     | __main__:get_components_by_type:179 - Getting components by type:
-2025-11-06 07:12:39.699 | INFO     | __main__:get_components_by_type:185 -
+2026-02-17 09:57:50.867 | INFO     | __main__:get_components_by_type:189 - Getting components by type:
+2026-02-17 09:57:55.081 | INFO     | __main__:get_components_by_type:203 - 
 ====================
 Processing Bond
 ====================
-2025-11-06 07:12:39.699 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:274 - Unwanted SMIRKS to filter: None
-2025-11-06 07:12:39.699 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:275 - Using 16 workers for parallel processing
-2025-11-06 07:12:39.699 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:287 - Processing 23109 molecules from HuggingFace Dataset
-2025-11-06 07:12:47.320 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 1156/23109 molecules (5.0%)
-2025-11-06 07:12:49.806 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 2311/23109 molecules (10.0%)
-2025-11-06 07:12:52.571 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 3467/23109 molecules (15.0%)
-2025-11-06 07:12:55.182 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 4622/23109 molecules (20.0%)
-2025-11-06 07:12:57.962 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 5778/23109 molecules (25.0%)
-2025-11-06 07:12:59.688 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 6933/23109 molecules (30.0%)
-2025-11-06 07:13:02.593 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 8089/23109 molecules (35.0%)
-2025-11-06 07:13:05.810 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 9244/23109 molecules (40.0%)
-2025-11-06 07:13:08.384 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 10400/23109 molecules (45.0%)
-2025-11-06 07:13:12.285 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 11555/23109 molecules (50.0%)
-2025-11-06 07:13:15.168 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 12710/23109 molecules (55.0%)
-2025-11-06 07:13:17.731 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 13866/23109 molecules (60.0%)
-2025-11-06 07:13:21.979 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 15021/23109 molecules (65.0%)
-2025-11-06 07:13:24.218 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 16177/23109 molecules (70.0%)
-2025-11-06 07:13:26.510 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 17332/23109 molecules (75.0%)
-2025-11-06 07:13:31.109 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 18488/23109 molecules (80.0%)
-2025-11-06 07:13:33.815 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 19643/23109 molecules (85.0%)
-2025-11-06 07:13:36.015 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 20799/23109 molecules (90.0%)
-2025-11-06 07:13:40.048 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 21954/23109 molecules (95.0%)
-2025-11-06 07:13:41.802 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:316 - Filtered out 0 unwanted components.
-2025-11-06 07:13:41.803 | INFO     | __main__:get_components_by_type:192 - Found 917178 Bonds.
-2025-11-06 07:13:41.857 | INFO     | from_finlay.process_mmcomponents:get_mm_components_by_specificity_by_type:552 - Getting Components by Type with Specificity 3: 3:AtomStandardRing-BondStandardRing
-2025-11-06 07:13:41.866 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:433 - Processing 917178 components with 16 workers
-2025-11-06 07:13:49.149 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 45859/917178 components (5.0%)
-2025-11-06 07:13:51.016 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 91718/917178 components (10.0%)
-2025-11-06 07:13:54.441 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 137577/917178 components (15.0%)
-2025-11-06 07:13:55.805 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 183436/917178 components (20.0%)
-2025-11-06 07:13:57.166 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 229295/917178 components (25.0%)
-2025-11-06 07:13:58.510 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 275154/917178 components (30.0%)
-2025-11-06 07:14:02.618 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 321013/917178 components (35.0%)
-2025-11-06 07:14:04.049 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 366872/917178 components (40.0%)
-2025-11-06 07:14:05.452 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 412731/917178 components (45.0%)
-2025-11-06 07:14:06.902 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 458589/917178 components (50.0%)
-2025-11-06 07:14:08.364 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 504448/917178 components (55.0%)
-2025-11-06 07:14:13.308 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 550307/917178 components (60.0%)
-2025-11-06 07:14:14.681 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 596166/917178 components (65.0%)
-2025-11-06 07:14:16.081 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 642025/917178 components (70.0%)
-2025-11-06 07:14:17.532 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 687884/917178 components (75.0%)
-2025-11-06 07:14:18.954 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 733743/917178 components (80.0%)
-2025-11-06 07:14:20.418 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 779602/917178 components (85.0%)
-2025-11-06 07:14:21.817 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 825461/917178 components (90.0%)
-2025-11-06 07:14:27.277 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 871320/917178 components (95.0%)
-2025-11-06 07:14:28.827 | INFO     | from_finlay.process_mmcomponents:get_mm_components_by_specificity_by_type:562 - Finding component types that are too specific...
-2025-11-06 07:16:01.991 | INFO     | from_finlay.process_mmcomponents:get_mm_components_by_specificity_by_type:552 - Getting Components by Type with Specificity 2: 2:AtomStandardRing-BondGeneralizedRing
-2025-11-06 07:16:01.991 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:433 - Processing 1436 components with 16 workers
-2025-11-06 07:16:07.452 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 72/1436 components (5.0%)
-2025-11-06 07:16:07.493 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 144/1436 components (10.0%)
-2025-11-06 07:16:07.535 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 216/1436 components (15.0%)
-2025-11-06 07:16:07.535 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 288/1436 components (20.1%)
-2025-11-06 07:16:07.574 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 359/1436 components (25.0%)
-2025-11-06 07:16:07.683 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 431/1436 components (30.0%)
-2025-11-06 07:16:07.718 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 503/1436 components (35.0%)
-2025-11-06 07:16:07.718 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 575/1436 components (40.0%)
-2025-11-06 07:16:07.752 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 647/1436 components (45.1%)
-2025-11-06 07:16:07.784 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 718/1436 components (50.0%)
-2025-11-06 07:16:07.784 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 790/1436 components (55.0%)
-2025-11-06 07:16:07.810 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 862/1436 components (60.0%)
-2025-11-06 07:16:07.836 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 934/1436 components (65.0%)
-2025-11-06 07:16:07.960 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1006/1436 components (70.1%)
-2025-11-06 07:16:07.960 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1078/1436 components (75.1%)
-2025-11-06 07:16:07.994 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1149/1436 components (80.0%)
-2025-11-06 07:16:08.022 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1221/1436 components (85.0%)
-2025-11-06 07:16:08.022 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1293/1436 components (90.0%)
-2025-11-06 07:16:08.079 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1365/1436 components (95.1%)
-2025-11-06 07:16:08.204 | INFO     | from_finlay.process_mmcomponents:get_mm_components_by_specificity_by_type:562 - Finding component types that are too specific...
-2025-11-06 07:16:14.214 | INFO     | from_finlay.process_mmcomponents:get_mm_components_by_specificity_by_type:552 - Getting Components by Type with Specificity 1: 1:AtomStandardNoRing_-BondGeneralizedRing
-2025-11-06 07:16:14.214 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:433 - Processing 1381 components with 16 workers
-2025-11-06 07:16:19.459 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 70/1381 components (5.1%)
-2025-11-06 07:16:19.499 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 139/1381 components (10.1%)
-2025-11-06 07:16:19.542 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 208/1381 components (15.1%)
-2025-11-06 07:16:19.542 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 277/1381 components (20.1%)
-2025-11-06 07:16:19.581 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 346/1381 components (25.1%)
-2025-11-06 07:16:19.615 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 415/1381 components (30.1%)
-2025-11-06 07:16:19.616 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 484/1381 components (35.0%)
-2025-11-06 07:16:19.648 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 553/1381 components (40.0%)
-2025-11-06 07:16:19.755 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 622/1381 components (45.0%)
-2025-11-06 07:16:19.755 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 691/1381 components (50.0%)
-2025-11-06 07:16:19.785 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 760/1381 components (55.0%)
-2025-11-06 07:16:19.812 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 829/1381 components (60.0%)
-2025-11-06 07:16:19.812 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 898/1381 components (65.0%)
-2025-11-06 07:16:19.843 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 967/1381 components (70.0%)
-2025-11-06 07:16:19.877 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1036/1381 components (75.0%)
-2025-11-06 07:16:19.956 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1105/1381 components (80.0%)
-2025-11-06 07:16:19.956 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1174/1381 components (85.0%)
-2025-11-06 07:16:20.002 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1243/1381 components (90.0%)
-2025-11-06 07:16:20.031 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1312/1381 components (95.0%)
-2025-11-06 07:16:20.160 | INFO     | from_finlay.process_mmcomponents:get_mm_components_by_specificity_by_type:562 - Finding component types that are too specific...
-2025-11-06 07:16:25.845 | INFO     | from_finlay.process_mmcomponents:get_mm_components_by_specificity_by_type:552 - Getting Components by Type with Specificity 0: 0:AtomStandardNoRing-BondGeneralizedNoRing
-2025-11-06 07:16:25.845 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:433 - Processing 512 components with 16 workers
-2025-11-06 07:16:31.070 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 26/512 components (5.1%)
-2025-11-06 07:16:31.070 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 52/512 components (10.2%)
-2025-11-06 07:16:31.070 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 77/512 components (15.0%)
-2025-11-06 07:16:31.074 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 103/512 components (20.1%)
-2025-11-06 07:16:31.107 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 128/512 components (25.0%)
-2025-11-06 07:16:31.107 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 154/512 components (30.1%)
-2025-11-06 07:16:31.107 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 180/512 components (35.2%)
-2025-11-06 07:16:31.107 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 205/512 components (40.0%)
-2025-11-06 07:16:31.130 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 231/512 components (45.1%)
-2025-11-06 07:16:31.130 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 256/512 components (50.0%)
-2025-11-06 07:16:31.130 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 282/512 components (55.1%)
-2025-11-06 07:16:31.130 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 308/512 components (60.2%)
-2025-11-06 07:16:31.162 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 333/512 components (65.0%)
-2025-11-06 07:16:31.162 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 359/512 components (70.1%)
-2025-11-06 07:16:31.162 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 385/512 components (75.2%)
-2025-11-06 07:16:31.162 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 410/512 components (80.1%)
-2025-11-06 07:16:31.191 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 436/512 components (85.2%)
-2025-11-06 07:16:31.191 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 461/512 components (90.0%)
-2025-11-06 07:16:31.191 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 487/512 components (95.1%)
-2025-11-06 07:16:31.304 | INFO     | from_finlay.process_mmcomponents:get_mm_components_by_specificity_by_type:562 - Finding component types that are too specific...
-2025-11-06 07:16:31.309 | INFO     | __main__:summarize_all_types:114 - Total unique component types at specificity level 3: 466
-2025-11-06 07:16:31.309 | INFO     | __main__:summarize_all_types:117 - Most common component types:
-2025-11-06 07:16:31.309 | INFO     | __main__:summarize_all_types:121 - [#1X1;!r3;!r4;!r5;!r6;!r7;!r8:1]-[#6X4;!r3;!r4;!r5;!r6;!r7;!r8:2]: 152763
-2025-11-06 07:16:31.309 | INFO     | __main__:summarize_all_types:121 - [#6X3;r6:1]:;@[#6X3;r6:2]: 129788
-2025-11-06 07:16:31.309 | INFO     | __main__:summarize_all_types:121 - [#1X1;!r3;!r4;!r5;!r6;!r7;!r8:1]-[#6X3;r6:2]: 92961
-2025-11-06 07:16:31.309 | INFO     | __main__:summarize_all_types:121 - [#1X1;!r3;!r4;!r5;!r6;!r7;!r8:1]-[#6X4;r6:2]: 46371
-2025-11-06 07:16:31.309 | INFO     | __main__:summarize_all_types:121 - [#6X4;!r3;!r4;!r5;!r6;!r7;!r8:1]-[#6X4;!r3;!r4;!r5;!r6;!r7;!r8:2]: 23716
-2025-11-06 07:16:31.309 | INFO     | __main__:summarize_all_types:121 - [#1X1;!r3;!r4;!r5;!r6;!r7;!r8:1]-[#6X4;r5:2]: 22533
-2025-11-06 07:16:31.309 | INFO     | __main__:summarize_all_types:121 - [#6X4;r6:1]-;@[#6X4;r6:2]: 19618
-2025-11-06 07:16:31.309 | INFO     | __main__:summarize_all_types:121 - [#1X1;!r3;!r4;!r5;!r6;!r7;!r8:1]-[#7X3;!r3;!r4;!r5;!r6;!r7;!r8:2]: 17994
-2025-11-06 07:16:31.309 | INFO     | __main__:summarize_all_types:121 - [#6X3;r5:1]-;@[#7X3;r5:2]: 15876
-2025-11-06 07:16:31.309 | INFO     | __main__:summarize_all_types:121 - [#6X3;r6:1]:;@[#7X2;r6:2]: 15026
-2025-11-06 07:16:31.309 | INFO     | __main__:summarize_all_types:114 - Total unique component types at specificity level 2: 5
-2025-11-06 07:16:31.309 | INFO     | __main__:summarize_all_types:117 - Most common component types:
-2025-11-06 07:16:31.310 | INFO     | __main__:summarize_all_types:121 - [#6X3;r3:1]~;@[#6X3;r3:2]: 14
-2025-11-06 07:16:31.310 | INFO     | __main__:summarize_all_types:121 - [#6X3;r5:1]~;@[#7X2;r7:2]: 11
-2025-11-06 07:16:31.310 | INFO     | __main__:summarize_all_types:121 - [#6X3;r6:1]~;@[#7X3;r5:2]: 10
-2025-11-06 07:16:31.310 | INFO     | __main__:summarize_all_types:121 - [#6X3;r6:1]~;@[#6X3;r8:2]: 10
-2025-11-06 07:16:31.310 | INFO     | __main__:summarize_all_types:121 - [#7X2;r7:1]~;@[#7X2;r7:2]: 10
-2025-11-06 07:16:31.310 | INFO     | __main__:summarize_all_types:114 - Total unique component types at specificity level 1: 45
-2025-11-06 07:16:31.310 | INFO     | __main__:summarize_all_types:117 - Most common component types:
-2025-11-06 07:16:31.310 | INFO     | __main__:summarize_all_types:121 - [#6X4:1]~;@[#7X3:2]: 52
-2025-11-06 07:16:31.310 | INFO     | __main__:summarize_all_types:121 - [#6X4:1]~;@[#6X4:2]: 40
-2025-11-06 07:16:31.310 | INFO     | __main__:summarize_all_types:121 - [#6X3:1]~;@[#6X3:2]: 39
-2025-11-06 07:16:31.310 | INFO     | __main__:summarize_all_types:121 - [#6X3:1]~[#6X3:2]: 38
-2025-11-06 07:16:31.310 | INFO     | __main__:summarize_all_types:121 - [#6X4:1]~;@[#8X2:2]: 36
-2025-11-06 07:16:31.310 | INFO     | __main__:summarize_all_types:121 - [#6X4:1]~[#6X4:2]: 33
-2025-11-06 07:16:31.310 | INFO     | __main__:summarize_all_types:121 - [#6X4:1]~[#7X3:2]: 33
-2025-11-06 07:16:31.310 | INFO     | __main__:summarize_all_types:121 - [#6X3:1]~[#7X3:2]: 28
-2025-11-06 07:16:31.310 | INFO     | __main__:summarize_all_types:121 - [#6X3:1]~;@[#8X2:2]: 28
-2025-11-06 07:16:31.310 | INFO     | __main__:summarize_all_types:121 - [#6X3:1]~;@[#7X3:2]: 27
-2025-11-06 07:16:31.310 | INFO     | __main__:summarize_all_types:114 - Total unique component types at specificity level 0: 98
-2025-11-06 07:16:31.310 | INFO     | __main__:summarize_all_types:117 - Most common component types:
-2025-11-06 07:16:31.310 | INFO     | __main__:summarize_all_types:121 - [#15X4:1]~[#8X2:2]: 18
-2025-11-06 07:16:31.310 | INFO     | __main__:summarize_all_types:121 - [#15X3:1]~[#8X2:2]: 17
-2025-11-06 07:16:31.310 | INFO     | __main__:summarize_all_types:121 - [#16X2:1]~[#7X3:2]: 12
-2025-11-06 07:16:31.310 | INFO     | __main__:summarize_all_types:121 - [#15X5:1]~[#7X3:2]: 12
-2025-11-06 07:16:31.310 | INFO     | __main__:summarize_all_types:121 - [#6X2:1]~[#6X4:2]: 11
-2025-11-06 07:16:31.310 | INFO     | __main__:summarize_all_types:121 - [#16X2:1]~[#8X2:2]: 11
-2025-11-06 07:16:31.310 | INFO     | __main__:summarize_all_types:121 - [#16X3:1]~[#7X2:2]: 11
-2025-11-06 07:16:31.310 | INFO     | __main__:summarize_all_types:121 - [#7X2:1]~[#7X3:2]: 10
-2025-11-06 07:16:31.310 | INFO     | __main__:summarize_all_types:121 - [#15X4:1]~[#7X3:2]: 10
-2025-11-06 07:16:31.310 | INFO     | __main__:summarize_all_types:121 - [#16X2:1]~[#16X3:2]: 10
-2025-11-06 07:16:31.310 | INFO     | __main__:summarize_all_types:125 - % of component types with count < 5: 7.91%
-2025-11-06 07:16:31.310 | INFO     | __main__:summarize_all_types:128 - % of component types with count = 1: 2.97%
-2025-11-06 07:16:31.310 | INFO     | __main__:summarize_all_types:138 -
+2026-02-17 09:57:55.081 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:274 - Unwanted SMIRKS to filter: None
+2026-02-17 09:57:55.081 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:275 - Using 16 workers for parallel processing
+2026-02-17 09:57:55.081 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:287 - Processing 23109 molecules from HuggingFace Dataset
+Warning: bond stereochemistry may be assigned incorrectly for molecule 
+2026-02-17 10:10:15.900 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 1156/23109 molecules (5.0%)
+2026-02-17 10:12:03.972 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 2311/23109 molecules (10.0%)
+Warning: bond stereochemistry may be assigned incorrectly for molecule 
+Warning: bond stereochemistry may be assigned incorrectly for molecule 
+2026-02-17 10:13:51.302 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 3467/23109 molecules (15.0%)
+Warning: bond stereochemistry may be assigned incorrectly for molecule 
+Warning: bond stereochemistry may be assigned incorrectly for molecule 
+Warning: bond stereochemistry may be assigned incorrectly for molecule 
+Warning: bond stereochemistry may be assigned incorrectly for molecule 
+Warning: bond stereochemistry may be assigned incorrectly for molecule 
+2026-02-17 10:15:07.562 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 4622/23109 molecules (20.0%)
+Warning: bond stereochemistry may be assigned incorrectly for molecule 
+Warning: bond stereochemistry may be assigned incorrectly for molecule 
+Warning: bond stereochemistry may be assigned incorrectly for molecule 
+Warning: bond stereochemistry may be assigned incorrectly for molecule 
+Warning: bond stereochemistry may be assigned incorrectly for molecule 
+Warning: bond stereochemistry may be assigned incorrectly for molecule 
+Warning: bond stereochemistry may be assigned incorrectly for molecule 
+2026-02-17 10:15:09.579 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 5778/23109 molecules (25.0%)
+Warning: bond stereochemistry may be assigned incorrectly for molecule 
+2026-02-17 10:15:12.221 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 6933/23109 molecules (30.0%)
+Warning: bond stereochemistry may be assigned incorrectly for molecule 
+Warning: bond stereochemistry may be assigned incorrectly for molecule 
+Warning: bond stereochemistry may be assigned incorrectly for molecule 
+Warning: bond stereochemistry may be assigned incorrectly for molecule 
+Warning: bond stereochemistry may be assigned incorrectly for molecule 
+2026-02-17 10:15:15.044 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 8089/23109 molecules (35.0%)
+Warning: bond stereochemistry may be assigned incorrectly for molecule 
+Warning: bond stereochemistry may be assigned incorrectly for molecule 
+Warning: bond stereochemistry may be assigned incorrectly for molecule 
+Warning: bond stereochemistry may be assigned incorrectly for molecule 
+Warning: bond stereochemistry may be assigned incorrectly for molecule 
+2026-02-17 10:15:16.882 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 9244/23109 molecules (40.0%)
+Warning: bond stereochemistry may be assigned incorrectly for molecule 
+Warning: bond stereochemistry may be assigned incorrectly for molecule 
+Warning: bond stereochemistry may be assigned incorrectly for molecule 
+2026-02-17 10:15:20.410 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 10400/23109 molecules (45.0%)
+Warning: bond stereochemistry may be assigned incorrectly for molecule 
+2026-02-17 10:15:22.313 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 11555/23109 molecules (50.0%)
+2026-02-17 10:15:26.231 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 12710/23109 molecules (55.0%)
+Warning: bond stereochemistry may be assigned incorrectly for molecule 
+2026-02-17 10:15:28.276 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 13866/23109 molecules (60.0%)
+Warning: bond stereochemistry may be assigned incorrectly for molecule 
+2026-02-17 10:15:32.280 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 15021/23109 molecules (65.0%)
+Warning: bond stereochemistry may be assigned incorrectly for molecule 
+Warning: bond stereochemistry may be assigned incorrectly for molecule 
+Warning: bond stereochemistry may be assigned incorrectly for molecule 
+2026-02-17 10:15:34.298 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 16177/23109 molecules (70.0%)
+Warning: bond stereochemistry may be assigned incorrectly for molecule 
+2026-02-17 10:15:38.479 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 17332/23109 molecules (75.0%)
+Warning: bond stereochemistry may be assigned incorrectly for molecule 
+2026-02-17 10:15:42.489 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 18488/23109 molecules (80.0%)
+2026-02-17 10:17:35.646 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 19643/23109 molecules (85.0%)
+Warning: bond stereochemistry may be assigned incorrectly for molecule 
+Warning: bond stereochemistry may be assigned incorrectly for molecule 
+2026-02-17 10:19:26.109 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 20799/23109 molecules (90.0%)
+2026-02-17 10:21:14.923 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 21954/23109 molecules (95.0%)
+2026-02-17 10:22:37.814 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:316 - Filtered out 0 unwanted components.
+2026-02-17 10:22:37.815 | INFO     | __main__:get_components_by_type:210 - Found 917178 Bonds.
+2026-02-17 10:22:37.855 | INFO     | from_finlay.process_mmcomponents:get_mm_components_by_specificity_by_type:552 - Getting Components by Type with Specificity 0: 0:AtomStandardRing-BondStandardRing
+2026-02-17 10:22:37.864 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:433 - Processing 917178 components with 16 workers
+2026-02-17 10:34:17.679 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 45859/917178 components (5.0%)
+2026-02-17 10:34:20.401 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 91718/917178 components (10.0%)
+2026-02-17 10:34:23.080 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 137577/917178 components (15.0%)
+2026-02-17 10:34:29.260 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 183436/917178 components (20.0%)
+2026-02-17 10:34:32.192 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 229295/917178 components (25.0%)
+2026-02-17 10:34:35.298 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 275154/917178 components (30.0%)
+2026-02-17 10:34:37.891 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 321013/917178 components (35.0%)
+2026-02-17 10:34:40.600 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 366872/917178 components (40.0%)
+2026-02-17 10:34:47.654 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 412731/917178 components (45.0%)
+2026-02-17 10:34:50.334 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 458589/917178 components (50.0%)
+2026-02-17 10:34:52.972 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 504448/917178 components (55.0%)
+2026-02-17 10:34:55.771 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 550307/917178 components (60.0%)
+2026-02-17 10:34:58.448 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 596166/917178 components (65.0%)
+2026-02-17 10:35:06.150 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 642025/917178 components (70.0%)
+2026-02-17 10:35:08.705 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 687884/917178 components (75.0%)
+2026-02-17 10:35:11.427 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 733743/917178 components (80.0%)
+2026-02-17 10:35:14.290 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 779602/917178 components (85.0%)
+2026-02-17 10:35:17.032 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 825461/917178 components (90.0%)
+2026-02-17 10:35:20.144 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 871320/917178 components (95.0%)
+2026-02-17 10:35:23.351 | INFO     | from_finlay.process_mmcomponents:get_mm_components_by_specificity_by_type:562 - Finding component types that are too specific...
+2026-02-17 10:35:23.361 | INFO     | __main__:summarize_all_types:116 - Total unique component types at specificity level 0: 914
+2026-02-17 10:35:23.361 | INFO     | __main__:summarize_all_types:119 - Most common component types:
+2026-02-17 10:35:23.361 | INFO     | __main__:summarize_all_types:123 - [#1X1;!r3;!r4;!r5;!r6;!r7;!r8:1]-[#6X4;!r3;!r4;!r5;!r6;!r7;!r8:2]: 152763
+2026-02-17 10:35:23.361 | INFO     | __main__:summarize_all_types:123 - [#6X3;r6:1]:;@[#6X3;r6:2]: 129788
+2026-02-17 10:35:23.361 | INFO     | __main__:summarize_all_types:123 - [#1X1;!r3;!r4;!r5;!r6;!r7;!r8:1]-[#6X3;r6:2]: 92961
+2026-02-17 10:35:23.361 | INFO     | __main__:summarize_all_types:123 - [#1X1;!r3;!r4;!r5;!r6;!r7;!r8:1]-[#6X4;r6:2]: 46371
+2026-02-17 10:35:23.361 | INFO     | __main__:summarize_all_types:123 - [#6X4;!r3;!r4;!r5;!r6;!r7;!r8:1]-[#6X4;!r3;!r4;!r5;!r6;!r7;!r8:2]: 23716
+2026-02-17 10:35:23.361 | INFO     | __main__:summarize_all_types:123 - [#1X1;!r3;!r4;!r5;!r6;!r7;!r8:1]-[#6X4;r5:2]: 22533
+2026-02-17 10:35:23.361 | INFO     | __main__:summarize_all_types:123 - [#6X4;r6:1]-;@[#6X4;r6:2]: 19618
+2026-02-17 10:35:23.361 | INFO     | __main__:summarize_all_types:123 - [#1X1;!r3;!r4;!r5;!r6;!r7;!r8:1]-[#7X3;!r3;!r4;!r5;!r6;!r7;!r8:2]: 17994
+2026-02-17 10:35:23.362 | INFO     | __main__:summarize_all_types:123 - [#6X3;r5:1]-;@[#7X3;r5:2]: 15876
+2026-02-17 10:35:23.362 | INFO     | __main__:summarize_all_types:123 - [#6X3;r6:1]:;@[#7X2;r6:2]: 15026
+2026-02-17 10:35:23.362 | INFO     | __main__:summarize_all_types:127 - % of component types with count < 5: 35.78%
+2026-02-17 10:35:23.362 | INFO     | __main__:summarize_all_types:130 - % of component types with count = 1: 16.30%
+2026-02-17 10:35:23.362 | INFO     | __main__:summarize_all_types:140 - 
 ==================================================
-Total unique component types, Bond, across all specificity levels: 607
+Total unique component types, Bond, across all specificity levels: 914
 ==================================================
-2025-11-06 07:16:31.310 | INFO     | __main__:get_components_by_type:185 -
-====================
-Processing Angle
-====================
-2025-11-06 07:16:31.310 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:274 - Unwanted SMIRKS to filter: None
-2025-11-06 07:16:31.310 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:275 - Using 16 workers for parallel processing
-2025-11-06 07:16:31.311 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:287 - Processing 23109 molecules from HuggingFace Dataset
-2025-11-06 07:16:38.395 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 1156/23109 molecules (5.0%)
-2025-11-06 07:16:48.758 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 2311/23109 molecules (10.0%)
-2025-11-06 07:16:50.664 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 3467/23109 molecules (15.0%)
-2025-11-06 07:16:52.281 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 4622/23109 molecules (20.0%)
-2025-11-06 07:16:53.932 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 5778/23109 molecules (25.0%)
-2025-11-06 07:16:55.708 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 6933/23109 molecules (30.0%)
-2025-11-06 07:16:57.530 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 8089/23109 molecules (35.0%)
-2025-11-06 07:16:59.251 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 9244/23109 molecules (40.0%)
-2025-11-06 07:17:00.949 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 10400/23109 molecules (45.0%)
-2025-11-06 07:17:02.729 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 11555/23109 molecules (50.0%)
-2025-11-06 07:17:13.319 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 12710/23109 molecules (55.0%)
-2025-11-06 07:17:15.245 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 13866/23109 molecules (60.0%)
-2025-11-06 07:17:17.098 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 15021/23109 molecules (65.0%)
-2025-11-06 07:17:19.167 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 16177/23109 molecules (70.0%)
-2025-11-06 07:17:21.051 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 17332/23109 molecules (75.0%)
-2025-11-06 07:17:23.157 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 18488/23109 molecules (80.0%)
-2025-11-06 07:17:25.145 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 19643/23109 molecules (85.0%)
-2025-11-06 07:17:27.099 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 20799/23109 molecules (90.0%)
-2025-11-06 07:17:29.053 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 21954/23109 molecules (95.0%)
-2025-11-06 07:17:41.156 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:316 - Filtered out 0 unwanted components.
-2025-11-06 07:17:41.632 | INFO     | __main__:get_components_by_type:192 - Found 1587714 Angles.
-2025-11-06 07:17:41.663 | INFO     | from_finlay.process_mmcomponents:get_mm_components_by_specificity_by_type:552 - Getting Components by Type with Specificity 6: 6:AtomStandardRing-BondStandardRing
-2025-11-06 07:17:41.677 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:433 - Processing 1587714 components with 16 workers
-2025-11-06 07:17:50.918 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 79386/1587714 components (5.0%)
-2025-11-06 07:17:53.702 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 158772/1587714 components (10.0%)
-2025-11-06 07:17:56.411 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 238158/1587714 components (15.0%)
-2025-11-06 07:17:58.755 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 317543/1587714 components (20.0%)
-2025-11-06 07:18:00.938 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 396929/1587714 components (25.0%)
-2025-11-06 07:18:03.162 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 476315/1587714 components (30.0%)
-2025-11-06 07:18:05.516 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 555700/1587714 components (35.0%)
-2025-11-06 07:18:07.829 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 635086/1587714 components (40.0%)
-2025-11-06 07:18:24.883 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 714472/1587714 components (45.0%)
-2025-11-06 07:18:27.632 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 793857/1587714 components (50.0%)
-2025-11-06 07:18:30.266 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 873243/1587714 components (55.0%)
-2025-11-06 07:18:32.820 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 952629/1587714 components (60.0%)
-2025-11-06 07:18:35.327 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1032015/1587714 components (65.0%)
-2025-11-06 07:18:37.875 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1111400/1587714 components (70.0%)
-2025-11-06 07:18:40.501 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1190786/1587714 components (75.0%)
-2025-11-06 07:18:43.046 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1270172/1587714 components (80.0%)
-2025-11-06 07:18:45.647 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1349557/1587714 components (85.0%)
-2025-11-06 07:19:07.186 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1428943/1587714 components (90.0%)
-2025-11-06 07:19:10.249 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1508329/1587714 components (95.0%)
-2025-11-06 07:19:13.081 | INFO     | from_finlay.process_mmcomponents:get_mm_components_by_specificity_by_type:562 - Finding component types that are too specific...
-2025-11-06 07:23:59.305 | INFO     | from_finlay.process_mmcomponents:get_mm_components_by_specificity_by_type:552 - Getting Components by Type with Specificity 5: 5:AtomStandardRing-BondGeneralizedRing
-2025-11-06 07:23:59.306 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:433 - Processing 12010 components with 16 workers
-2025-11-06 07:24:22.933 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 601/12010 components (5.0%)
-2025-11-06 07:24:23.329 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1201/12010 components (10.0%)
-2025-11-06 07:24:23.675 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1802/12010 components (15.0%)
-2025-11-06 07:24:24.047 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 2402/12010 components (20.0%)
-2025-11-06 07:24:24.761 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 3003/12010 components (25.0%)
-2025-11-06 07:24:25.055 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 3603/12010 components (30.0%)
-2025-11-06 07:24:25.278 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 4204/12010 components (35.0%)
-2025-11-06 07:24:25.557 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 4804/12010 components (40.0%)
-2025-11-06 07:24:25.896 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 5405/12010 components (45.0%)
-2025-11-06 07:24:26.154 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 6005/12010 components (50.0%)
-2025-11-06 07:24:26.430 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 6606/12010 components (55.0%)
-2025-11-06 07:24:26.624 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 7206/12010 components (60.0%)
-2025-11-06 07:24:27.000 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 7807/12010 components (65.0%)
-2025-11-06 07:24:27.308 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 8408/12010 components (70.0%)
-2025-11-06 07:24:27.522 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 9008/12010 components (75.0%)
-2025-11-06 07:24:27.945 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 9609/12010 components (80.0%)
-2025-11-06 07:24:28.165 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 10209/12010 components (85.0%)
-2025-11-06 07:24:28.566 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 10810/12010 components (90.0%)
-2025-11-06 07:24:28.856 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 11410/12010 components (95.0%)
-2025-11-06 07:24:29.349 | INFO     | from_finlay.process_mmcomponents:get_mm_components_by_specificity_by_type:562 - Finding component types that are too specific...
-2025-11-06 07:24:41.230 | INFO     | from_finlay.process_mmcomponents:get_mm_components_by_specificity_by_type:552 - Getting Components by Type with Specificity 4: 4:AtomStandardRing-BondStandardNoRing
-2025-11-06 07:24:41.230 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:433 - Processing 11290 components with 16 workers
-2025-11-06 07:24:46.795 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 565/11290 components (5.0%)
-2025-11-06 07:24:47.328 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1129/11290 components (10.0%)
-2025-11-06 07:24:47.663 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1694/11290 components (15.0%)
-2025-11-06 07:24:48.048 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 2258/11290 components (20.0%)
-2025-11-06 07:24:48.439 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 2823/11290 components (25.0%)
-2025-11-06 07:24:48.824 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 3387/11290 components (30.0%)
-2025-11-06 07:24:49.148 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 3952/11290 components (35.0%)
-2025-11-06 07:24:49.405 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 4516/11290 components (40.0%)
-2025-11-06 07:24:49.683 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 5081/11290 components (45.0%)
-2025-11-06 07:24:49.958 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 5645/11290 components (50.0%)
-2025-11-06 07:24:50.219 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 6210/11290 components (55.0%)
-2025-11-06 07:24:50.344 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 6774/11290 components (60.0%)
-2025-11-06 07:24:50.629 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 7339/11290 components (65.0%)
-2025-11-06 07:25:16.965 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 7904/11290 components (70.0%)
-2025-11-06 07:25:17.271 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 8468/11290 components (75.0%)
-2025-11-06 07:25:17.630 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 9033/11290 components (80.0%)
-2025-11-06 07:25:17.844 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 9597/11290 components (85.0%)
-2025-11-06 07:25:18.151 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 10162/11290 components (90.0%)
-2025-11-06 07:25:18.506 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 10726/11290 components (95.0%)
-2025-11-06 07:25:18.953 | INFO     | from_finlay.process_mmcomponents:get_mm_components_by_specificity_by_type:562 - Finding component types that are too specific...
-2025-11-06 07:25:28.566 | INFO     | from_finlay.process_mmcomponents:get_mm_components_by_specificity_by_type:552 - Getting Components by Type with Specificity 3: 3:AtomTerminalHnoHRing-BondGeneralizedRing
-2025-11-06 07:25:28.566 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:433 - Processing 2247 components with 16 workers
-2025-11-06 07:25:33.922 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 113/2247 components (5.0%)
-2025-11-06 07:25:33.988 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 225/2247 components (10.0%)
-2025-11-06 07:25:34.060 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 338/2247 components (15.0%)
-2025-11-06 07:25:34.136 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 450/2247 components (20.0%)
-2025-11-06 07:25:34.239 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 562/2247 components (25.0%)
-2025-11-06 07:25:34.337 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 675/2247 components (30.0%)
-2025-11-06 07:25:34.385 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 787/2247 components (35.0%)
-2025-11-06 07:25:34.437 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 899/2247 components (40.0%)
-2025-11-06 07:25:34.653 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1012/2247 components (45.0%)
-2025-11-06 07:25:34.712 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1124/2247 components (50.0%)
-2025-11-06 07:25:34.748 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1236/2247 components (55.0%)
-2025-11-06 07:25:34.795 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1349/2247 components (60.0%)
-2025-11-06 07:25:34.830 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1461/2247 components (65.0%)
-2025-11-06 07:25:34.878 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1573/2247 components (70.0%)
-2025-11-06 07:25:34.928 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1686/2247 components (75.0%)
-2025-11-06 07:25:34.973 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1798/2247 components (80.0%)
-2025-11-06 07:25:35.154 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1910/2247 components (85.0%)
-2025-11-06 07:25:35.199 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 2023/2247 components (90.0%)
-2025-11-06 07:25:35.220 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 2135/2247 components (95.0%)
-2025-11-06 07:25:35.417 | INFO     | from_finlay.process_mmcomponents:get_mm_components_by_specificity_by_type:562 - Finding component types that are too specific...
-2025-11-06 07:25:42.050 | INFO     | from_finlay.process_mmcomponents:get_mm_components_by_specificity_by_type:552 - Getting Components by Type with Specificity 2: 2:AtomStandardRing-BondGeneralizedNoRing
-2025-11-06 07:25:42.050 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:433 - Processing 1709 components with 16 workers
-2025-11-06 07:25:47.379 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 86/1709 components (5.0%)
-2025-11-06 07:25:47.432 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 171/1709 components (10.0%)
-2025-11-06 07:25:47.490 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 257/1709 components (15.0%)
-2025-11-06 07:25:47.544 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 342/1709 components (20.0%)
-2025-11-06 07:25:47.595 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 428/1709 components (25.0%)
-2025-11-06 07:25:47.757 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 513/1709 components (30.0%)
-2025-11-06 07:25:47.757 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 599/1709 components (35.0%)
-2025-11-06 07:25:47.806 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 684/1709 components (40.0%)
-2025-11-06 07:25:47.857 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 770/1709 components (45.1%)
-2025-11-06 07:25:47.898 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 855/1709 components (50.0%)
-2025-11-06 07:25:47.967 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 940/1709 components (55.0%)
-2025-11-06 07:25:48.058 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1026/1709 components (60.0%)
-2025-11-06 07:25:48.123 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1111/1709 components (65.0%)
-2025-11-06 07:25:48.123 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1197/1709 components (70.0%)
-2025-11-06 07:25:48.162 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1282/1709 components (75.0%)
-2025-11-06 07:25:48.211 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1368/1709 components (80.0%)
-2025-11-06 07:25:48.375 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1453/1709 components (85.0%)
-2025-11-06 07:25:48.429 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1539/1709 components (90.1%)
-2025-11-06 07:25:48.472 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1624/1709 components (95.0%)
-2025-11-06 07:25:48.598 | INFO     | from_finlay.process_mmcomponents:get_mm_components_by_specificity_by_type:562 - Finding component types that are too specific...
-2025-11-06 07:25:55.164 | INFO     | from_finlay.process_mmcomponents:get_mm_components_by_specificity_by_type:552 - Getting Components by Type with Specificity 1: 1:AtomTerminalHnoHRing-BondGeneralizedNoRing
-2025-11-06 07:25:55.164 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:433 - Processing 1688 components with 16 workers
-2025-11-06 07:26:00.434 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 85/1688 components (5.0%)
-2025-11-06 07:26:00.491 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 169/1688 components (10.0%)
-2025-11-06 07:26:00.553 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 254/1688 components (15.0%)
-2025-11-06 07:26:00.608 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 338/1688 components (20.0%)
-2025-11-06 07:26:00.657 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 422/1688 components (25.0%)
-2025-11-06 07:26:00.760 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 507/1688 components (30.0%)
-2025-11-06 07:26:00.761 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 591/1688 components (35.0%)
-2025-11-06 07:26:00.838 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 676/1688 components (40.0%)
-2025-11-06 07:26:00.886 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 760/1688 components (45.0%)
-2025-11-06 07:26:00.934 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 844/1688 components (50.0%)
-2025-11-06 07:26:00.974 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 929/1688 components (55.0%)
-2025-11-06 07:26:01.106 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1013/1688 components (60.0%)
-2025-11-06 07:26:01.106 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1098/1688 components (65.0%)
-2025-11-06 07:26:01.145 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1182/1688 components (70.0%)
-2025-11-06 07:26:01.184 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1267/1688 components (75.1%)
-2025-11-06 07:26:01.233 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1351/1688 components (80.0%)
-2025-11-06 07:26:01.278 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1435/1688 components (85.0%)
-2025-11-06 07:26:01.435 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1520/1688 components (90.0%)
-2025-11-06 07:26:01.476 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1604/1688 components (95.0%)
-2025-11-06 07:26:01.615 | INFO     | from_finlay.process_mmcomponents:get_mm_components_by_specificity_by_type:562 - Finding component types that are too specific...
-2025-11-06 07:26:08.034 | INFO     | from_finlay.process_mmcomponents:get_mm_components_by_specificity_by_type:552 - Getting Components by Type with Specificity 0: 0:AtomTerminalWildcardNoRing-BondGeneralizedNoRing
-2025-11-06 07:26:08.035 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:433 - Processing 1638 components with 16 workers
-2025-11-06 07:26:13.344 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 82/1638 components (5.0%)
-2025-11-06 07:26:13.396 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 164/1638 components (10.0%)
-2025-11-06 07:26:13.452 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 246/1638 components (15.0%)
-2025-11-06 07:26:13.508 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 328/1638 components (20.0%)
-2025-11-06 07:26:13.555 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 410/1638 components (25.0%)
-2025-11-06 07:26:13.555 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 492/1638 components (30.0%)
-2025-11-06 07:26:13.597 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 574/1638 components (35.0%)
-2025-11-06 07:26:13.647 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 656/1638 components (40.0%)
-2025-11-06 07:26:13.803 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 738/1638 components (45.1%)
-2025-11-06 07:26:13.853 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 819/1638 components (50.0%)
-2025-11-06 07:26:13.891 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 901/1638 components (55.0%)
-2025-11-06 07:26:13.891 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 983/1638 components (60.0%)
-2025-11-06 07:26:13.933 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1065/1638 components (65.0%)
-2025-11-06 07:26:13.971 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1147/1638 components (70.0%)
-2025-11-06 07:26:14.015 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1229/1638 components (75.0%)
-2025-11-06 07:26:14.150 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1311/1638 components (80.0%)
-2025-11-06 07:26:14.192 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1393/1638 components (85.0%)
-2025-11-06 07:26:14.233 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1475/1638 components (90.0%)
-2025-11-06 07:26:14.280 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1557/1638 components (95.1%)
-2025-11-06 07:26:14.420 | INFO     | from_finlay.process_mmcomponents:get_mm_components_by_specificity_by_type:562 - Finding component types that are too specific...
-2025-11-06 07:26:14.435 | INFO     | __main__:summarize_all_types:114 - Total unique component types at specificity level 6: 2433
-2025-11-06 07:26:14.436 | INFO     | __main__:summarize_all_types:117 - Most common component types:
-2025-11-06 07:26:14.438 | INFO     | __main__:summarize_all_types:121 - [#1X1;!r3;!r4;!r5;!r6;!r7;!r8:1]-[#6X3;r6:2]:;@[#6X3;r6:3]: 161280
-2025-11-06 07:26:14.438 | INFO     | __main__:summarize_all_types:121 - [#6X3;r6:1]:;@[#6X3;r6:2]:;@[#6X3;r6:3]: 123740
-2025-11-06 07:26:14.438 | INFO     | __main__:summarize_all_types:121 - [#1X1;!r3;!r4;!r5;!r6;!r7;!r8:1]-[#6X4;!r3;!r4;!r5;!r6;!r7;!r8:2]-[#1X1;!r3;!r4;!r5;!r6;!r7;!r8:3]: 120962
-2025-11-06 07:26:14.438 | INFO     | __main__:summarize_all_types:121 - [#1X1;!r3;!r4;!r5;!r6;!r7;!r8:1]-[#6X4;!r3;!r4;!r5;!r6;!r7;!r8:2]-[#6X4;!r3;!r4;!r5;!r6;!r7;!r8:3]: 88339
-2025-11-06 07:26:14.438 | INFO     | __main__:summarize_all_types:121 - [#1X1;!r3;!r4;!r5;!r6;!r7;!r8:1]-[#6X4;r6:2]-;@[#6X4;r6:3]: 63833
-2025-11-06 07:26:14.438 | INFO     | __main__:summarize_all_types:121 - [#1X1;!r3;!r4;!r5;!r6;!r7;!r8:1]-[#6X4;r5:2]-;@[#6X4;r5:3]: 29984
-2025-11-06 07:26:14.438 | INFO     | __main__:summarize_all_types:121 - [#1X1;!r3;!r4;!r5;!r6;!r7;!r8:1]-[#6X4;!r3;!r4;!r5;!r6;!r7;!r8:2]-[#7X3;!r3;!r4;!r5;!r6;!r7;!r8:3]: 21272
-2025-11-06 07:26:14.438 | INFO     | __main__:summarize_all_types:121 - [#1X1;!r3;!r4;!r5;!r6;!r7;!r8:1]-[#6X4;r6:2]-[#1X1;!r3;!r4;!r5;!r6;!r7;!r8:3]: 20038
-2025-11-06 07:26:14.438 | INFO     | __main__:summarize_all_types:121 - [#1X1;!r3;!r4;!r5;!r6;!r7;!r8:1]-[#6X4;!r3;!r4;!r5;!r6;!r7;!r8:2]-[#8X2;!r3;!r4;!r5;!r6;!r7;!r8:3]: 19833
-2025-11-06 07:26:14.438 | INFO     | __main__:summarize_all_types:121 - [#1X1;!r3;!r4;!r5;!r6;!r7;!r8:1]-[#6X4;!r3;!r4;!r5;!r6;!r7;!r8:2]-[#6X3;!r3;!r4;!r5;!r6;!r7;!r8:3]: 17987
-2025-11-06 07:26:14.438 | INFO     | __main__:summarize_all_types:114 - Total unique component types at specificity level 5: 59
-2025-11-06 07:26:14.438 | INFO     | __main__:summarize_all_types:117 - Most common component types:
-2025-11-06 07:26:14.438 | INFO     | __main__:summarize_all_types:121 - [#6X3;r6:1]~;@[#6X3;r6:2]~;@[#6X3;r7:3]: 31
-2025-11-06 07:26:14.438 | INFO     | __main__:summarize_all_types:121 - [#7X2;!r3;!r4;!r5;!r6;!r7;!r8:1]~[#7X3;!r3;!r4;!r5;!r6;!r7;!r8:2]~[#8X1;!r3;!r4;!r5;!r6;!r7;!r8:3]: 21
-2025-11-06 07:26:14.438 | INFO     | __main__:summarize_all_types:121 - [#6X3;r7:1]~;@[#6X3;r7:2]~[#7X3;!r3;!r4;!r5;!r6;!r7;!r8:3]: 20
-2025-11-06 07:26:14.438 | INFO     | __main__:summarize_all_types:121 - [#6X3;r5:1]~;@[#6X3;r5:2]~;@[#6X4;r4:3]: 19
-2025-11-06 07:26:14.438 | INFO     | __main__:summarize_all_types:121 - [#6X3;r6:1]~;@[#6X3;r4:2]~;@[#6X4;r4:3]: 16
-2025-11-06 07:26:14.438 | INFO     | __main__:summarize_all_types:121 - [#16X2;r6:1]~;@[#6X3;r6:2]~;@[#6X3;r5:3]: 16
-2025-11-06 07:26:14.438 | INFO     | __main__:summarize_all_types:121 - [#6X3;r5:1]~;@[#7X3;r5:2]~;@[#6X3;r6:3]: 16
-2025-11-06 07:26:14.438 | INFO     | __main__:summarize_all_types:121 - [#6X3;r7:1]~;@[#6X3;r7:2]~[#7X2;!r3;!r4;!r5;!r6;!r7;!r8:3]: 16
-2025-11-06 07:26:14.438 | INFO     | __main__:summarize_all_types:121 - [#6X3;r6:1]~;@[#6X3;r5:2]~;@[#7X3;r5:3]: 15
-2025-11-06 07:26:14.438 | INFO     | __main__:summarize_all_types:121 - [#6X3;r7:1]~;@[#6X3;r5:2]~;@[#7X2;r5:3]: 14
-2025-11-06 07:26:14.438 | INFO     | __main__:summarize_all_types:114 - Total unique component types at specificity level 4: 318
-2025-11-06 07:26:14.438 | INFO     | __main__:summarize_all_types:117 - Most common component types:
-2025-11-06 07:26:14.438 | INFO     | __main__:summarize_all_types:121 - [!#1;!r3;!r4;!r5;!r6;!r7;!r8:1]-[#6X4;!r3;!r4;!r5;!r6;!r7;!r8:2]-[!#1;!r3;!r4;!r5;!r6;!r7;!r8:3]: 165
-2025-11-06 07:26:14.439 | INFO     | __main__:summarize_all_types:121 - [!#1;!r3;!r4;!r5;!r6;!r7;!r8:1]-[#6X4;r5:2]-[!#1;r5:3]: 163
-2025-11-06 07:26:14.439 | INFO     | __main__:summarize_all_types:121 - [!#1;!r3;!r4;!r5;!r6;!r7;!r8:1]-[#6X4;r6:2]-[!#1;r6:3]: 126
-2025-11-06 07:26:14.439 | INFO     | __main__:summarize_all_types:121 - [!#1;!r3;!r4;!r5;!r6;!r7;!r8:1]-[#6X3;!r3;!r4;!r5;!r6;!r7;!r8:2]-[!#1;!r3;!r4;!r5;!r6;!r7;!r8:3]: 109
-2025-11-06 07:26:14.439 | INFO     | __main__:summarize_all_types:121 - [!#1;!r3;!r4;!r5;!r6;!r7;!r8:1]-[#7X3;!r3;!r4;!r5;!r6;!r7;!r8:2]-[!#1;!r3;!r4;!r5;!r6;!r7;!r8:3]: 108
-2025-11-06 07:26:14.439 | INFO     | __main__:summarize_all_types:121 - [!#1;r5:1]-[#6X4;r5:2]-[!#1;r6:3]: 108
-2025-11-06 07:26:14.439 | INFO     | __main__:summarize_all_types:121 - [!#1;!r3;!r4;!r5;!r6;!r7;!r8:1]-[#6X3;r5:2]-[!#1;r5:3]: 108
-2025-11-06 07:26:14.439 | INFO     | __main__:summarize_all_types:121 - [!#1;!r3;!r4;!r5;!r6;!r7;!r8:1]-[#7X3;r5:2]-[!#1;r5:3]: 95
-2025-11-06 07:26:14.439 | INFO     | __main__:summarize_all_types:121 - [!#1;r5:1]-[#6X3;r5:2]-[!#1;r7:3]: 92
-2025-11-06 07:26:14.439 | INFO     | __main__:summarize_all_types:121 - [!#1;!r3;!r4;!r5;!r6;!r7;!r8:1]-[#6X4;r4:2]-[!#1;r4:3]: 86
-2025-11-06 07:26:14.439 | INFO     | __main__:summarize_all_types:114 - Total unique component types at specificity level 3: 42
-2025-11-06 07:26:14.439 | INFO     | __main__:summarize_all_types:117 - Most common component types:
-2025-11-06 07:26:14.439 | INFO     | __main__:summarize_all_types:121 - [!#1;!r3;!r4;!r5;!r6;!r7;!r8:1]~[#7X3;r6:2]~;@[!#1;r6:3]: 22
-2025-11-06 07:26:14.439 | INFO     | __main__:summarize_all_types:121 - [!#1;r5:1]~;@[#6X3;r6:2]~;@[!#1;r7:3]: 21
-2025-11-06 07:26:14.439 | INFO     | __main__:summarize_all_types:121 - [!#1;!r3;!r4;!r5;!r6;!r7;!r8:1]~[#6X3;r6:2]~;@[!#1;r4:3]: 19
-2025-11-06 07:26:14.439 | INFO     | __main__:summarize_all_types:121 - [!#1;r6:1]~;@[#6X3;r7:2]~[!#1;r6:3]: 17
-2025-11-06 07:26:14.439 | INFO     | __main__:summarize_all_types:121 - [!#1;r6:1]~;@[#7X2;r6:2]~;@[!#1;r6:3]: 15
-2025-11-06 07:26:14.439 | INFO     | __main__:summarize_all_types:121 - [!#1;!r3;!r4;!r5;!r6;!r7;!r8:1]~[#16X3;!r3;!r4;!r5;!r6;!r7;!r8:2]~[!#1;r6:3]: 15
-2025-11-06 07:26:14.439 | INFO     | __main__:summarize_all_types:121 - [!#1;r5:1]~[#7X2;!r3;!r4;!r5;!r6;!r7;!r8:2]~[!#1;r6:3]: 15
-2025-11-06 07:26:14.439 | INFO     | __main__:summarize_all_types:121 - [!#1;r3:1]~;@[#6X3;r5:2]~;@[!#1;r5:3]: 15
-2025-11-06 07:26:14.439 | INFO     | __main__:summarize_all_types:121 - [!#1;r5:1]~;@[#6X3;r7:2]~[#1;!r3;!r4;!r5;!r6;!r7;!r8:3]: 14
-2025-11-06 07:26:14.439 | INFO     | __main__:summarize_all_types:121 - [!#1;r3:1]~;@[#6X3;r6:2]~;@[!#1;r6:3]: 14
-2025-11-06 07:26:14.439 | INFO     | __main__:summarize_all_types:114 - Total unique component types at specificity level 2: 2
-2025-11-06 07:26:14.439 | INFO     | __main__:summarize_all_types:117 - Most common component types:
-2025-11-06 07:26:14.439 | INFO     | __main__:summarize_all_types:121 - [#6X3;r5:1]~[#6X3;r6:2]~[#6X4;r3:3]: 11
-2025-11-06 07:26:14.439 | INFO     | __main__:summarize_all_types:121 - [#6X3;r5:1]~[#6X3;r7:2]~[#6X3;r5:3]: 10
-2025-11-06 07:26:14.439 | INFO     | __main__:summarize_all_types:114 - Total unique component types at specificity level 1: 4
-2025-11-06 07:26:14.439 | INFO     | __main__:summarize_all_types:117 - Most common component types:
-2025-11-06 07:26:14.439 | INFO     | __main__:summarize_all_types:121 - [!#1;r4:1]~[#6X3;r5:2]~[!#1;r5:3]: 16
-2025-11-06 07:26:14.439 | INFO     | __main__:summarize_all_types:121 - [!#1;r3:1]~[#6X3;r3:2]~[!#1;r6:3]: 12
-2025-11-06 07:26:14.439 | INFO     | __main__:summarize_all_types:121 - [!#1;r3:1]~[#6X3;r6:2]~[!#1;r6:3]: 11
-2025-11-06 07:26:14.439 | INFO     | __main__:summarize_all_types:121 - [!#1;r5:1]~[#7X3;r5:2]~[!#1;r6:3]: 11
-2025-11-06 07:26:14.439 | INFO     | __main__:summarize_all_types:114 - Total unique component types at specificity level 0: 14
-2025-11-06 07:26:14.439 | INFO     | __main__:summarize_all_types:117 - Most common component types:
-2025-11-06 07:26:14.439 | INFO     | __main__:summarize_all_types:121 - [*:1]~[#6X4:2]~[*:3]: 335
-2025-11-06 07:26:14.439 | INFO     | __main__:summarize_all_types:121 - [*:1]~[#6X3:2]~[*:3]: 278
-2025-11-06 07:26:14.439 | INFO     | __main__:summarize_all_types:121 - [*:1]~[#7X3:2]~[*:3]: 249
-2025-11-06 07:26:14.439 | INFO     | __main__:summarize_all_types:121 - [*:1]~[#16X4:2]~[*:3]: 134
-2025-11-06 07:26:14.439 | INFO     | __main__:summarize_all_types:121 - [*:1]~[#8X2:2]~[*:3]: 120
-2025-11-06 07:26:14.439 | INFO     | __main__:summarize_all_types:121 - [*:1]~[#7X4:2]~[*:3]: 100
-2025-11-06 07:26:14.439 | INFO     | __main__:summarize_all_types:121 - [*:1]~[#16X2:2]~[*:3]: 84
-2025-11-06 07:26:14.439 | INFO     | __main__:summarize_all_types:121 - [*:1]~[#7X2:2]~[*:3]: 81
-2025-11-06 07:26:14.439 | INFO     | __main__:summarize_all_types:121 - [*:1]~[#15X4:2]~[*:3]: 73
-2025-11-06 07:26:14.439 | INFO     | __main__:summarize_all_types:121 - [*:1]~[#16X3:2]~[*:3]: 72
-2025-11-06 07:26:14.440 | INFO     | __main__:summarize_all_types:125 - % of component types with count < 5: 0.03%
-2025-11-06 07:26:14.440 | INFO     | __main__:summarize_all_types:128 - % of component types with count = 1: 0.03%
-2025-11-06 07:26:14.440 | INFO     | __main__:summarize_all_types:138 -
-==================================================
-Total unique component types, Angle, across all specificity levels: 2872
-==================================================
-2025-11-06 07:26:15.303 | INFO     | __main__:write_forcefield_file:248 - Reading template force field: /dfs9/dmobley-lab/jclark9/descent/back-to-school-jen/forcefields/openff_unconstrained-2.3.0-rc2.offxml
-/data/homezvol2/jclark9/micromamba/envs/bts/lib/python3.13/site-packages/openff/amber_ff_ports/amber_ff_ports.py:8: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
-  from pkg_resources import resource_filename
-2025-11-06 07:26:15.600 | INFO     | __main__:write_forcefield_file:251 -
+2026-02-17 10:35:23.362 | INFO     | __main__:get_components_by_type:198 - Skipping Angle - no specificities defined
+2026-02-17 10:35:24.936 | INFO     | __main__:write_forcefield_file:266 - Reading template force field: /dfs9/dmobley-lab/jclark9/descent/back-to-school-jen/forcefields/openff_unconstrained-2.3.0-rc2.offxml
+2026-02-17 10:35:34.578 | INFO     | __main__:write_forcefield_file:275 - 
 Adding Bond parameters to force field...
-2025-11-06 07:26:15.649 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:538 - Using 16 workers to assemble the force field.
-2025-11-06 07:26:15.676 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:577 - Adding parameters for specificity 0...
-2025-11-06 07:26:23.245 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 5/98 parameters (5.1%)
-2025-11-06 07:26:23.245 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 10/98 parameters (10.2%)
-2025-11-06 07:26:23.245 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 15/98 parameters (15.3%)
-2025-11-06 07:26:23.245 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 20/98 parameters (20.4%)
-2025-11-06 07:26:23.245 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 25/98 parameters (25.5%)
-2025-11-06 07:26:23.245 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 30/98 parameters (30.6%)
-2025-11-06 07:26:23.245 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 35/98 parameters (35.7%)
-2025-11-06 07:26:23.245 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 40/98 parameters (40.8%)
-2025-11-06 07:26:23.245 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 45/98 parameters (45.9%)
-2025-11-06 07:26:23.245 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 49/98 parameters (50.0%)
-2025-11-06 07:26:23.245 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 54/98 parameters (55.1%)
-2025-11-06 07:26:23.245 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 59/98 parameters (60.2%)
-2025-11-06 07:26:23.245 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 64/98 parameters (65.3%)
-2025-11-06 07:26:23.245 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 69/98 parameters (70.4%)
-2025-11-06 07:26:23.246 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 74/98 parameters (75.5%)
-2025-11-06 07:26:23.246 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 79/98 parameters (80.6%)
-2025-11-06 07:26:23.246 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 84/98 parameters (85.7%)
-2025-11-06 07:26:23.246 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 89/98 parameters (90.8%)
-2025-11-06 07:26:23.246 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 94/98 parameters (95.9%)
-2025-11-06 07:26:23.377 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:577 - Adding parameters for specificity 1...
-2025-11-06 07:26:31.585 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 3/45 parameters (6.7%)
-2025-11-06 07:26:31.585 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 5/45 parameters (11.1%)
-2025-11-06 07:26:31.585 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 7/45 parameters (15.6%)
-2025-11-06 07:26:31.585 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 9/45 parameters (20.0%)
-2025-11-06 07:26:31.585 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 12/45 parameters (26.7%)
-2025-11-06 07:26:31.585 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 14/45 parameters (31.1%)
-2025-11-06 07:26:31.585 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 16/45 parameters (35.6%)
-2025-11-06 07:26:31.585 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 18/45 parameters (40.0%)
-2025-11-06 07:26:31.585 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 21/45 parameters (46.7%)
-2025-11-06 07:26:31.585 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 23/45 parameters (51.1%)
-2025-11-06 07:26:31.585 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 25/45 parameters (55.6%)
-2025-11-06 07:26:31.585 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 27/45 parameters (60.0%)
-2025-11-06 07:26:31.585 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 30/45 parameters (66.7%)
-2025-11-06 07:26:31.646 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 32/45 parameters (71.1%)
-2025-11-06 07:26:31.646 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 34/45 parameters (75.6%)
-2025-11-06 07:26:31.646 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 37/45 parameters (82.2%)
-2025-11-06 07:26:31.646 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 39/45 parameters (86.7%)
-2025-11-06 07:26:31.646 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 41/45 parameters (91.1%)
-2025-11-06 07:26:31.646 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 43/45 parameters (95.6%)
-2025-11-06 07:26:31.781 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:577 - Adding parameters for specificity 2...
-2025-11-06 07:26:38.179 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 1/5 parameters (20.0%)
-2025-11-06 07:26:38.179 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 2/5 parameters (40.0%)
-2025-11-06 07:26:38.179 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 3/5 parameters (60.0%)
-2025-11-06 07:26:38.179 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 4/5 parameters (80.0%)
-2025-11-06 07:26:38.180 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 5/5 parameters (100.0%)
-2025-11-06 07:26:38.325 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:577 - Adding parameters for specificity 3...
-2025-11-06 07:27:46.479 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 24/466 parameters (5.2%)
-2025-11-06 07:28:04.478 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 47/466 parameters (10.1%)
-2025-11-06 07:28:04.479 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 70/466 parameters (15.0%)
-2025-11-06 07:28:04.479 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 94/466 parameters (20.2%)
-2025-11-06 07:28:04.479 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 117/466 parameters (25.1%)
-2025-11-06 07:28:04.858 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 140/466 parameters (30.0%)
-2025-11-06 07:28:04.913 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 164/466 parameters (35.2%)
-2025-11-06 07:28:05.326 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 187/466 parameters (40.1%)
-2025-11-06 07:28:06.442 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 210/466 parameters (45.1%)
-2025-11-06 07:28:06.498 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 233/466 parameters (50.0%)
-2025-11-06 07:28:07.181 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 257/466 parameters (55.2%)
-2025-11-06 07:28:07.181 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 280/466 parameters (60.1%)
-2025-11-06 07:28:44.370 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 303/466 parameters (65.0%)
-2025-11-06 07:28:44.370 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 327/466 parameters (70.2%)
-2025-11-06 07:28:44.370 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 350/466 parameters (75.1%)
-2025-11-06 07:28:44.370 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 373/466 parameters (80.0%)
-2025-11-06 07:28:44.370 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 397/466 parameters (85.2%)
-2025-11-06 07:28:44.370 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 420/466 parameters (90.1%)
-2025-11-06 07:28:44.370 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 443/466 parameters (95.1%)
-2025-11-06 07:28:44.816 | INFO     | __main__:write_forcefield_file:251 -
-Adding Angle parameters to force field...
-2025-11-06 07:28:44.907 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:538 - Using 16 workers to assemble the force field.
-2025-11-06 07:28:44.923 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:577 - Adding parameters for specificity 0...
-2025-11-06 07:28:55.858 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 1/14 parameters (7.1%)
-2025-11-06 07:28:55.858 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 2/14 parameters (14.3%)
-2025-11-06 07:28:55.858 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 3/14 parameters (21.4%)
-2025-11-06 07:28:55.858 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 4/14 parameters (28.6%)
-2025-11-06 07:28:55.858 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 5/14 parameters (35.7%)
-2025-11-06 07:28:55.858 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 6/14 parameters (42.9%)
-2025-11-06 07:28:55.858 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 7/14 parameters (50.0%)
-2025-11-06 07:28:55.858 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 8/14 parameters (57.1%)
-2025-11-06 07:28:55.858 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 9/14 parameters (64.3%)
-2025-11-06 07:28:55.858 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 10/14 parameters (71.4%)
-2025-11-06 07:28:55.858 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 11/14 parameters (78.6%)
-2025-11-06 07:28:55.858 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 12/14 parameters (85.7%)
-2025-11-06 07:28:55.858 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 13/14 parameters (92.9%)
-2025-11-06 07:28:55.858 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 14/14 parameters (100.0%)
-2025-11-06 07:28:56.005 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:577 - Adding parameters for specificity 1...
-2025-11-06 07:29:02.799 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 1/4 parameters (25.0%)
-2025-11-06 07:29:02.799 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 2/4 parameters (50.0%)
-2025-11-06 07:29:02.799 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 3/4 parameters (75.0%)
-2025-11-06 07:29:02.799 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 4/4 parameters (100.0%)
-2025-11-06 07:29:02.948 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:577 - Adding parameters for specificity 2...
-2025-11-06 07:29:08.960 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 1/2 parameters (50.0%)
-2025-11-06 07:29:08.961 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 2/2 parameters (100.0%)
-2025-11-06 07:29:09.086 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:577 - Adding parameters for specificity 3...
-2025-11-06 07:29:18.716 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 3/42 parameters (7.1%)
-2025-11-06 07:29:18.716 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 5/42 parameters (11.9%)
-2025-11-06 07:29:18.716 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 7/42 parameters (16.7%)
-2025-11-06 07:29:18.717 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 9/42 parameters (21.4%)
-2025-11-06 07:29:18.903 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 11/42 parameters (26.2%)
-2025-11-06 07:29:18.903 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 13/42 parameters (31.0%)
-2025-11-06 07:29:18.903 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 15/42 parameters (35.7%)
-2025-11-06 07:29:18.903 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 17/42 parameters (40.5%)
-2025-11-06 07:29:18.904 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 19/42 parameters (45.2%)
-2025-11-06 07:29:18.904 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 21/42 parameters (50.0%)
-2025-11-06 07:29:18.904 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 24/42 parameters (57.1%)
-2025-11-06 07:29:18.904 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 26/42 parameters (61.9%)
-2025-11-06 07:29:18.904 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 28/42 parameters (66.7%)
-2025-11-06 07:29:18.904 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 30/42 parameters (71.4%)
-2025-11-06 07:29:19.118 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 32/42 parameters (76.2%)
-2025-11-06 07:29:19.118 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 34/42 parameters (81.0%)
-2025-11-06 07:29:19.118 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 36/42 parameters (85.7%)
-2025-11-06 07:29:19.118 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 38/42 parameters (90.5%)
-2025-11-06 07:29:19.118 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 40/42 parameters (95.2%)
-2025-11-06 07:29:19.249 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:577 - Adding parameters for specificity 4...
-2025-11-06 07:29:29.731 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 16/318 parameters (5.0%)
-2025-11-06 07:29:29.911 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 32/318 parameters (10.1%)
-2025-11-06 07:29:30.408 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 48/318 parameters (15.1%)
-2025-11-06 07:29:30.409 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 64/318 parameters (20.1%)
-2025-11-06 07:29:30.625 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 80/318 parameters (25.2%)
-2025-11-06 07:29:31.054 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 96/318 parameters (30.2%)
-2025-11-06 07:29:31.077 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 112/318 parameters (35.2%)
-2025-11-06 07:29:31.213 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 128/318 parameters (40.3%)
-2025-11-06 07:29:31.857 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 144/318 parameters (45.3%)
-2025-11-06 07:29:31.858 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 159/318 parameters (50.0%)
-2025-11-06 07:29:34.355 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 175/318 parameters (55.0%)
-2025-11-06 07:29:34.619 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 191/318 parameters (60.1%)
-2025-11-06 07:29:34.619 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 207/318 parameters (65.1%)
-2025-11-06 07:29:35.315 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 223/318 parameters (70.1%)
-2025-11-06 07:29:35.315 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 239/318 parameters (75.2%)
-2025-11-06 07:29:35.315 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 255/318 parameters (80.2%)
-2025-11-06 07:29:35.621 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 271/318 parameters (85.2%)
-2025-11-06 07:29:35.621 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 287/318 parameters (90.3%)
-2025-11-06 07:29:35.899 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 303/318 parameters (95.3%)
-2025-11-06 07:29:36.046 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:577 - Adding parameters for specificity 5...
-2025-11-06 07:29:45.677 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 3/59 parameters (5.1%)
-2025-11-06 07:29:45.678 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 6/59 parameters (10.2%)
-2025-11-06 07:29:45.678 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 9/59 parameters (15.3%)
-2025-11-06 07:29:45.762 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 12/59 parameters (20.3%)
-2025-11-06 07:29:45.762 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 15/59 parameters (25.4%)
-2025-11-06 07:29:45.762 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 18/59 parameters (30.5%)
-2025-11-06 07:29:45.938 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 21/59 parameters (35.6%)
-2025-11-06 07:29:45.938 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 24/59 parameters (40.7%)
-2025-11-06 07:29:45.938 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 27/59 parameters (45.8%)
-2025-11-06 07:29:45.938 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 30/59 parameters (50.8%)
-2025-11-06 07:29:45.973 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 33/59 parameters (55.9%)
-2025-11-06 07:29:45.973 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 36/59 parameters (61.0%)
-2025-11-06 07:29:45.973 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 39/59 parameters (66.1%)
-2025-11-06 07:29:46.019 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 42/59 parameters (71.2%)
-2025-11-06 07:29:46.019 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 45/59 parameters (76.3%)
-2025-11-06 07:29:46.019 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 48/59 parameters (81.4%)
-2025-11-06 07:29:46.019 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 51/59 parameters (86.4%)
-2025-11-06 07:29:46.019 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 54/59 parameters (91.5%)
-2025-11-06 07:29:46.019 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 57/59 parameters (96.6%)
-2025-11-06 07:29:46.168 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:577 - Adding parameters for specificity 6...
-2025-11-06 07:31:13.304 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 122/2433 parameters (5.0%)
-2025-11-06 07:31:24.621 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 244/2433 parameters (10.0%)
-2025-11-06 07:31:28.491 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 365/2433 parameters (15.0%)
-2025-11-06 07:31:33.632 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 487/2433 parameters (20.0%)
-2025-11-06 07:31:35.860 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 609/2433 parameters (25.0%)
-2025-11-06 07:31:39.800 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 730/2433 parameters (30.0%)
-2025-11-06 07:32:34.062 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 852/2433 parameters (35.0%)
-2025-11-06 07:33:17.324 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 974/2433 parameters (40.0%)
-2025-11-06 07:33:28.578 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 1095/2433 parameters (45.0%)
-2025-11-06 07:33:37.697 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 1217/2433 parameters (50.0%)
-2025-11-06 07:33:38.094 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 1339/2433 parameters (55.0%)
-2025-11-06 07:33:43.786 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 1460/2433 parameters (60.0%)
-2025-11-06 07:33:47.056 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 1582/2433 parameters (65.0%)
-2025-11-06 07:33:50.418 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 1704/2433 parameters (70.0%)
-2025-11-06 07:34:58.253 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 1825/2433 parameters (75.0%)
-2025-11-06 07:35:13.659 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 1947/2433 parameters (80.0%)
-2025-11-06 07:35:19.081 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 2069/2433 parameters (85.0%)
-2025-11-06 07:35:25.300 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 2190/2433 parameters (90.0%)
-2025-11-06 07:35:27.715 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 2312/2433 parameters (95.0%)
-2025-11-06 07:35:35.147 | INFO     | __main__:write_forcefield_file:260 - Writing new force field: /dfs9/dmobley-lab/jclark9/descent/back-to-school-jen/4_make_offxmls/a_broad_specification/openff-2.2.1-ring-no-bond.offxml
-2025-11-06 07:36:07.234 | INFO     | __main__:test_coverage:356 -
+2026-02-17 10:35:34.629 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:538 - Using 16 workers to assemble the force field.
+2026-02-17 10:35:34.882 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:577 - Adding parameters for specificity 0...
+2026-02-17 10:48:07.778 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 46/914 parameters (5.0%)
+2026-02-17 10:48:07.778 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 92/914 parameters (10.1%)
+2026-02-17 10:48:10.215 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 138/914 parameters (15.1%)
+2026-02-17 10:48:14.015 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 183/914 parameters (20.0%)
+2026-02-17 10:48:15.539 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 229/914 parameters (25.1%)
+2026-02-17 10:48:15.539 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 275/914 parameters (30.1%)
+2026-02-17 10:48:16.209 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 320/914 parameters (35.0%)
+2026-02-17 10:48:16.646 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 366/914 parameters (40.0%)
+2026-02-17 10:48:16.775 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 412/914 parameters (45.1%)
+2026-02-17 10:48:16.776 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 457/914 parameters (50.0%)
+2026-02-17 10:48:16.776 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 503/914 parameters (55.0%)
+2026-02-17 10:48:46.517 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 549/914 parameters (60.1%)
+2026-02-17 10:49:06.490 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 595/914 parameters (65.1%)
+2026-02-17 10:49:06.490 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 640/914 parameters (70.0%)
+2026-02-17 10:49:06.490 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 686/914 parameters (75.1%)
+2026-02-17 10:49:06.490 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 732/914 parameters (80.1%)
+2026-02-17 10:49:06.491 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 777/914 parameters (85.0%)
+2026-02-17 10:49:06.491 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 823/914 parameters (90.0%)
+2026-02-17 10:49:06.491 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:584 - Progress: 869/914 parameters (95.1%)
+2026-02-17 10:49:06.863 | INFO     | __main__:write_forcefield_file:286 - Writing new force field: /dfs9/dmobley-lab/jclark9/descent/back-to-school-jen/4_make_offxmls/a_broad_specification/openff-2.3.0-ring-no-bond.offxml
+2026-02-17 10:49:38.860 | INFO     | __main__:test_coverage:398 - 
 Checking coverage for train dataset with 23109 SMILES strings...
-
-Checking Component Coverage (parallel chunks):   0%|          | 0/48 [00:00<?, ?it/s]
-Checking Component Coverage (parallel chunks): 100%|██████████| 48/48 [00:00<00:00, 597408.28it/s]
-2025-11-06 07:40:55.752 | INFO     | __main__:test_coverage:371 - Uncovered Bonds: 0 in 0 molecules
-2025-11-06 07:40:55.757 | INFO     | __main__:test_coverage:371 - Uncovered Angles: 0 in 0 molecules
-2025-11-06 07:40:55.758 | INFO     | __main__:test_coverage:356 -
+Checking Component Coverage (parallel chunks):   0%|          | 0/48 [00:00<?, ?it/s]Checking Component Coverage (parallel chunks): 100%|██████████| 48/48 [00:00<00:00, 463886.16it/s]
+2026-02-17 11:06:25.255 | INFO     | __main__:test_coverage:413 - Uncovered Bonds: 2 in 1 molecules
+2026-02-17 11:06:25.255 | DEBUG    | __main__:test_coverage:417 -     Uncovered Bonds
+2026-02-17 11:06:25.255 | DEBUG    | __main__:test_coverage:419 -     [H:28][c:8]1[c:7]([c:11]2[c:15]([c:9]([c:14]3[c:16]([c:12]([c:18]4[c:13]1[C:10](=[C:17]([C:22]([C:23]4([H:39])[O:5][H:26])([H:38])[O:4][H:25])[O:3][H:24])[H:30])[O:2]2)[C:21]([C:20]([C:6]3=[O:1])([H:34])[H:35])([H:36])[H:37])[H:29])[C:19]([H:31])([H:32])[H:33])[H:27]: [(11, 17), (7, 12)]
+2026-02-17 11:06:25.260 | INFO     | __main__:test_coverage:413 - Uncovered Angles: 0 in 0 molecules
+2026-02-17 11:06:25.260 | INFO     | __main__:test_coverage:398 - 
 Checking coverage for test dataset with 1217 SMILES strings...
-
-Checking Component Coverage (parallel chunks):   0%|          | 0/47 [00:00<?, ?it/s]
-Checking Component Coverage (parallel chunks): 100%|██████████| 47/47 [00:00<00:00, 1059851.01it/s]
-2025-11-06 07:41:26.867 | INFO     | __main__:test_coverage:371 - Uncovered Bonds: 19 in 11 molecules
-2025-11-06 07:41:26.867 | DEBUG    | __main__:test_coverage:375 -     Uncovered Bonds
-2025-11-06 07:41:26.867 | DEBUG    | __main__:test_coverage:377 -     [H:11][C:4]([H:12])([H:13])[S:7]([C:5]([H:14])([H:15])[H:16])([C:6]([H:17])([H:18])[C:3]([H:9])([H:10])[O:2][H:8])[I:1]: [(0, 6)]
-2025-11-06 07:41:26.867 | DEBUG    | __main__:test_coverage:377 -     [O-:3][S:5](=[O:1])(=[O:2])[S-:4]: [(3, 4)]
-2025-11-06 07:41:26.867 | DEBUG    | __main__:test_coverage:377 -     [P:6]([Br:1])([Br:2])([Br:3])([Br:4])[Br:5]: [(1, 5), (4, 5), (0, 5), (2, 5), (3, 5)]
-2025-11-06 07:41:26.867 | DEBUG    | __main__:test_coverage:377 -     [F:1][S:3][S:4][F:2]: [(0, 2), (1, 3)]
-2025-11-06 07:41:26.867 | DEBUG    | __main__:test_coverage:377 -     [H:8][C:2]#[C:3][S:4](=[O:1])[C:6]([H:12])([H:13])[C:7]([H:14])([H:15])[C:5]([H:9])([H:10])[H:11]: [(2, 3)]
-2025-11-06 07:41:26.867 | DEBUG    | __main__:test_coverage:377 -     [H:22][c:8]1[c:7]([c:9]([c:11]([n+:12]([c:10]1[H:23])[C:14]([H:27])([H:28])[H:29])/[C:6](=[N:3]/[O:4][P:20]([H:42])([C:19]([H:40])([H:41])[C:17]([H:36])([H:37])[H:38])([O-:1])[O:5][C:18]([H:39])([C:15]([H:30])([H:31])[H:32])[C:16]([H:33])([H:34])[H:35])/[C:13]([H:24])([H:25])[H:26])[I:2])[H:21]: [(0, 19)]
-2025-11-06 07:41:26.867 | DEBUG    | __main__:test_coverage:377 -     [H:13][C-:5]([S:11](=[O:1])(=[O:2])[C:9]([H:23])([H:24])[H:25])[S:12](=[O:3])(=[O:4])[N+:10]([C:6]([H:14])([H:15])[H:16])([C:7]([H:17])([H:18])[H:19])[C:8]([H:20])([H:21])[H:22]: [(9, 11)]
-2025-11-06 07:41:26.867 | DEBUG    | __main__:test_coverage:377 -     [H:24][c:5]1[c:7]2[c:9]([c:6]([c:4]([c:8]1[C:19]([C:14]([H:37])([H:38])[H:39])([C:15]([H:40])([H:41])[H:42])[C:16]([H:43])([H:44])[H:45])[H:23])[C:17]([C:10]([H:25])([H:26])[H:27])([C:11]([H:28])([H:29])[H:30])[O:2][H:22])[S:21]([O:3][C:18]2([C:12]([H:31])([H:32])[H:33])[C:13]([H:34])([H:35])[H:36])([C:20]([H:46])([H:47])[H:48])[Cl:1]: [(0, 20)]
-2025-11-06 07:41:26.867 | DEBUG    | __main__:test_coverage:377 -     [S-:1][S:3][S-:2]: [(0, 2), (1, 2)]
-2025-11-06 07:41:26.867 | DEBUG    | __main__:test_coverage:377 -     [H:15][C@@:8]([C:7]([H:13])([H:14])[N:5]([H:9])[H:10])([C:6]([H:11])([H:12])[O:3][P:4]=[O:1])[F:2]: [(0, 3), (2, 3)]
-2025-11-06 07:41:26.867 | DEBUG    | __main__:test_coverage:377 -     [S:3]([S:4][I:2])[I:1]: [(0, 2), (1, 3)]
-2025-11-06 07:41:26.868 | INFO     | __main__:test_coverage:371 - Uncovered Angles: 0 in 0 molecules
-2025-11-06 07:41:26.868 | INFO     | __main__:test_coverage:356 -
+Checking Component Coverage (parallel chunks):   0%|          | 0/47 [00:00<?, ?it/s]Checking Component Coverage (parallel chunks): 100%|██████████| 47/47 [00:00<00:00, 880054.86it/s]
+2026-02-17 11:23:05.969 | INFO     | __main__:test_coverage:413 - Uncovered Bonds: 83 in 47 molecules
+2026-02-17 11:23:05.969 | DEBUG    | __main__:test_coverage:417 -     Uncovered Bonds
+2026-02-17 11:23:05.969 | DEBUG    | __main__:test_coverage:419 -     [H:25][N:23]1[c:21]2[c:19]([c:15]([c:11]([c:13]([c:17]2[F:8])[F:4])[F:2])[F:6])[N:22]([O:9][c:18]3[c:20]1[c:16]([c:12]([c:10]([c:14]3[F:5])[F:1])[F:3])[F:7])[H:24]: [(8, 21)]
+2026-02-17 11:23:05.970 | DEBUG    | __main__:test_coverage:419 -     [H:11][C:4]([H:12])([H:13])[S:7]([C:5]([H:14])([H:15])[H:16])([C:6]([H:17])([H:18])[C:3]([H:9])([H:10])[O:2][H:8])[I:1]: [(0, 6)]
+2026-02-17 11:23:05.970 | DEBUG    | __main__:test_coverage:419 -     [N:1]([C:2]([C:12]12[C:5]3([H:22])[C:9]4([H:26])[C:6]1([H:23])[C:11]1([H:28])[C:7]2([H:24])[C:10]3([H:27])[C:13]41[C:8]1([H:25])[C:3]([H:18])([H:19])[C:4]1([H:20])[H:21])([H:16])[H:17])([H:14])[H:15]: [(7, 12)]
+2026-02-17 11:23:05.970 | DEBUG    | __main__:test_coverage:419 -     [H:11][C:5]1([C:6]([C:8]([C:7]1([H:15])[H:16])([C:4](=[O:1])[O-:2])[N+:9]([H:17])([H:18])[O:3][H:10])([H:13])[H:14])[H:12]: [(7, 8)]
+2026-02-17 11:23:05.970 | DEBUG    | __main__:test_coverage:419 -     [H:37][C:15]1([c:5]2[c:6]([c:4]3[c:9]([c:8]4[c:7]2[C:19]([C:21]45[C:16]([C:20]5([H:44])[C:13]([H:32])([H:33])[H:34])([H:39])[H:40])([H:43])[C:12]([H:29])([H:30])[H:31])[S:22](=[O:1])(=[O:2])[O:3][C:17]([C:14]3([H:35])[H:36])([H:41])[C:10]([H:23])([H:24])[H:25])[C:18]1([H:42])[C:11]([H:26])([H:27])[H:28])[H:38]: [(7, 20)]
+2026-02-17 11:23:05.970 | DEBUG    | __main__:test_coverage:419 -     [O-:3][S:5](=[O:1])(=[O:2])[S-:4]: [(3, 4)]
+2026-02-17 11:23:05.970 | DEBUG    | __main__:test_coverage:419 -     [H:5][C:3]1([C:4]([N:2]1[Cl:1])([H:7])[H:8])[H:6]: [(0, 1)]
+2026-02-17 11:23:05.970 | DEBUG    | __main__:test_coverage:419 -     [S:1]=[P:12]12[O:2][C:6]([H:13])([H:14])[C:9]([H:19])([H:20])[N:5]([C:10]([H:21])([H:22])[C:7]([H:15])([H:16])[O:3]1)[C:11]([H:23])([H:24])[C:8]([H:17])([H:18])[O:4]2: [(2, 11), (0, 11), (1, 11), (3, 11)]
+2026-02-17 11:23:05.970 | DEBUG    | __main__:test_coverage:419 -     [P:6]([Br:1])([Br:2])([Br:3])([Br:4])[Br:5]: [(1, 5), (4, 5), (0, 5), (2, 5), (3, 5)]
+2026-02-17 11:23:05.970 | DEBUG    | __main__:test_coverage:419 -     [H:14][C:7]1([C:10]2([C:8]([C:12]3([C:9]([C:11]1([O:5][P:13]4([O:4]2)([O:6]3)[O:2][O:1][O:3]4)[H:21])([H:18])[H:19])[H:22])([H:16])[H:17])[H:20])[H:15]: [(4, 12), (1, 12), (3, 12), (5, 12), (2, 12)]
+2026-02-17 11:23:05.970 | DEBUG    | __main__:test_coverage:419 -     [H:8][C:3]1=[C:4]([P:7](=[O:1])([C:6]([C:5]1([H:10])[H:11])([H:12])[H:13])[Cl:2])[H:9]: [(1, 6)]
+2026-02-17 11:23:05.970 | DEBUG    | __main__:test_coverage:419 -     [H:7][C:2]1=[C:1]([P:3]([C:5]([C:4]1([H:9])[H:10])([H:11])[H:12])[H:8])[H:6]: [(2, 7)]
+2026-02-17 11:23:05.970 | DEBUG    | __main__:test_coverage:419 -     [H:14][C:9]1([C:13]2([C:10]([O:4][P:7]([O:3]1)[Cl:1])([H:16])[H:17])[C:11]([O:5][P:8]([O:6][C:12]2([H:20])[H:21])[Cl:2])([H:18])[H:19])[H:15]: [(0, 6), (1, 7)]
+2026-02-17 11:23:05.970 | DEBUG    | __main__:test_coverage:419 -     [H:17][C:11]1([C:12]([C:10]([S:7](=[N:5][C:6](=[O:1])[C:8]([Cl:2])([Cl:3])[Cl:4])[C:9]1([H:13])[H:14])([H:15])[H:16])([H:19])[H:20])[H:18]: [(4, 6)]
+2026-02-17 11:23:05.970 | DEBUG    | __main__:test_coverage:419 -     [O-:1][P:4]([O-:2])[O-:3]: [(2, 3), (0, 3), (1, 3)]
+2026-02-17 11:23:05.970 | DEBUG    | __main__:test_coverage:419 -     [F:1][S:3][S:4][F:2]: [(0, 2), (1, 3)]
+2026-02-17 11:23:05.970 | DEBUG    | __main__:test_coverage:419 -     [H:11][C:6]([H:12])([H:13])[N:4]([C:7]([H:14])([H:15])[H:16])[P:10]([N:5]([C:8]([H:17])([H:18])[H:19])[C:9]([H:20])([H:21])[H:22])([F:1])([F:2])[F:3]: [(1, 9), (0, 9), (2, 9)]
+2026-02-17 11:23:05.970 | DEBUG    | __main__:test_coverage:419 -     [C:1]12=[C:2]([C:4]([H:12])([H:13])[C:3]1([H:10])[H:11])[C:9]13[C:6]([H:16])([H:17])[C:5]([H:14])([H:15])[C:8]21[C:7]3([H:18])[H:19]: [(0, 7), (1, 8)]
+2026-02-17 11:23:05.970 | DEBUG    | __main__:test_coverage:419 -     [H:17][C:6]([H:18])([H:19])[C:12]([C:7]([H:20])([H:21])[H:22])([C:8]([H:23])([H:24])[H:25])/[N:1]=[C:2]/1\[N:3]([N:4]1[C:13]([C:9]([H:26])([H:27])[H:28])([C:10]([H:29])([H:30])[H:31])[C:11]([H:32])([H:33])[H:34])[C:5]([H:14])([H:15])[H:16]: [(0, 1)]
+2026-02-17 11:23:05.970 | DEBUG    | __main__:test_coverage:419 -     [H:10][N:7]([P:8]([F:1])[F:2])[P:9]([F:3])([F:4])([F:5])[F:6]: [(3, 8), (5, 8), (4, 8), (2, 8)]
+2026-02-17 11:23:05.970 | DEBUG    | __main__:test_coverage:419 -     [H:18][c:6]1[c:7]([c:10]([c:14]2[c:15]([c:11]([c:8]([c:12]([c:13]([c:9]1[H:21])[C:16]2([F:3])[F:4])[H:24])[H:20])[H:23])[S:17](=[O:1])(=[O:2])[Cl:5])[H:22])[H:19]: [(14, 16)]
+2026-02-17 11:23:05.970 | DEBUG    | __main__:test_coverage:419 -     [H:10][C:2]12[C:3]3([C:6]4([C:4]1([C:8]5([C:5]2([C:7]3([C:9]45[I:1])[H:15])[H:13])[H:16])[H:12])[H:14])[H:11]: [(0, 8)]
+2026-02-17 11:23:05.970 | DEBUG    | __main__:test_coverage:419 -     [H:8][C:2]#[C:3][S:4](=[O:1])[C:6]([H:12])([H:13])[C:7]([H:14])([H:15])[C:5]([H:9])([H:10])[H:11]: [(2, 3)]
+2026-02-17 11:23:05.970 | DEBUG    | __main__:test_coverage:419 -     [O:1]=[N+:25]([O-:4])[c:22]1[c:16]([H:35])[c:13]([H:32])[c:20]([C:11]2=[C:8]([H:29])[C:10]3=[C:7]([H:28])[C:6]([H:27])=[C:9]([H:30])[N:24]3[c:21]3[c:15]([H:34])[c:19]([Cl:5])[c:12]([H:31])[c:18]([H:37])[c:23]3[S:26]2(=[O:2])=[O:3])[c:14]([H:33])[c:17]1[H:36]: [(10, 25)]
+2026-02-17 11:23:05.970 | DEBUG    | __main__:test_coverage:419 -     [H:23][c:9]1[c:11]([c:15]([c:19]2[c:17]([c:13]1[H:27])[C:5]3=[C:7]([N:21]2[H:31])[S:3][S:1][S:2][S:4][C:8]4=[C:6]3[c:18]5[c:14]([c:10]([c:12]([c:16]([c:20]5[N:22]4[H:32])[H:30])[H:26])[H:24])[H:28])[H:29])[H:25]: [(3, 7), (2, 6)]
+2026-02-17 11:23:05.970 | DEBUG    | __main__:test_coverage:419 -     [H:26][c:4]1[c:6]([c:12]([c:19]([c:13]([c:7]1[H:29])[H:35])[S+:22]2[C:3](=[C:2]([c:18]3[c:11]([c:5]([c:9]([c:16]([c:21]3[C:23]2([H:39])[c:20]4[c:14]([c:8]([c:10]([c:17]([c:15]4[H:37])[Br:1])[H:32])[H:30])[H:36])[H:38])[H:31])[H:27])[H:33])[H:24])[H:25])[H:34])[H:28]: [(18, 21)]
+2026-02-17 11:23:05.970 | DEBUG    | __main__:test_coverage:419 -     [H:21][C:9]1([C:10]([C:8]([N:4]([C:7]1([H:17])[H:18])[P:11]2(=[O:1])[N:3]([C:6]([C:5]([S:2]2)([H:13])[H:14])([H:15])[H:16])[H:12])([H:19])[H:20])([H:23])[H:24])[H:22]: [(3, 10)]
+2026-02-17 11:23:05.970 | DEBUG    | __main__:test_coverage:419 -     [H:22][c:8]1[c:7]([c:9]([c:11]([n+:12]([c:10]1[H:23])[C:14]([H:27])([H:28])[H:29])/[C:6](=[N:3]/[O:4][P:20]([H:42])([C:19]([H:40])([H:41])[C:17]([H:36])([H:37])[H:38])([O-:1])[O:5][C:18]([H:39])([C:15]([H:30])([H:31])[H:32])[C:16]([H:33])([H:34])[H:35])/[C:13]([H:24])([H:25])[H:26])[I:2])[H:21]: [(0, 19)]
+2026-02-17 11:23:05.970 | DEBUG    | __main__:test_coverage:419 -     [H:12][C:9]1([C:8]([O:6][S:10]1(=[O:1])=[O:2])([H:11])[C:7]([Cl:3])([Cl:4])[Cl:5])[H:13]: [(5, 9)]
+2026-02-17 11:23:05.970 | DEBUG    | __main__:test_coverage:419 -     [O:1]=[C:5]1[N:7]([I:3])[C:6](=[O:2])[C:11]([C:9]([H:12])([H:13])[H:14])([C:10]([H:15])([H:16])[H:17])[N:8]1[I:4]: [(3, 7), (2, 6)]
+2026-02-17 11:23:05.970 | DEBUG    | __main__:test_coverage:419 -     [H:13][C-:5]([S:11](=[O:1])(=[O:2])[C:9]([H:23])([H:24])[H:25])[S:12](=[O:3])(=[O:4])[N+:10]([C:6]([H:14])([H:15])[H:16])([C:7]([H:17])([H:18])[H:19])[C:8]([H:20])([H:21])[H:22]: [(9, 11)]
+2026-02-17 11:23:05.970 | DEBUG    | __main__:test_coverage:419 -     [C:1]1(\[H:18])=[C:2](\[H:19])[C:5]([H:22])([H:23])[C:9]([H:30])([H:31])[C:15]([P:3]2[C:16]3([H:43])[C:11]([H:34])([H:35])[C:7]([H:26])([H:27])[C:8]([H:28])([H:29])[C:12]([H:36])([H:37])[C:17]2([H:44])[C:14]([H:40])([H:41])[C:13]3([H:38])[H:39])([H:42])[C:10]([H:32])([H:33])[C:6]([H:24])([H:25])[C:4]1([H:20])[H:21]: [(2, 14)]
+2026-02-17 11:23:05.970 | DEBUG    | __main__:test_coverage:419 -     [H:24][C:11]12[C:10]([C:8]([C:9]1([H:22])[Cl:2])([H:21])[Cl:1])([N:3]=[N:4][C:12]2([C:6]([H:16])([H:17])[H:18])[C:7]([H:19])([H:20])[C:5]([H:13])([H:14])[H:15])[H:23]: [(2, 9)]
+2026-02-17 11:23:05.970 | DEBUG    | __main__:test_coverage:419 -     [H:20][c:7]1[c:5]([c:9]([c:13]2=[C:3]([O:2][N:1]=[c:12]3[c:8]([c:4]([c:6]([c:10]([c:14]3=[c:15]2[c:11]1[H:24])[H:23])[H:19])[H:17])[H:21])[H:16])[H:22])[H:18]: [(0, 1)]
+2026-02-17 11:23:05.970 | DEBUG    | __main__:test_coverage:419 -     [H:20][C:8]1([C:3](=[C:4]([C:9]([P:10]1([C:7]([H:17])([H:18])[H:19])([Cl:1])[Cl:2])([H:22])[H:23])[C:6]([H:14])([H:15])[H:16])[C:5]([H:11])([H:12])[H:13])[H:21]: [(8, 9), (1, 9), (7, 9), (0, 9), (6, 9)]
+2026-02-17 11:23:05.970 | DEBUG    | __main__:test_coverage:419 -     [H:11][C:5]1([C:6]([C:7]([S:8](=[O:1])(=[O:2])[S:3][C:4]1([H:9])[H:10])([H:15])[H:16])([H:13])[H:14])[H:12]: [(2, 7)]
+2026-02-17 11:23:05.970 | DEBUG    | __main__:test_coverage:419 -     [H:18][c:8]1[c:9]([c:11]([c:13]2[c:12]([c:10]1[H:20])[N:3]=[C:5]([C:6](=[C:7]([S:15]2(=[O:1])=[O:2])[H:17])[H:16])[O:4][C:14]([H:22])([H:23])[H:24])[H:21])[H:19]: [(6, 14)]
+2026-02-17 11:23:05.970 | DEBUG    | __main__:test_coverage:419 -     [H:24][c:5]1[c:7]2[c:9]([c:6]([c:4]([c:8]1[C:19]([C:14]([H:37])([H:38])[H:39])([C:15]([H:40])([H:41])[H:42])[C:16]([H:43])([H:44])[H:45])[H:23])[C:17]([C:10]([H:25])([H:26])[H:27])([C:11]([H:28])([H:29])[H:30])[O:2][H:22])[S:21]([O:3][C:18]2([C:12]([H:31])([H:32])[H:33])[C:13]([H:34])([H:35])[H:36])([C:20]([H:46])([H:47])[H:48])[Cl:1]: [(0, 20)]
+2026-02-17 11:23:05.970 | DEBUG    | __main__:test_coverage:419 -     [H:28][c:7]1[c:10]([c:16]([c:22]([c:17]([c:11]1[H:32])[H:38])[C:5]2=[C:3]3[C:4](=[C:6]([P:27](=[O:1])([O:2][C:25]3([H:43])[H:44])[c:24]4[c:20]([c:14]([c:9]([c:15]([c:21]4[H:42])[H:36])[H:30])[H:35])[H:41])[c:23]5[c:18]([c:12]([c:8]([c:13]([c:19]5[H:40])[H:34])[H:29])[H:33])[H:39])[C:26]2([H:45])[H:46])[H:37])[H:31]: [(4, 21)]
+2026-02-17 11:23:05.970 | DEBUG    | __main__:test_coverage:419 -     [S-:1][S:3][S-:2]: [(0, 2), (1, 2)]
+2026-02-17 11:23:05.970 | DEBUG    | __main__:test_coverage:419 -     [H:15][C@@:8]([C:7]([H:13])([H:14])[N:5]([H:9])[H:10])([C:6]([H:11])([H:12])[O:3][P:4]=[O:1])[F:2]: [(0, 3), (2, 3)]
+2026-02-17 11:23:05.970 | DEBUG    | __main__:test_coverage:419 -     [S:3]([S:4][I:2])[I:1]: [(0, 2), (1, 3)]
+2026-02-17 11:23:05.970 | DEBUG    | __main__:test_coverage:419 -     [H:25][C:13]1=[C:15]([C:14](=[C:16]([C:19]([C:17]1=[S:18](=[O:2])=[O:3])([H:27])[H:28])[F:4])[H:26])[C:12](=[O:1])[C:22]([H:29])([H:30])[C:23]([C:20]([F:5])([F:6])[F:7])([C:21]([F:8])([F:9])[F:10])[O:11][H:24]: [(16, 17)]
+2026-02-17 11:23:05.970 | DEBUG    | __main__:test_coverage:419 -     [H:32][c:12]1[c:13]([c:16]([c:14]([c:17]2[c:15]1[N:6]=[C:9]([N:19]([S:29]2([O-:4])[O-:5])[H:36])[C:10]3=[C:11]([C@:28]4([C@:26]([C@:27]5([C:23]([C@@:25]4([C:21]([C:22]5([H:40])[H:41])([H:38])[H:39])[H:47])([H:42])[H:43])[H:49])([N:18]([C:8]3=[O:1])[H:35])[H:48])[H:50])[O:7][H:31])[H:34])[N:20]([H:37])[S:30](=[O:2])(=[O:3])[C:24]([H:44])([H:45])[H:46])[H:33]: [(3, 28), (4, 28)]
+2026-02-17 11:23:05.973 | DEBUG    | __main__:test_coverage:419 -     [H:39][c:23]1[c:21]([c:27]([c:25]([c:31]2[c:29]1[O:9][C:14]3=[C:16]([N:32]([C:15](=[C:19]3[N:33]4[C:18](=[C:12]([C:13](=[C:17]4[Cl:5])[Cl:3])[H:35])[C:11]2=[O:2])[Cl:4])[H:42])[C:10](=[O:1])[c:30]5[c:24]([c:26]([c:20]([c:22]([c:28]5[O:8][H:34])[H:38])[H:36])[Cl:6])[H:40])[H:41])[Cl:7])[H:37]: [(8, 13)]
+2026-02-17 11:23:05.973 | DEBUG    | __main__:test_coverage:419 -     [H:29][c:7]1[c:8]([c:15]2[c:11]([c:4]3[n:2][c:18]([c:20]4[c:17]5[c:19]([c:12]([c:16]([c:9]([c:13]6[n:1][c:3]([c:10]([c:14]1[N:21]2[H:35])[H:32])[C:5](=[C:6]6[H:28])[H:27])[H:31])[N:22]5[H:36])[H:34])[C:25]([C:26]4([H:43])[H:44])([H:41])[H:42])[C:24]([C:23]3([H:37])[H:38])([H:39])[H:40])[H:33])[H:30]: [(3, 10), (8, 12), (8, 15), (9, 13), (10, 14), (2, 9)]
+2026-02-17 11:23:05.973 | DEBUG    | __main__:test_coverage:419 -     [N:1]#[C:4][N:7]=[S:22]1[C:23]([H:32])([H:33])[C:25]([N:21]([C:12]2=[N:6][O:9][N:5]=[C:11]2/[C:13](=[N:8]/[O:10][H:26])[N:20]([c:19]2[c:15]([H:28])[c:14]([H:27])[c:17]([F:2])[c:18]([Br:3])[c:16]2[H:29])[H:30])[H:31])([H:36])[C:24]1([H:34])[H:35]: [(6, 21)]
+2026-02-17 11:23:05.973 | INFO     | __main__:test_coverage:413 - Uncovered Angles: 0 in 0 molecules
+2026-02-17 11:23:05.973 | INFO     | __main__:test_coverage:398 - 
 Checking coverage for OpenFF Industry Benchmark Season 1 v1.2 dataset with 9835 SMILES strings...
-
-Checking Component Coverage (parallel chunks):   0%|          | 0/48 [00:00<?, ?it/s]
-Checking Component Coverage (parallel chunks): 100%|██████████| 48/48 [00:00<00:00, 1100145.31it/s]
-2025-11-06 07:43:40.772 | INFO     | __main__:test_coverage:371 - Uncovered Bonds: 20 in 5 molecules
-2025-11-06 07:43:40.772 | DEBUG    | __main__:test_coverage:375 -     Uncovered Bonds
-2025-11-06 07:43:40.772 | DEBUG    | __main__:test_coverage:377 -     [C:1]([C:2]([C:3]([H:28])([H:29])[H:30])([C@@:4]([C@:5]([H:6])([N:7]([C:8]([H:32])([H:33])[H:34])[C:9](=[O:10])[O:11][C:12]([C:13]([H:35])([H:36])[H:37])([C:14]([H:38])([H:39])[H:40])[C:15]([H:41])([H:42])[H:43])[C:16](=[O:17])[O:18][F:19])([C:20]([C:21]([H:44])([H:45])[H:46])([C:22]([H:47])([H:48])[H:49])[O:23][H:50])[H:31])[H:27])([H:24])([H:25])[H:26]: [(17, 18)]
-2025-11-06 07:43:40.772 | DEBUG    | __main__:test_coverage:377 -     [C:1]([O:2][c:3]1[c:4]([C:5]([C:6]([S:7]([C:8]([H:49])([H:50])[H:51])([C:9]([H:52])([H:53])[H:54])(=[O:10])[H:48])([H:46])[H:47])([H:44])[H:45])[c:11]([H:55])[c:12]2[c:38]([c:39]1[Cl:40])[C:17]([N:18]([c:19]1[c:20]([H:61])[c:21]([H:62])[c:22]([F:23])[c:24]([H:63])[c:25]1[O:26][C@:27]([H:28])([C:29]([H:64])([H:65])[H:66])[C:30](=[O:31])[N:32]([C:33]([C:34]([F:35])([F:36])[F:37])([H:68])[H:69])[H:67])[H:60])=[N:16][C:15]([H:59])=[C:14]([H:58])[C:13]2([H:56])[H:57])([H:41])([H:42])[H:43]: [(6, 8), (5, 6), (6, 47), (6, 7), (6, 9)]
-2025-11-06 07:43:40.772 | DEBUG    | __main__:test_coverage:377 -     [C:1]([C@:2]1([H:37])[C:3]([H:38])([H:39])[N:4]([c:5]2[c:6]([H:40])[c:7]([H:41])[c:8]([S:11]([F:12])([F:13])([F:14])([F:15])[F:16])[c:9]([H:42])[c:10]2[H:43])[C:17](=[O:18])[C:19]2=[C:20]([N:21]([C:22](=[O:23])[c:24]3[c:25]([H:45])[c:26]([H:46])[c:27]([H:47])[n:28][c:29]3[N:30]([H:48])[H:49])[H:44])[C:31]([H:50])=[N:32][N:33]12)([H:34])([H:35])[H:36]: [(10, 12), (10, 15), (7, 10), (10, 11), (10, 14), (10, 13)]
-2025-11-06 07:43:40.772 | DEBUG    | __main__:test_coverage:377 -     [F:1][S:2]([F:3])([F:4])([F:5])([F:6])[c:7]1[c:8]([H:24])[c:9]([C:13]2=[C:14]([H:28])[N:15]([C:16]([C:17]3=[N:18][N:19]([H:31])[C:20]([H:32])=[C:21]3[H:33])([H:29])[H:30])[N:22]=[C:23]2[H:34])[c:10]([H:25])[c:11]([H:26])[c:12]1[H:27]: [(1, 6), (1, 3), (0, 1), (1, 2), (1, 5), (1, 4)]
-2025-11-06 07:43:40.772 | DEBUG    | __main__:test_coverage:377 -     [c:1]1([H:29])[c:3]([H:31])[c:7]([H:35])[c:19]2[c:15]([c:5]1[H:33])[C:13]([H:41])([H:42])[N:21]([c:17]1[c:9]([H:37])[c:11]([H:39])[c:18]([N:22]3[C:14]([H:43])([H:44])[c:16]4[c:6]([H:34])[c:2]([H:30])[c:4]([H:32])[c:8]([H:36])[c:20]4[O:24][P@@:26]3(=[S:28])[H:46])[c:12]([H:40])[c:10]1[H:38])[P@@:25](=[S:27])([H:45])[O:23]2: [(24, 44), (25, 45)]
-2025-11-06 07:43:40.774 | INFO     | __main__:test_coverage:371 - Uncovered Angles: 40 in 3 molecules
-2025-11-06 07:43:40.774 | DEBUG    | __main__:test_coverage:375 -     Uncovered Angles
-2025-11-06 07:43:40.774 | DEBUG    | __main__:test_coverage:377 -     [C:1]([O:2][c:3]1[c:4]([C:5]([C:6]([S:7]([C:8]([H:49])([H:50])[H:51])([C:9]([H:52])([H:53])[H:54])(=[O:10])[H:48])([H:46])[H:47])([H:44])[H:45])[c:11]([H:55])[c:12]2[c:38]([c:39]1[Cl:40])[C:17]([N:18]([c:19]1[c:20]([H:61])[c:21]([H:62])[c:22]([F:23])[c:24]([H:63])[c:25]1[O:26][C@:27]([H:28])([C:29]([H:64])([H:65])[H:66])[C:30](=[O:31])[N:32]([C:33]([C:34]([F:35])([F:36])[F:37])([H:68])[H:69])[H:67])[H:60])=[N:16][C:15]([H:59])=[C:14]([H:58])[C:13]2([H:56])[H:57])([H:41])([H:42])[H:43]: [(8, 6, 9), (5, 6, 8), (5, 6, 47), (9, 6, 47), (7, 6, 47), (5, 6, 7), (8, 6, 47), (7, 6, 8), (5, 6, 9), (7, 6, 9)]
-2025-11-06 07:43:40.774 | DEBUG    | __main__:test_coverage:377 -     [C:1]([C@:2]1([H:37])[C:3]([H:38])([H:39])[N:4]([c:5]2[c:6]([H:40])[c:7]([H:41])[c:8]([S:11]([F:12])([F:13])([F:14])([F:15])[F:16])[c:9]([H:42])[c:10]2[H:43])[C:17](=[O:18])[C:19]2=[C:20]([N:21]([C:22](=[O:23])[c:24]3[c:25]([H:45])[c:26]([H:46])[c:27]([H:47])[n:28][c:29]3[N:30]([H:48])[H:49])[H:44])[C:31]([H:50])=[N:32][N:33]12)([H:34])([H:35])[H:36]: [(7, 10, 11), (13, 10, 14), (14, 10, 15), (7, 10, 13), (7, 10, 15), (11, 10, 13), (11, 10, 15), (7, 10, 12), (13, 10, 15), (12, 10, 13), (7, 10, 14), (12, 10, 15), (12, 10, 14), (11, 10, 12), (11, 10, 14)]
-2025-11-06 07:43:40.774 | DEBUG    | __main__:test_coverage:377 -     [F:1][S:2]([F:3])([F:4])([F:5])([F:6])[c:7]1[c:8]([H:24])[c:9]([C:13]2=[C:14]([H:28])[N:15]([C:16]([C:17]3=[N:18][N:19]([H:31])[C:20]([H:32])=[C:21]3[H:33])([H:29])[H:30])[N:22]=[C:23]2[H:34])[c:10]([H:25])[c:11]([H:26])[c:12]1[H:27]: [(5, 1, 6), (2, 1, 6), (0, 1, 3), (2, 1, 3), (0, 1, 6), (3, 1, 5), (4, 1, 5), (0, 1, 5), (2, 1, 5), (0, 1, 2), (3, 1, 4), (2, 1, 4), (0, 1, 4), (3, 1, 6), (4, 1, 6)]
+Warning: Problem parsing SMILES:
+Warning: Inconsistent cis/trans bond stereo.
+Warning: [c:1]1([H:24])[c:2]([H:25])[c:5]([H:28])[c:12]2[c:11]([c:4]1[H:27])[c:7]([H:30])[c:8]([H:31])[c:15]1[c:13]2[C:10]([H:33])=[C:14](/[C:18](=[N:20]/[C:16]2=[C:6]([H:29])[C:3]([H:26])=[C:9]([H:32])[S:23]2)[O:21][H:35])/[C:17](=[N:19]/[H:34])[O:22]1
+Checking Component Coverage (parallel chunks):   0%|          | 0/48 [00:00<?, ?it/s]Checking Component Coverage (parallel chunks): 100%|██████████| 48/48 [00:00<00:00, 1011691.42it/s]
+2026-02-17 11:41:07.114 | INFO     | __main__:test_coverage:413 - Uncovered Bonds: 307 in 134 molecules
+2026-02-17 11:41:07.114 | DEBUG    | __main__:test_coverage:417 -     Uncovered Bonds
+2026-02-17 11:41:07.114 | DEBUG    | __main__:test_coverage:419 -     [C:1]([N:2]1[C:3]([H:32])=[C:4]2[C:5](=[C:17]1[C:18](=[O:19])[N:20]([c:21]1[c:22]([H:43])[c:23]([F:24])[c:25]([F:26])[c:27]([H:44])[c:28]1[H:45])[H:42])[O:6][C:7]([H:33])([H:34])[C@:8]([C:13]1([O:14][H:37])[C:15]([H:38])([H:39])[C:16]1([H:40])[H:41])([H:35])[N:9]([H:36])[S:10]2(=[O:11])=[O:12])([H:29])([H:30])[H:31]: [(3, 9), (7, 12)]
+2026-02-17 11:41:07.114 | DEBUG    | __main__:test_coverage:419 -     [C:1]([c:2]1[c:3]([H:36])[c:4]([C@@:5]([C:6]([N+:7]2([H:62])[C:8]([H:40])([H:41])[C:9]([H:42])([H:43])[C:10]2([H:44])[H:45])([H:38])[H:39])([N:11]2[C:12]([H:46])([H:47])[C:13]([H:48])([H:49])[N:14]([c:15]3[n:16][c:17]([H:50])[n:18][c:19]([N:20]([H:51])[H:52])[c:21]3[C:22]3=[C:26]([H:55])[N:25]([H:54])[N:24]=[C:23]3[H:53])[C:27]([H:56])([H:57])[C:28]2([H:58])[H:59])[H:37])[c:29]([H:60])[c:30]([H:61])[c:31]1[Cl:32])([H:33])([H:34])[H:35]: [(5, 6), (6, 7), (6, 61), (6, 9)]
+2026-02-17 11:41:07.114 | DEBUG    | __main__:test_coverage:419 -     [C:1]([C@:2]1([H:30])[N:3]([H:31])[S:4](=[O:5])(=[O:6])[C:7]2=[C:8]([H:32])[N:9]([C:10]([H:33])([H:34])[H:35])[C:11]([C:12](=[O:13])[N:14]([c:15]3[c:16]([H:37])[c:17]([H:38])[c:18]([F:19])[c:20]([F:21])[c:22]3[H:39])[H:36])=[C:23]2[O:24][C@@:25]1([C:26]([H:41])([H:42])[H:43])[H:40])([H:27])([H:28])[H:29]: [(3, 6)]
+2026-02-17 11:41:07.114 | DEBUG    | __main__:test_coverage:419 -     [C:1]([C@@:2]1([H:36])[C:3]([H:37])([H:38])[C:4]([H:39])([H:40])[N@+:5]1([C:6]([C@@:7]([N:8]([c:9]1[n:10][c:11]([H:45])[n:12][c:13]2[c:14]([C:15]([N:16]([H:46])[H:47])=[O:17])[c:18]([H:48])[c:19]([H:49])[c:20]([H:50])[c:21]12)[H:44])([c:22]1[c:23]([H:51])[c:24]([H:52])[c:25]([F:26])[c:27]([C:28]([F:29])([F:30])[F:31])[c:32]1[H:53])[H:43])([H:41])[H:42])[H:54])([H:33])([H:34])[H:35]: [(3, 4), (4, 5), (4, 53), (1, 4)]
+2026-02-17 11:41:07.114 | DEBUG    | __main__:test_coverage:419 -     [N:1]([C:2](=[O:3])[c:4]1[c:5]([N:6]([H:36])[H:37])[n:7][c:8]([H:38])[n:9][c:10]1[N:11]1[C:12]([H:39])([H:40])[C:13]([H:41])([H:42])[C:14]([C:15]2=[N:16][C:17]([c:18]3[c:19]([H:44])[c:20]([H:45])[c:21]([H:46])[c:22]([H:47])[c:23]3[H:48])=[C:24]([H:49])[N:25]2[C:26]([C:27]([N+:28]2([H:64])[C:29]([H:54])([H:55])[C:30]([H:56])([H:57])[C:31]2([H:58])[H:59])([H:52])[H:53])([H:50])[H:51])([H:43])[C:32]([H:60])([H:61])[C:33]1([H:62])[H:63])([H:34])[H:35]: [(26, 27), (27, 28), (27, 30), (27, 63)]
+2026-02-17 11:41:07.114 | DEBUG    | __main__:test_coverage:419 -     [C:1]([c:2]1[c:3]([H:37])[c:4]([C:5]2=[C:6]([H:38])[N:7]([C:8]([C:9]3([H:41])[C:10]([H:42])([H:43])[N+:11]([H:44])([H:61])[C:12]3([H:45])[H:46])([H:39])[H:40])[C:13]([C:14]3([H:47])[C:15]([H:48])([H:49])[C:16]([H:50])([H:51])[N:17]([c:18]4[n:19][c:20]([H:52])[n:21][c:22]([N:23]([H:53])[H:54])[c:24]4[C:25]#[N:26])[C:27]([H:55])([H:56])[C:28]3([H:57])[H:58])=[N:29]2)[c:30]([H:59])[c:31]([H:60])[c:32]1[F:33])([H:34])([H:35])[H:36]: [(10, 43), (9, 10), (10, 60), (10, 11)]
+2026-02-17 11:41:07.114 | DEBUG    | __main__:test_coverage:419 -     [N:1]([C:2](=[O:3])[c:4]1[c:5]([H:29])[c:6]([H:30])[c:7]([H:31])[c:8]2[c:9]([N:10]([C@:11]([C:12]([N+:13]3([H:48])[C:14]([H:36])([H:37])[C:15]([H:38])([H:39])[C:16]3([H:40])[H:41])([H:34])[H:35])([c:17]3[c:18]([H:42])[c:19]([H:43])[c:20]([H:44])[c:21]([H:45])[c:22]3[H:46])[H:33])[H:32])[n:23][c:24]([H:47])[n:25][c:26]12)([H:27])[H:28]: [(12, 13), (12, 15), (11, 12), (12, 47)]
+2026-02-17 11:41:07.114 | DEBUG    | __main__:test_coverage:419 -     [N:1]([c:2]1[n:3][c:4]([H:35])[n:5][c:6]([N:7]2[C:8]([H:36])([H:37])[C:9]([H:38])([H:39])[N:10]([C@@:11]([C:12]([N+:13]3([H:59])[C:14]([H:43])([H:44])[C:15]([H:45])([H:46])[C:16]3([H:47])[H:48])([H:41])[H:42])([c:17]3[c:18]([H:49])[c:19]([H:50])[c:20]([Cl:21])[c:22]([Cl:23])[c:24]3[H:51])[H:40])[C:25]([H:52])([H:53])[C:26]2([H:54])[H:55])[c:27]1[C:28]1=[C:32]([H:58])[N:31]([H:57])[N:30]=[C:29]1[H:56])([H:33])[H:34]: [(12, 13), (12, 58), (12, 15), (11, 12)]
+2026-02-17 11:41:07.114 | DEBUG    | __main__:test_coverage:419 -     [O:1]([C@:2]1([H:33])[C:3]([H:34])([H:35])[C:4]([H:36])([H:37])[C:5]([H:38])([H:39])[C:6]([H:40])([H:41])[N:7]([S:11](=[O:12])(=[O:13])[c:14]2[c:15]([F:16])[c:17]([H:45])[c:18]([H:46])[c:19]([C:21](=[O:22])[N:23]([c:24]3[c:25]([H:49])[c:26]([H:50])[c:27]([F:28])[c:29]([Cl:30])[c:31]3[H:51])[H:48])[c:20]2[H:47])[C:8]([H:42])([H:43])[C@@:9]1([F:10])[H:44])[H:32]: [(8, 9), (6, 10)]
+2026-02-17 11:41:07.114 | DEBUG    | __main__:test_coverage:419 -     [c:1]1([H:29])[c:3]([H:31])[c:11]([H:39])[c:19]([C:25]([C:26]([S:28]2([c:22]3[c:15]([H:43])[c:7]([H:35])[c:2]([H:30])[c:8]([H:36])[c:16]3[H:44])[c:23]3[c:17]([H:45])[c:9]([H:37])[c:5]([H:33])[c:13]([H:41])[c:20]3[N:27]([H:51])[c:21]3[c:14]([H:42])[c:6]([H:34])[c:10]([H:38])[c:18]([H:46])[c:24]32)([H:49])[H:50])([H:47])[H:48])[c:12]([H:40])[c:4]1[H:32]: [(25, 27)]
+2026-02-17 11:41:07.115 | DEBUG    | __main__:test_coverage:419 -     [c:1]1([H:29])[c:3]([H:31])[c:9]([H:37])[c:17]2[c:13]([c:5]1[H:33])[O:26][c:14]1[c:6]([H:34])[c:2]([H:30])[c:4]([H:32])[c:10]([H:38])[c:18]1[S:28]2([c:16]1[c:11]([H:39])[c:7]([H:35])[c:15]([O:27][C:19]([C:24]([C:20]([H:41])([H:42])[H:43])([C:21]([H:44])([H:45])[H:46])[C:22]([H:47])([H:48])[H:49])=[O:25])[c:8]([H:36])[c:12]1[H:40])[C:23]([H:50])([H:51])[H:52]: [(22, 27)]
+2026-02-17 11:41:07.115 | DEBUG    | __main__:test_coverage:419 -     [C:1]([N:2]1[C:3]([H:30])=[C:4]2[C:5](=[C:15]1[C:16](=[O:17])[N:18]([c:19]1[c:20]([H:37])[c:21]([H:38])[c:22]([F:23])[c:24]([F:25])[c:26]1[H:39])[H:36])[C:6]([H:31])([H:32])[C:7]([F:8])([F:9])[C:10]([H:33])([H:34])[N:11]([H:35])[S:12]2(=[O:13])=[O:14])([H:27])([H:28])[H:29]: [(3, 11)]
+2026-02-17 11:41:07.115 | DEBUG    | __main__:test_coverage:419 -     [C:1]([N:2]1[C:3]([H:36])=[C:4]2[C:5](=[C:21]1[C:22](=[O:23])[N:24]([c:25]1[c:26]([H:51])[c:27]([F:28])[c:29]([F:30])[c:31]([H:52])[c:32]1[H:53])[H:50])[O:6][C:7]([H:37])([H:38])[C@@:8]([C:9]([H:39])([H:40])[H:41])([C:10]([c:11]1[c:12]([H:44])[c:13]([H:45])[c:14]([H:46])[c:15]([H:47])[c:16]1[H:48])([H:42])[H:43])[N:17]([H:49])[S:18]2(=[O:19])=[O:20])([H:33])([H:34])[H:35]: [(3, 17)]
+2026-02-17 11:41:07.115 | DEBUG    | __main__:test_coverage:419 -     [C:1]([C:2]([O:3][C:4](=[O:5])[C@:6]1([H:31])[C:7]([H:32])([H:33])[C@:8]1([C:9]1=[C:10]([H:35])[C:11]([C:12]([H:36])([H:37])[H:38])([C:13]([H:39])([H:40])[H:41])[C:14]([H:42])=[C:15]([N:16]([C:17](=[O:18])[O:19][C:20]([C:21]([H:44])([H:45])[H:46])([C:22]([H:47])([H:48])[H:49])[C:23]([H:50])([H:51])[H:52])[H:43])[N:24]=[C:25]1[H:53])[H:34])([H:29])[H:30])([H:26])([H:27])[H:28]: [(7, 8)]
+2026-02-17 11:41:07.115 | DEBUG    | __main__:test_coverage:419 -     [F:1][C:2]([F:3])([F:4])[C:5]1=[C:28]([H:45])[N:27]2[C:8](=[N:9][C:10]([H:31])=[C:11]2[c:12]2[n:13][c:14]([H:32])[c:15]([H:33])[c:16]([N:17]3[C:18]([H:34])([H:35])[C:19]([H:36])([H:37])[O:20][C:21]4([C:22]([H:38])([H:39])[N+:23]([H:40])([H:46])[C:24]4([H:41])[H:42])[C:25]3([H:43])[H:44])[n:26]2)[C:7]([H:30])=[C:6]1[H:29]: [(21, 22), (22, 23), (22, 39), (22, 45)]
+2026-02-17 11:41:07.115 | DEBUG    | __main__:test_coverage:419 -     [C:1]([C:2]1([C:3]([H:34])([H:35])[H:36])[C:4]([H:37])([H:38])[N:5]([c:6]2[c:7]([H:39])[c:8]([H:40])[n:9][c:10]([C:11]3=[C:12]([H:41])[N:13]=[C:14]4[C:15]([H:42])=[C:16]([H:43])[C:17]([C:18]([F:19])([F:20])[F:21])=[C:22]([H:44])[N:23]34)[n:24]2)[C:25]([H:45])([H:46])[C:26]2([C:27]([H:47])([H:48])[N+:28]([H:49])([H:52])[C:29]2([H:50])[H:51])[O:30]1)([H:31])([H:32])[H:33]: [(26, 27), (27, 28), (27, 51), (27, 48)]
+2026-02-17 11:41:07.115 | DEBUG    | __main__:test_coverage:419 -     [C:1]([C@:2]1([H:37])[C:3]([H:38])([H:39])[N:4]([c:5]2[c:6]([H:40])[c:7]([H:41])[c:8]([S:11]([F:12])([F:13])([F:14])([F:15])[F:16])[c:9]([H:42])[c:10]2[H:43])[C:17](=[O:18])[C:19]2=[C:20]([N:21]([C:22](=[O:23])[c:24]3[c:25]([H:45])[c:26]([H:46])[c:27]([H:47])[n:28][c:29]3[N:30]([H:48])[H:49])[H:44])[C:31]([H:50])=[N:32][N:33]12)([H:34])([H:35])[H:36]: [(10, 12), (10, 15), (7, 10), (10, 11), (10, 14), (10, 13)]
+2026-02-17 11:41:07.115 | DEBUG    | __main__:test_coverage:419 -     [C:1]([C:2]([C@@:3]([C:4]([C:5]([N:6]([C:7](=[O:8])[O:9][C:10]([C:11]([H:50])([H:51])[H:52])([C:12]([H:53])([H:54])[H:55])[C:13]([H:56])([H:57])[H:58])[H:49])([H:47])[H:48])([H:45])[H:46])([N:14]1[N:15]([H:59])[C:16]([C:18]2=[C:19]([H:61])[C:20]([H:62])([H:63])[C@@:21]([N:22]([H:65])[H:66])([H:64])[C@@:23]([C:24]([N:25]([C@@:26]([C:27]([H:72])([H:73])[H:74])([C:28]3=[C:29]([H:75])[C:30]([H:76])([H:77])[C:31]([H:78])([H:79])[C:32]([C:34]([F:35])([F:36])[F:37])=[C:33]3[H:80])[H:71])[H:70])([H:68])[H:69])([H:67])[C:38]2([H:81])[H:82])=[C:17]1[H:60])[H:44])([H:42])[H:43])([H:39])([H:40])[H:41]: [(15, 17)]
+2026-02-17 11:41:07.115 | DEBUG    | __main__:test_coverage:419 -     [O:1]=[C:2]([N:3]([c:4]1[c:5]([H:29])[n:6][c:7]2[c:8]([H:30])[c:9]([H:31])[c:10]([H:32])[c:11]([H:33])[c:12]2[c:13]1[H:34])[H:28])[c:14]1[c:15]([H:35])[c:16]([H:36])[c:17]([N:20]2[C:21]([H:39])([H:40])[C:22]([H:41])([H:42])[C:23]([H:43])([H:44])[C:24]([H:45])([H:46])[C:25]([H:47])([H:48])[C:26]([H:49])([H:50])[C:27]2([H:51])[H:52])[c:18]([H:37])[c:19]1[H:38]: [(16, 19)]
+2026-02-17 11:41:07.115 | DEBUG    | __main__:test_coverage:419 -     [N:1]([c:2]1[n:3][c:4]([H:35])[n:5][c:6]([N:7]2[C:8]([H:36])([H:37])[C:9]([H:38])([H:39])[N:10]([C@@:11]([C:12]([N+:13]3([H:59])[C:14]([H:43])([H:44])[C:15]([H:45])([H:46])[C:16]3([H:47])[H:48])([H:41])[H:42])([c:17]3[c:18]([H:49])[c:19]([H:50])[c:20]([Cl:21])[c:22]([F:23])[c:24]3[H:51])[H:40])[C:25]([H:52])([H:53])[C:26]2([H:54])[H:55])[c:27]1[C:28]1=[C:32]([H:58])[N:31]([H:57])[N:30]=[C:29]1[H:56])([H:33])[H:34]: [(12, 13), (12, 58), (12, 15), (11, 12)]
+2026-02-17 11:41:07.115 | DEBUG    | __main__:test_coverage:419 -     [F:1][C:2]([F:3])([F:4])[c:5]1[c:6]([H:28])[c:7]([C:8]2=[C:9]([H:29])[N:10]([C:11]([C:12]([N+:13]3([H:52])[C:14]([H:34])([H:35])[C:15]([H:36])([H:37])[C:16]3([H:38])[H:39])([H:32])[H:33])([H:30])[H:31])[C:17]([C:18]3([H:40])[C:19]([H:41])([H:42])[C:20]([H:43])([H:44])[N+:21]([H:45])([H:53])[C:22]([H:46])([H:47])[C:23]3([H:48])[H:49])=[N:24]2)[c:25]([H:50])[c:26]([H:51])[n:27]1: [(12, 13), (12, 15), (12, 51), (11, 12)]
+2026-02-17 11:41:07.115 | DEBUG    | __main__:test_coverage:419 -     [O:1]=[C:2]([C@:3]1([H:26])[C:4]([H:27])([H:28])[C@@:5]([C:6]([c:7]2[c:8]([H:32])[c:9]([H:33])[c:10]([H:34])[c:11]([H:35])[c:12]2[H:36])([H:30])[H:31])([H:29])[C:13]([H:37])([H:38])[N:14]1[H:39])[N:15]1[C:16]([H:40])([H:41])[C:17]([H:42])([H:43])[C:18]([H:44])([H:45])[N:19]([C:22]2([H:50])[C:23]([H:51])([H:52])[C:24]([H:53])([H:54])[C:25]2([H:55])[H:56])[C:20]([H:46])([H:47])[C:21]1([H:48])[H:49]: [(18, 21)]
+2026-02-17 11:41:07.115 | DEBUG    | __main__:test_coverage:419 -     [C:1]([N:2]1[C:3]([H:36])=[C:4]2[C:5](=[C:21]1[C:22](=[O:23])[N:24]([c:25]1[c:26]([H:48])[c:27]([F:28])[c:29]([F:30])[c:31]([H:49])[c:32]1[H:50])[H:47])[O:6][C:7]([H:37])([H:38])[C@:8]([C@:13]([O:14][H:42])([c:15]1[c:16]([H:43])[c:17]([H:44])[c:18]([H:45])[n:19][c:20]1[H:46])[H:41])([H:39])[N:9]([H:40])[S:10]2(=[O:11])=[O:12])([H:33])([H:34])[H:35]: [(3, 9)]
+2026-02-17 11:41:07.115 | DEBUG    | __main__:test_coverage:419 -     [F:1][c:2]1[c:3]([S:4](=[O:5])([N:6]([H:29])[H:30])=[O:7])[c:8]([F:9])[c:10]([F:11])[c:13]([S:14](=[O:15])(=[O:16])[C:17]([C:18]([O:19][H:35])([H:33])[H:34])([H:31])[H:32])[c:12]1[N:20]([C:21]1([H:37])[C:22]([H:38])([H:39])[C:23]([H:40])([H:41])[C:24]([H:42])([H:43])[C:25]([H:44])([H:45])[C:26]([H:46])([H:47])[C:27]([H:48])([H:49])[C:28]1([H:50])[H:51])[H:36]: [(19, 20)]
+2026-02-17 11:41:07.115 | DEBUG    | __main__:test_coverage:419 -     [C:1]1([H:29])([H:30])[C:2]([H:31])([H:32])[C:3]([H:33])([H:34])[N:4]([P:6]([O:7][N:8]2[C:9]([H:38])=[C:10]([c:13]3[c:14]([H:39])[c:15]([H:40])[c:16]([H:41])[c:17]([H:42])[c:18]3[H:43])[N:11]=[N:12]2)([N:19]2[C:20]([H:44])([H:45])[C:21]([H:46])([H:47])[C:22]([H:48])([H:49])[C:23]2([H:50])[H:51])([N:24]2[C:25]([H:52])([H:53])[C:26]([H:54])([H:55])[C:27]([H:56])([H:57])[C:28]2([H:58])[H:59])[H:37])[C:5]1([H:35])[H:36]: [(5, 18), (3, 5), (5, 23)]
+2026-02-17 11:41:07.115 | DEBUG    | __main__:test_coverage:419 -     [C:1]([N:2]1[C:3]([H:32])=[C:4]2[C:5](=[C:17]1[C:18](=[O:19])[N:20]([c:21]1[c:22]([H:45])[c:23]([C:24]([H:46])([H:47])[H:48])[c:25]([F:26])[c:27]([H:49])[c:28]1[H:50])[H:44])[O:6][C:7]([H:33])([H:34])[C@:8]([C:13]([C:14]([H:37])([H:38])[H:39])([C:15]([H:40])([H:41])[H:42])[O:16][H:43])([H:35])[N:9]([H:36])[S:10]2(=[O:11])=[O:12])([H:29])([H:30])[H:31]: [(3, 9)]
+2026-02-17 11:41:07.115 | DEBUG    | __main__:test_coverage:419 -     [C:1]([O:2][c:3]1[c:4]([F:5])[c:6]([H:34])[c:7]([C@@:8]([C:9]([N+:10]2([H:52])[C:11]([H:38])([H:39])[C:12]([H:40])([H:41])[C:13]2([H:42])[H:43])([H:36])[H:37])([N:14]([c:15]2[n:16][c:17]([H:45])[n:18][c:19]3[c:20]([C:21]([N:22]([H:46])[H:47])=[O:23])[c:24]([H:48])[c:25]([H:49])[c:26]([H:50])[c:27]23)[H:44])[H:35])[c:28]([H:51])[c:29]1[F:30])([H:31])([H:32])[H:33]: [(9, 51), (8, 9), (9, 10), (9, 12)]
+2026-02-17 11:41:07.115 | DEBUG    | __main__:test_coverage:419 -     [O:1]=[C:2]1[C:3]([H:31])([H:32])[N:4]([H:33])[c:5]2[n:6][c:7]([H:34])[n:8][c:9]([N:10]3[C:11]([H:35])([H:36])[C:12]([H:37])([H:38])[N:13]([C@@:14]([C:15]([N+:16]4([H:57])[C:17]([H:42])([H:43])[C:18]([H:44])([H:45])[C:19]4([H:46])[H:47])([H:40])[H:41])([c:20]4[c:21]([H:48])[c:22]([H:49])[c:23]([H:50])[c:24]([H:51])[c:25]4[Cl:26])[H:39])[C:27]([H:52])([H:53])[C:28]3([H:54])[H:55])[c:29]2[N:30]1[H:56]: [(14, 15), (15, 56), (15, 16), (15, 18)]
+2026-02-17 11:41:07.115 | DEBUG    | __main__:test_coverage:419 -     [C:1]([O:2][C:3]([C:4]([O:5][c:6]1[c:7]([H:42])[c:8]2[c:31]([c:32]([H:58])[c:33]1[F:34])[C:11]([C:12]1=[C:13]([H:44])[C:14]([c:15]3[c:16]([H:45])[c:17]([H:46])[c:18]([C:19](=[O:20])[N:21]4[C:22]([H:47])([H:48])[C:23]([C:24]([H:49])([H:50])[H:51])([N+:25]([H:52])([H:53])[H:59])[C:26]4([H:54])[H:55])[c:27]([H:56])[c:28]3[H:57])=[N:29][O:30]1)=[N:10][N:9]2[H:43])([H:40])[H:41])([H:38])[H:39])([H:35])([H:36])[H:37]: [(22, 24)]
+2026-02-17 11:41:07.115 | DEBUG    | __main__:test_coverage:419 -     [N:1]([C:2](=[O:3])[c:4]1[c:5]([H:35])[c:6]([H:36])[n:7][c:8]2[c:9]([N:10]([C@:11]([C:12]([N+:13]3([H:51])[C:14]([H:41])([H:42])[C:15]([O:16][H:44])([H:43])[C:17]3([H:45])[H:46])([H:39])[H:40])([c:18]3[c:19]([H:47])[c:20]([H:48])[c:21]([Cl:22])[c:23]([C:24]([F:25])([F:26])[F:27])[c:28]3[H:49])[H:38])[H:37])[n:29][c:30]([H:50])[n:31][c:32]12)([H:33])[H:34]: [(12, 16), (12, 13), (11, 12), (12, 50)]
+2026-02-17 11:41:07.115 | DEBUG    | __main__:test_coverage:419 -     [C:1]([C@@:2]([H:3])([O:4][c:5]1[c:6]([N:7]([c:8]2[c:9]3[c:15]([n:16][c:17]([H:49])[n:18]2)[C:14]([H:48])=[C:13]([N:19]=[S:20]2(=[O:21])[C:22]([H:50])([H:51])[C:23]([H:52])([H:53])[C:24]2([H:54])[H:55])[C:12]([H:46])([H:47])[C@@:10]3([C:11]([H:43])([H:44])[H:45])[H:42])[H:41])[c:25]([H:56])[c:26]([H:57])[c:27]([F:28])[c:29]1[H:58])[C:30](=[O:31])[N:32]([C:33]12[C:34]([H:60])([H:61])[C:35]([H:62])([C:36]1([H:63])[H:64])[C:37]2([H:65])[H:66])[H:59])([H:38])([H:39])[H:40]: [(18, 19)]
+2026-02-17 11:41:07.115 | DEBUG    | __main__:test_coverage:419 -     [C:1]([C@@:2]1([H:36])[C:3]([H:37])([H:38])[C:4]([H:39])([H:40])[N@@+:5]1([C:6]([C@@:7]([N:8]([c:9]1[n:10][c:11]([H:45])[n:12][c:13]2[c:14]([C:15]([N:16]([H:46])[H:47])=[O:17])[c:18]([H:48])[c:19]([H:49])[c:20]([H:50])[c:21]12)[H:44])([c:22]1[c:23]([H:51])[c:24]([H:52])[c:25]([F:26])[c:27]([C:28]([F:29])([F:30])[F:31])[c:32]1[H:53])[H:43])([H:41])[H:42])[H:54])([H:33])([H:34])[H:35]: [(3, 4), (4, 5), (4, 53), (1, 4)]
+2026-02-17 11:41:07.115 | DEBUG    | __main__:test_coverage:419 -     [C:1]([C@:2]1([H:38])[C@@:3]([C:4]([N:5]([S:6]([C:7]([H:43])([H:44])[H:45])(=[O:8])=[O:9])[H:42])([H:40])[H:41])([H:39])[N@@+:10]([C:11]2([H:46])[C:12]([H:47])([H:48])[C:13]2([H:49])[H:50])([H:62])[C:14]([H:51])([H:52])[C:15]([H:53])([H:54])[N:16]1[c:17]1[c:18]([H:55])[c:19]([H:56])[n:20][c:21]([C:22]2=[C:23]([H:57])[N:24]=[C:25]3[C:26]([H:58])=[C:27]([H:59])[C:28]([C:29]([F:30])([F:31])[H:60])=[C:32]([H:61])[N:33]23)[n:34]1)([H:35])([H:36])[H:37]: [(9, 10)]
+2026-02-17 11:41:07.115 | DEBUG    | __main__:test_coverage:419 -     [c:1]1([H:27])[c:2]([H:28])[c:8]([O:26][c:10]2[c:5]([H:31])[n:21][c:9]([C:11]([N:23]([C:20]([H:47])([H:48])[H:49])[H:50])=[O:25])[c:4]([H:30])[n:22]2)[c:3]([H:29])[c:7]2[c:6]1[C:12]([H:32])([H:33])[C:17]([H:42])([H:43])[N@@+:24]([C:19]1([H:46])[C:15]([H:38])([H:39])[C:14]([H:36])([H:37])[C:16]1([H:40])[H:41])([H:51])[C:18]([H:44])([H:45])[C:13]2([H:34])[H:35]: [(18, 23)]
+2026-02-17 11:41:07.115 | DEBUG    | __main__:test_coverage:419 -     [c:1]1([H:27])[c:3]([H:29])[c:10]([F:25])[c:7]([H:33])[c:12]([S:26]([c:11]2[c:5]([H:31])[c:2]([H:28])[c:8]3[c:9]([c:6]2[H:32])[C:13]([H:34])([H:35])[C:14]([H:36])([H:37])[C:15]([H:38])([H:39])[C@:18]3([C:20]([N+:21]2([H:48])[C:16]([H:40])([H:41])[C:19]([O:24][H:49])([H:45])[C:17]2([H:42])[H:43])([H:46])[H:47])[H:44])(=[O:22])=[O:23])[c:4]1[H:30]: [(16, 20), (20, 47), (15, 20), (19, 20)]
+2026-02-17 11:41:07.115 | DEBUG    | __main__:test_coverage:419 -     [O:1]([c:2]1[c:3]([N:4]([c:5]2[c:6]3[c:7]([F:8])[c:9]([H:30])[c:10]([N:16]=[S:17]4(=[O:18])[C:19]([H:33])([H:34])[C:20]([H:35])([H:36])[C:21]([H:37])([H:38])[C:22]4([H:39])[H:40])[c:11]([H:31])[c:12]3[n:13][c:14]([H:32])[n:15]2)[H:29])[c:23]([H:41])[c:24]([H:42])[c:25]([F:26])[c:27]1[H:43])[H:28]: [(15, 16)]
+2026-02-17 11:41:07.115 | DEBUG    | __main__:test_coverage:419 -     [c:1]1([H:28])[c:6]([H:33])[c:11]([O:26][c:9]2[c:2]([H:29])[c:4]([H:31])[c:10]([F:27])[c:5]([H:32])[c:3]2[H:30])[n:22][c:7]([H:34])[c:8]1[C:12]([N:23]1[C:17]([H:43])([H:44])[C:16]([H:41])([H:42])[C:18]([H:45])([H:46])[N:24]([C:21]2([H:51])[C:14]([H:37])([H:38])[C:13]([H:35])([H:36])[C:15]2([H:39])[H:40])[C:20]([H:49])([H:50])[C:19]1([H:47])[H:48])=[O:25]: [(20, 23)]
+2026-02-17 11:41:07.115 | DEBUG    | __main__:test_coverage:419 -     [C:1]([N:2]1[C:3]([H:35])=[C:4]2[C:5](=[C:20]1[C:21](=[O:22])[N:23]([c:24]1[c:25]([H:47])[c:26]([H:48])[c:27]([F:28])[c:29]([F:30])[c:31]1[H:49])[H:46])[O:6][C:7]([H:36])([H:37])[C@@:8]([C:9]([H:38])([H:39])[H:40])([c:14]1[c:15]([H:42])[c:16]([H:43])[c:17]([H:44])[c:18]([H:45])[n:19]1)[N:10]([H:41])[S:11]2(=[O:12])=[O:13])([H:32])([H:33])[H:34]: [(3, 10)]
+2026-02-17 11:41:07.115 | DEBUG    | __main__:test_coverage:419 -     [C:1]1([H:20])([H:21])[C:4]([H:26])([H:27])[C@@:13]2([C:8]([H:32])([H:33])[N:16](/[C:12](=[N:15]/[C:11]3=[N:14][C:5]([H:28])=[C:7]([H:31])[S:19]3)[O:17][H:36])[C@:10]2([C:9]2([H:34])[C:2]([H:22])([H:23])[C:3]2([H:24])[H:25])[H:35])[O:18][C:6]1([H:29])[H:30]: [(8, 9)]
+2026-02-17 11:41:07.115 | DEBUG    | __main__:test_coverage:419 -     [N:1]([C:2](=[O:3])[c:4]1[c:5]([H:31])[c:6]([H:32])[c:7]([H:33])[c:8]2[c:9]([N:10]([C@:11]([C:12]([N+:13]3([H:48])[C:14]([H:38])([H:39])[C:15]([F:16])([H:40])[C:17]3([H:41])[H:42])([H:36])[H:37])([c:18]3[c:19]([H:43])[c:20]([H:44])[c:21]([H:45])[c:22]([Cl:23])[c:24]3[H:46])[H:35])[H:34])[n:25][c:26]([H:47])[n:27][c:28]12)([H:29])[H:30]: [(12, 16), (12, 13), (11, 12), (12, 47)]
+2026-02-17 11:41:07.115 | DEBUG    | __main__:test_coverage:419 -     [c:1]1([H:29])[c:3]([H:31])[c:7]([H:35])[c:19]2[c:15]([c:5]1[H:33])[C:13]([H:41])([H:42])[N:21]([c:17]1[c:9]([H:37])[c:11]([H:39])[c:18]([N:22]3[C:14]([H:43])([H:44])[c:16]4[c:6]([H:34])[c:2]([H:30])[c:4]([H:32])[c:8]([H:36])[c:20]4[O:24][P@@:26]3(=[S:28])[H:46])[c:12]([H:40])[c:10]1[H:38])[P@@:25](=[S:27])([H:45])[O:23]2: [(24, 44), (25, 45)]
+2026-02-17 11:41:07.115 | DEBUG    | __main__:test_coverage:419 -     [C:1]([C@:2]1([H:32])[N:3]([H:33])[S:4](=[O:5])(=[O:6])[C:7]2=[C:8]([H:34])[N:9]([C:10]([H:35])([H:36])[H:37])[C:11]([C:12](=[O:13])[N:14]([c:15]3[c:16]([H:39])[c:17]([H:40])[c:18]([F:19])[c:20]([C:22]([F:23])([F:24])[F:25])[c:21]3[H:41])[H:38])=[C:26]2[C:27]([H:42])=[C:28]1[H:43])([H:29])([H:30])[H:31]: [(3, 6)]
+2026-02-17 11:41:07.115 | DEBUG    | __main__:test_coverage:419 -     [C:1]([N:2]1[C:3]([H:34])=[C:4]2[C:5](=[C:19]1[C:20](=[O:21])[N:22]([c:23]1[c:24]([H:45])[c:25]([H:46])[c:26]([F:27])[c:28]([F:29])[c:30]1[H:47])[H:44])[O:6][C:7]([H:35])([H:36])[C@:8]([c:13]1[c:14]([H:39])[c:15]([H:40])[c:16]([H:41])[c:17]([H:42])[c:18]1[H:43])([H:37])[N:9]([H:38])[S:10]2(=[O:11])=[O:12])([H:31])([H:32])[H:33]: [(3, 9)]
+2026-02-17 11:41:07.115 | DEBUG    | __main__:test_coverage:419 -     [C:1]([C:2]([C:3]([S:4](=[O:5])(=[O:6])[N:7]([c:8]1[c:9]([H:40])[c:10]([H:41])[c:11]([F:12])[c:13]([N:14]2/[C:15]([H:42])=[C:16]([c:23]3[c:24]([H:53])[n:25][c:26]([N:27]([H:54])[H:55])[c:28]([H:56])[c:29]3[H:57])\[C:17]([H:43])=[C:18](\[H:44])[C:19]([H:45])([H:46])[C:20]([H:47])([H:48])[C@:21]2([C:22]([H:50])([H:51])[H:52])[H:49])[c:30]1[F:31])[H:39])([H:37])[H:38])([H:35])[H:36])([H:32])([H:33])[H:34]: [(12, 13), (15, 16)]
+2026-02-17 11:41:07.115 | DEBUG    | __main__:test_coverage:419 -     [N:1]([C:2](=[O:3])[c:4]1[c:5]([H:31])[c:6]([H:32])[c:7]([H:33])[c:8]2[c:9]([N:10]([C@:11]([C:12]([N+:13]3([H:48])[C:14]([H:38])([H:39])[C:15]([H:40])([H:41])[C:16]3([H:42])[H:43])([H:36])[H:37])([c:17]3[c:18]([H:44])[c:19]([H:45])[c:20]([F:21])[c:22]([Cl:23])[c:24]3[H:46])[H:35])[H:34])[n:25][c:26]([H:47])[n:27][c:28]12)([H:29])[H:30]: [(12, 13), (12, 15), (11, 12), (12, 47)]
+2026-02-17 11:41:07.115 | DEBUG    | __main__:test_coverage:419 -     [C:1]([N:2]1[C:3]([H:34])=[C:4]2[C:5](=[C:18]1[C:19](=[O:20])[N:21]([c:22]1[c:23]([H:47])[c:24]([C:25]#[N:26])[c:27]([F:28])[c:29]([H:48])[c:30]1[H:49])[H:46])[O:6][C:7]([H:35])([H:36])[C@:8]([C@:13]([O:14][H:40])([C:15]1([H:41])[C:16]([H:42])([H:43])[C:17]1([H:44])[H:45])[H:39])([H:37])[N:9]([H:38])[S:10]2(=[O:11])=[O:12])([H:31])([H:32])[H:33]: [(3, 9)]
+2026-02-17 11:41:07.115 | DEBUG    | __main__:test_coverage:419 -     [C:1]([O:2][c:3]1[c:4]([H:33])[c:5]([C@@:6]([C:7]([N+:8]2([H:52])[C:9]([H:37])([H:38])[C:10]([H:39])([H:40])[C:11]2([H:41])[H:42])([H:35])[H:36])([N:12]([c:13]2[n:14][c:15]([H:44])[n:16][c:17]3[c:18]([C:19]([N:20]([H:45])[H:46])=[O:21])[c:22]([H:47])[c:23]([H:48])[c:24]([H:49])[c:25]23)[H:43])[H:34])[c:26]([H:50])[c:27]([H:51])[c:28]1[F:29])([H:30])([H:31])[H:32]: [(7, 10), (6, 7), (7, 51), (7, 8)]
+2026-02-17 11:41:07.115 | DEBUG    | __main__:test_coverage:419 -     [C:1]([C:2]([C:3]([H:39])([H:40])[H:41])([c:4]1[c:5]([H:42])[c:6]([C:7]2=[C:8]([H:43])[N:9]([C:10]([C:11]([N+:12]3([H:68])[C:13]([H:48])([H:49])[C:14]([H:50])([H:51])[C:15]3([H:52])[H:53])([H:46])[H:47])([H:44])[H:45])[C:16]([C:17]3([H:54])[C:18]([H:55])([H:56])[C:19]([H:57])([H:58])[N:20]([c:21]4[n:22][c:23]([H:59])[n:24][c:25]([N:26]([H:60])[H:61])[c:27]4[Br:28])[C:29]([H:62])([H:63])[C:30]3([H:64])[H:65])=[N:31]2)[c:32]([H:66])[c:33]([H:67])[n:34]1)[H:38])([H:35])([H:36])[H:37]: [(11, 14), (10, 11), (11, 67), (11, 12)]
+2026-02-17 11:41:07.115 | DEBUG    | __main__:test_coverage:419 -     [C:1]([N:2]1[C:3]([H:32])=[C:4]2[C:5](=[C:16]1[C:17](=[O:18])[N:19]([c:20]1[c:21]([H:39])[c:22]([F:23])[c:24]([F:25])[c:26]([F:27])[c:28]1[H:40])[H:38])[C:6]([H:33])=[C:7]([H:34])[C@:8]([C:13]([F:14])([F:15])[H:37])([H:35])[N:9]([H:36])[S:10]2(=[O:11])=[O:12])([H:29])([H:30])[H:31]: [(3, 9)]
+2026-02-17 11:41:07.115 | DEBUG    | __main__:test_coverage:419 -     [C:1]([C:2]([C:3]([H:28])([H:29])[H:30])([C@@:4]([C@:5]([H:6])([N:7]([C:8]([H:32])([H:33])[H:34])[C:9](=[O:10])[O:11][C:12]([C:13]([H:35])([H:36])[H:37])([C:14]([H:38])([H:39])[H:40])[C:15]([H:41])([H:42])[H:43])[C:16](=[O:17])[O:18][F:19])([C:20]([C:21]([H:44])([H:45])[H:46])([C:22]([H:47])([H:48])[H:49])[O:23][H:50])[H:31])[H:27])([H:24])([H:25])[H:26]: [(17, 18)]
+2026-02-17 11:41:07.115 | DEBUG    | __main__:test_coverage:419 -     [N:1]([C:2](=[O:3])[c:4]1[c:5]([H:34])[c:6]([H:35])[c:7]([H:36])[c:8]2[c:9]([N:10]([C@:11]([C:12]([N+:13]3([H:52])[C:14]([H:41])([H:42])[C:15]([H:43])([H:44])[C:16]3([H:45])[H:46])([H:39])[H:40])([c:17]3[c:18]([H:47])[c:19]([H:48])[c:20]([O:21][C:22]([F:23])([F:24])[F:25])[c:26]([H:49])[c:27]3[H:50])[H:38])[H:37])[n:28][c:29]([H:51])[n:30][c:31]12)([H:32])[H:33]: [(12, 13), (12, 15), (12, 51), (11, 12)]
+2026-02-17 11:41:07.115 | DEBUG    | __main__:test_coverage:419 -     [N:1]([c:2]1[n:3][c:4]([H:37])[n:5][c:6]([N:7]2[C:8]([H:38])([H:39])[C:9]([H:40])([H:41])[N:10]([C@@:11]([C:12]([N+:13]3([H:69])[C:14]([H:45])([H:46])[C:15]([H:47])([H:48])[C:16]3([H:49])[H:50])([H:43])[H:44])([c:17]3[c:18]([H:51])[c:19]([H:52])[c:20]4[c:21]([c:22]3[H:53])[C:23]([H:54])([H:55])[C:24]([H:56])([H:57])[C:25]([H:58])([H:59])[C:26]4([H:60])[H:61])[H:42])[C:27]([H:62])([H:63])[C:28]2([H:64])[H:65])[c:29]1[C:30]1=[C:34]([H:68])[N:33]([H:67])[N:32]=[C:31]1[H:66])([H:35])[H:36]: [(12, 68), (12, 13), (12, 15), (11, 12)]
+2026-02-17 11:41:07.115 | DEBUG    | __main__:test_coverage:419 -     [C:1]([C:2]([c:3]1[c:4]([N:5]([H:39])[H:40])[n:6][c:7]([H:41])[n:8][c:9]1[N:10]1[C:11]([H:42])([H:43])[C:12]([H:44])([H:45])[C:13]([C:14]2=[N:15][C:16]([c:17]3[c:18]([H:47])[c:19]([H:48])[n:20][c:21]([C:22]([H:49])([H:50])[H:51])[c:23]3[H:52])=[C:24]([H:53])[N:25]2[C:26]([C:27]([N+:28]2([H:68])[C:29]([H:58])([H:59])[C:30]([H:60])([H:61])[C:31]2([H:62])[H:63])([H:56])[H:57])([H:54])[H:55])([H:46])[C:32]([H:64])([H:65])[C:33]1([H:66])[H:67])([H:37])[H:38])([H:34])([H:35])[H:36]: [(26, 27), (27, 28), (27, 67), (27, 30)]
+2026-02-17 11:41:07.115 | DEBUG    | __main__:test_coverage:419 -     [C:1]([c:2]1[c:3]([H:30])[c:4]([H:31])[c:5]([H:32])[c:6]([O:7][C@:8]2([H:33])[C:9]([H:34])([H:35])[N:10]([H:36])[C@:11]([C:13](=[O:14])[N:15]3[C:16]([H:40])([H:41])[C:17]([H:42])([H:43])[C:18]([H:44])([H:45])[N:19]([C:22]4([H:50])[C:23]([H:51])([H:52])[C:24]([H:53])([H:54])[C:25]4([H:55])[H:56])[C:20]([H:46])([H:47])[C:21]3([H:48])[H:49])([H:37])[C:12]2([H:38])[H:39])[c:26]1[H:57])([H:27])([H:28])[H:29]: [(18, 21)]
+2026-02-17 11:41:07.115 | DEBUG    | __main__:test_coverage:419 -     [N:1]([C:2](=[O:3])[c:4]1[c:5]([H:31])[c:6]([H:32])[c:7]([H:33])[c:8]2[c:9]([N:10]([C@:11]([C:12]([N+:13]3([H:48])[C:14]([H:38])([H:39])[C:15]([H:40])([H:41])[C:16]3([H:42])[H:43])([H:36])[H:37])([c:17]3[c:18]([H:44])[c:19]([F:20])[c:21]([H:45])[c:22]([H:46])[c:23]3[Cl:24])[H:35])[H:34])[n:25][c:26]([H:47])[n:27][c:28]12)([H:29])[H:30]: [(12, 13), (12, 15), (11, 12), (12, 47)]
+2026-02-17 11:41:07.115 | DEBUG    | __main__:test_coverage:419 -     [C:1]([C:2]1([H:36])[C:3]([H:37])([H:38])[N+:4]([C:5]([C@@:6]([N:7]([c:8]2[n:9][c:10]([H:43])[n:11][c:12]3[c:13]([C:14]([N:15]([H:44])[H:45])=[O:16])[c:17]([H:46])[c:18]([H:47])[c:19]([H:48])[c:20]23)[H:42])([c:21]2[c:22]([H:49])[c:23]([H:50])[c:24]([F:25])[c:26]([C:27]([F:28])([F:29])[F:30])[c:31]2[H:51])[H:41])([H:39])[H:40])([H:54])[C:32]1([H:52])[H:53])([H:33])([H:34])[H:35]: [(3, 53), (3, 4), (3, 31), (2, 3)]
+2026-02-17 11:41:07.115 | DEBUG    | __main__:test_coverage:419 -     [F:1][c:2]1[c:3]([H:28])[c:4]([H:29])[c:5]([H:30])[c:6]([O:7][c:8]2[c:9]([H:31])[c:10]([H:32])[c:11]([C:14](=[O:15])[N:16]3[C:17]([H:34])([H:35])[C:18]([H:36])([H:37])[C:19]([H:38])([H:39])[N:20]([C:23]4([H:44])[C:24]([H:45])([H:46])[C:25]([H:47])([H:48])[C:26]4([H:49])[H:50])[C:21]([H:40])([H:41])[C:22]3([H:42])[H:43])[n:12][c:13]2[H:33])[c:27]1[H:51]: [(19, 22)]
+2026-02-17 11:41:07.115 | DEBUG    | __main__:test_coverage:419 -     [C:1]([c:2]1[c:3]([H:37])[c:4]([C:5]2=[C:6]([H:38])[N:7]([C:8]([C:9]3([H:41])[C:10]([H:42])([H:43])[N+:11]([C:12]([H:44])([H:45])[H:46])([H:63])[C:13]3([H:47])[H:48])([H:39])[H:40])[C:14]([C:15]3([H:49])[C:16]([H:50])([H:51])[C:17]([H:52])([H:53])[N:18]([c:19]4[n:20][c:21]([H:54])[n:22][c:23]([N:24]([H:55])[H:56])[c:25]4[Cl:26])[C:27]([H:57])([H:58])[C:28]3([H:59])[H:60])=[N:29]2)[c:30]([H:61])[c:31]([H:62])[c:32]1[F:33])([H:34])([H:35])[H:36]: [(10, 12), (9, 10), (10, 11), (10, 62)]
+2026-02-17 11:41:07.115 | DEBUG    | __main__:test_coverage:419 -     [N:1]([C:2](=[O:3])[c:4]1[c:5]([H:32])[c:6]([H:33])[c:7]([H:34])[c:8]2[c:9]([N:10]([C@:11]([C:12]([N+:13]3([H:49])[C:14]([H:39])([H:40])[C:15]([O:16][H:42])([H:41])[C:17]3([H:43])[H:44])([H:37])[H:38])([c:18]3[c:19]([H:45])[c:20]([H:46])[c:21]([F:22])[c:23]([F:24])[c:25]3[H:47])[H:36])[H:35])[n:26][c:27]([H:48])[n:28][c:29]12)([H:30])[H:31]: [(12, 16), (12, 13), (12, 48), (11, 12)]
+2026-02-17 11:41:07.115 | DEBUG    | __main__:test_coverage:419 -     [C:1]([O:2][c:3]1[c:4]([C:5]([C:6]([S:7]([C:8]([H:49])([H:50])[H:51])([C:9]([H:52])([H:53])[H:54])(=[O:10])[H:48])([H:46])[H:47])([H:44])[H:45])[c:11]([H:55])[c:12]2[c:38]([c:39]1[Cl:40])[C:17]([N:18]([c:19]1[c:20]([H:61])[c:21]([H:62])[c:22]([F:23])[c:24]([H:63])[c:25]1[O:26][C@:27]([H:28])([C:29]([H:64])([H:65])[H:66])[C:30](=[O:31])[N:32]([C:33]([C:34]([F:35])([F:36])[F:37])([H:68])[H:69])[H:67])[H:60])=[N:16][C:15]([H:59])=[C:14]([H:58])[C:13]2([H:56])[H:57])([H:41])([H:42])[H:43]: [(6, 8), (5, 6), (6, 47), (6, 7), (6, 9)]
+2026-02-17 11:41:07.115 | DEBUG    | __main__:test_coverage:419 -     [C:1]([C@:2]([O:3][H:32])([C@:4]1([H:33])[C:5]([H:34])([H:35])[C:6]([H:36])([H:37])[C:7]2=[C:8]([C:17](=[O:18])[N:19]([c:20]3[c:21]([H:44])[c:22]([H:45])[c:23]([F:24])[c:25]([Cl:26])[c:27]3[H:46])[H:43])[N:9]([C:10]([H:38])([H:39])[H:40])[C:11]([H:41])=[C:12]2[S:13](=[O:14])(=[O:15])[N:16]1[H:42])[H:31])([H:28])([H:29])[H:30]: [(11, 12)]
+2026-02-17 11:41:07.115 | DEBUG    | __main__:test_coverage:419 -     [N:1]([c:2]1[n:3][c:4]([H:37])[n:5][c:6]([N:7]2[C:8]([H:38])([H:39])[C:9]([H:40])([H:41])[N:10]([C@@:11]([C:12]([C:13]([N+:14]3([H:65])[C:15]([H:47])([H:48])[C:16]([H:49])([H:50])[C:17]3([H:51])[H:52])([H:45])[H:46])([H:43])[H:44])([c:18]3[c:19]([H:53])[c:20]([H:54])[c:21]([Cl:22])[c:23]([H:55])[c:24]3[H:56])[H:42])[C:25]([H:57])([H:58])[C:26]2([H:59])[H:60])[c:27]1-[c:28]1[c:29]([H:61])[c:30]([H:62])[c:31]([F:32])[c:33]([H:63])[c:34]1[H:64])([H:35])[H:36]: [(12, 13), (13, 14), (13, 16), (13, 64)]
+2026-02-17 11:41:07.115 | DEBUG    | __main__:test_coverage:419 -     [F:1][c:2]1[c:3]([H:27])[c:4]([H:28])[c:5]([O:6][C@:7]2([H:29])[C:8]([H:30])([H:31])[N:9]([H:32])[C@:10]([C:12](=[O:13])[N:14]3[C:15]([H:36])([H:37])[C:16]([H:38])([H:39])[C:17]([H:40])([H:41])[N:18]([C:21]4([H:46])[C:22]([H:47])([H:48])[C:23]([H:49])([H:50])[C:24]4([H:51])[H:52])[C:19]([H:42])([H:43])[C:20]3([H:44])[H:45])([H:33])[C:11]2([H:34])[H:35])[c:25]([H:53])[c:26]1[H:54]: [(17, 20)]
+2026-02-17 11:41:07.116 | DEBUG    | __main__:test_coverage:419 -     [c:1]1([H:29])[c:3]([H:31])[c:9]([H:37])[c:17]2[c:14]([c:7]1[H:35])[S:27][c:15]1[c:8]([H:36])[c:2]([H:30])[c:4]([H:32])[c:10]([H:38])[c:18]1[S:28]2([c:16]1[c:11]([H:39])[c:5]([H:33])[c:13]([O:26][C:19]([C:24]([C:20]([H:41])([H:42])[H:43])([C:21]([H:44])([H:45])[H:46])[C:22]([H:47])([H:48])[H:49])=[O:25])[c:6]([H:34])[c:12]1[H:40])[C:23]([H:50])([H:51])[H:52]: [(22, 27)]
+2026-02-17 11:41:07.116 | DEBUG    | __main__:test_coverage:419 -     [Br:1][c:2]1[c:3]([H:28])[c:4]([H:29])[c:5]([C:8]2=[N:9][C:10]3([C:11]([H:32])([H:33])[C:12]3([H:34])[H:35])[C:13](=[O:14])[N:15]2[C:16]([C:17]2([H:38])[C:18]([H:39])([H:40])[C:19]([H:41])([H:42])[N:20]([C:23](=[O:24])[C:25]3([H:47])[C:26]([H:48])([H:49])[C:27]3([H:50])[H:51])[C:21]([H:43])([H:44])[C:22]2([H:45])[H:46])([H:36])[H:37])[c:6]([H:30])[c:7]1[H:31]: [(8, 9)]
+2026-02-17 11:41:07.116 | DEBUG    | __main__:test_coverage:419 -     [C:1]([N:2]1[C:3]([H:42])([H:43])[O:4][C@:5]23[C:6]([H:44])([H:45])[c:7]4[c:8]([c:35]([H:74])[c:36]([H:75])[c:37]([H:76])[c:38]4[H:77])[C:9]([H:46])([H:47])[C:10]([H:48])([H:49])[C@:11]24[C:12]([H:50])([H:51])[c:13]2[c:14]([H:52])[c:15]([H:53])[c:16]([C:17]([C:18]([C:19]5([H:58])[C:20]([H:59])([H:60])[C:21]5([H:61])[H:62])([H:56])[H:57])([H:54])[H:55])[c:22]([H:63])[c:23]2[C@:24]34[N:25]=[C:26]1[N:27]([C:28](=[O:29])[O:30][C:31]([C:32]([H:65])([H:66])[H:67])([C:33]([H:68])([H:69])[H:70])[C:34]([H:71])([H:72])[H:73])[H:64])([H:39])([H:40])[H:41]: [(23, 24), (3, 4)]
+2026-02-17 11:41:07.116 | DEBUG    | __main__:test_coverage:419 -     [C:1]1([H:23])([H:24])[C:2]([H:25])([H:26])[C:3]([H:27])([H:28])[N:4]([P:6]([O:7][N:8]2[C:9]([H:32])=[C:10]([H:33])[N:11]=[N:12]2)([N:13]2[C:14]([H:34])([H:35])[C:15]([H:36])([H:37])[C:16]([H:38])([H:39])[C:17]2([H:40])[H:41])([N:18]2[C:19]([H:42])([H:43])[C:20]([H:44])([H:45])[C:21]([H:46])([H:47])[C:22]2([H:48])[H:49])[H:31])[C:5]1([H:29])[H:30]: [(5, 12), (3, 5), (5, 17)]
+2026-02-17 11:41:07.116 | DEBUG    | __main__:test_coverage:419 -     [C:1]([N:2]([C:3]([H:25])([H:26])[H:27])/[C:4](=[N:5]/[c:6]1[c:7]([C:8]#[N:9])[c:10]([C:11]([H:29])([H:30])[H:31])[c:12]([H:32])[c:13]([N:15]=[S:16]2(=[O:17])[C:18]([H:34])([H:35])[C:19]([H:36])([H:37])[C:20]([H:38])([H:39])[C:21]2([H:40])[H:41])[c:14]1[H:33])[H:28])([H:22])([H:23])[H:24]: [(14, 15)]
+2026-02-17 11:41:07.116 | DEBUG    | __main__:test_coverage:419 -     [O:1]=[C:2]1[C:3]([H:32])([H:33])[N:4]([H:34])[c:5]2[n:6][c:7]([H:35])[n:8][c:9]([N:10]3[C:11]([H:36])([H:37])[C:12]([H:38])([H:39])[N:13]([C@@:14]([C:15]([N+:16]4([H:57])[C:17]([H:43])([H:44])[C:18]([H:45])([H:46])[C:19]4([H:47])[H:48])([H:41])[H:42])([c:20]4[c:21]([H:49])[c:22]([H:50])[c:23]([F:24])[c:25]([Cl:26])[c:27]4[H:51])[H:40])[C:28]([H:52])([H:53])[C:29]3([H:54])[H:55])[c:30]2[N:31]1[H:56]: [(14, 15), (15, 56), (15, 16), (15, 18)]
+2026-02-17 11:41:07.116 | DEBUG    | __main__:test_coverage:419 -     [Cl:1][c:2]1[c:3]([Cl:4])[c:5]([H:29])[c:6]([O:7][c:8]2[n:9][c:10]([H:30])[c:11]([C:14](=[O:15])[N:16]3[C:17]([H:33])([H:34])[C:18]([H:35])([H:36])[C:19]([H:37])([H:38])[N:20]([C:23]4([H:43])[C:24]([H:44])([H:45])[C:25]([H:46])([H:47])[C:26]4([H:48])[H:49])[C:21]([H:39])([H:40])[C:22]3([H:41])[H:42])[c:12]([H:31])[c:13]2[H:32])[c:27]([H:50])[c:28]1[H:51]: [(19, 22)]
+2026-02-17 11:41:07.116 | DEBUG    | __main__:test_coverage:419 -     [C:1]([N+:2]1([H:58])[C:3]([H:38])([H:39])[C:4]2([C:5]([H:40])([H:41])[C:6]([H:42])([H:43])[N:7]([C:8](=[O:9])[c:10]3[c:11]([H:44])[c:12]([H:45])[c:13]([N:14]4[C:15]([H:46])=[C:16]([C:17]5=[C:18]([H:47])[c:19]6[c:20]([H:48])[c:21]([F:22])[c:23]([H:49])[c:24]([H:50])[c:25]6[N:26]([H:51])[C:27]5=[O:28])[N:29]=[N:30]4)[c:31]([H:52])[c:32]3[H:53])[C:33]2([H:54])[H:55])[C:34]1([H:56])[H:57])([H:35])([H:36])[H:37]: [(1, 33), (0, 1), (1, 57), (1, 2)]
+2026-02-17 11:41:07.116 | DEBUG    | __main__:test_coverage:419 -     [N:1]#[C:2][c:3]1[c:4]([H:35])[c:5]([H:36])[c:6]([H:37])[c:7]([C@@:8]([C:9]([N+:10]2([H:63])[C:11]([H:41])([H:42])[C:12]([H:43])([H:44])[C:13]2([H:45])[H:46])([H:39])[H:40])([N:14]2[C:15]([H:47])([H:48])[C:16]([H:49])([H:50])[N:17]([c:18]3[n:19][c:20]([H:51])[n:21][c:22]([N:23]([H:52])[H:53])[c:24]3-[c:25]3[c:26]([H:54])[c:27]([H:55])[c:28]([F:29])[c:30]([H:56])[c:31]3[H:57])[C:32]([H:58])([H:59])[C:33]2([H:60])[H:61])[H:38])[c:34]1[H:62]: [(8, 9), (9, 62), (9, 10), (9, 12)]
+2026-02-17 11:41:07.116 | DEBUG    | __main__:test_coverage:419 -     [C:1]([N:2]1[C:3]([H:38])=[C:4]2[C:5](=[C:21]1[C:22](=[O:23])[N:24]([c:25]1[c:26]([H:52])[c:27]([H:53])[c:28]([F:29])[c:30]([C:32]([F:33])([F:34])[H:55])[c:31]1[H:54])[H:51])[O:6][C:7]([H:39])([H:40])[C@@:8]([C:9]([H:41])([H:42])[H:43])([c:14]1[c:15]([H:45])[c:16]([H:46])[c:17]([H:47])[c:18]([C:19]([H:48])([H:49])[H:50])[n:20]1)[N:10]([H:44])[S:11]2(=[O:12])=[O:13])([H:35])([H:36])[H:37]: [(3, 10)]
+2026-02-17 11:41:07.116 | DEBUG    | __main__:test_coverage:419 -     [C:1]([C:2]([C:3]([H:34])([H:35])[H:36])([c:4]1[c:5]([H:37])[c:6]([H:38])[c:7]([C@@:8]([C:9]([N+:10]2([H:56])[C:11]([H:42])([H:43])[C:12]([H:44])([H:45])[C:13]2([H:46])[H:47])([H:40])[H:41])([N:14]([c:15]2[n:16][c:17]([H:49])[n:18][c:19]3[c:20]([C:21]([N:22]([H:50])[H:51])=[O:23])[c:24]([H:52])[c:25]([H:53])[n:26][c:27]23)[H:48])[H:39])[c:28]([H:54])[c:29]1[H:55])[H:33])([H:30])([H:31])[H:32]: [(8, 9), (9, 10), (9, 55), (9, 12)]
+2026-02-17 11:41:07.116 | DEBUG    | __main__:test_coverage:419 -     [F:1][C:2]([F:3])([F:4])[C:5]1=[C:33]([H:54])[N:32]2[C:8](=[N:9][C:10]([H:36])=[C:11]2[c:12]2[c:13]([H:37])[c:14]([H:38])[n:15][c:16]([N:17]3[C:18]([H:39])([H:40])[C:19]([H:41])([H:42])[N@+:20]([C:21]4([H:43])[C:22]([H:44])([H:45])[C:23]4([H:46])[H:47])([H:55])[C@@:24]([C:25]4=[C:29]([H:51])[N:28]([H:50])[N:27]=[C:26]4[H:49])([H:48])[C:30]3([H:52])[H:53])[n:31]2)[C:7]([H:35])=[C:6]1[H:34]: [(19, 20)]
+2026-02-17 11:41:07.116 | DEBUG    | __main__:test_coverage:419 -     [C:1]([C@@:2]1([O:3][H:35])[C:4]([H:36])([H:37])[C:5]([H:38])([H:39])[C:6]([H:40])([H:41])[C:7]([H:42])([H:43])[C:8]([H:44])([H:45])[N:9]([S:11](=[O:12])(=[O:13])[c:14]2[c:15]([F:16])[c:17]([H:48])[c:18]([H:49])[c:19]([C:21](=[O:22])[N:23]([c:24]3[c:25]([H:52])[c:26]([H:53])[c:27]([F:28])[c:29]([Cl:30])[c:31]3[H:54])[H:51])[c:20]2[H:50])[C:10]1([H:46])[H:47])([H:32])([H:33])[H:34]: [(8, 10)]
+2026-02-17 11:41:07.116 | DEBUG    | __main__:test_coverage:419 -     [C:1]([C:2]([C:3]([H:34])([H:35])[H:36])([C@:4]([O:5][H:38])([C@:6]1([H:39])[C:7]([H:40])([H:41])[O:8][C:9]2=[C:10]([C:19](=[O:20])[N:21]([c:22]3[c:23]([H:48])[c:24]([F:25])[c:26]([F:27])[c:28]([H:49])[c:29]3[H:50])[H:47])[N:11]([C:12]([H:42])([H:43])[H:44])[C:13]([H:45])=[C:14]2[S:15](=[O:16])(=[O:17])[N:18]1[H:46])[H:37])[H:33])([H:30])([H:31])[H:32]: [(13, 14)]
+2026-02-17 11:41:07.116 | DEBUG    | __main__:test_coverage:419 -     [C:1]([C:2]([C:3]([C@@:4]1([H:41])[C@@:5]2([H:42])[C:6]([H:43])([H:44])[C@@:7]3([H:8])[C@:9]4([H:10])[C:11](=[O:12])[C@@:13]([F:14])([H:45])[C:15]5=[C:16]([H:46])[C:17](=[O:18])[C@:19]([O:20][H:48])([H:47])[C:21](=[O:22])[C@:23]5([C:24]([H:49])([H:50])[H:51])[C@@:25]4([F:26])[C:27]([H:52])([H:53])[C:28]([H:54])([H:55])[C@:29]3([C:30]([H:56])([H:57])[H:58])[C@@:31]12[S:32][C:33]([H:59])([H:60])[H:61])([H:39])[H:40])([H:37])[H:38])([H:34])([H:35])[H:36]: [(30, 31)]
+2026-02-17 11:41:07.116 | DEBUG    | __main__:test_coverage:419 -     [c:1]1([H:27])[c:4]([H:30])[c:11]([O:26][c:10]2[c:3]([H:29])[c:2]([H:28])[c:8]3[c:9]([c:5]2[H:31])[C:14]([H:35])([H:36])[C:19]([H:45])([H:46])[N@+:24]([C:20]2([H:47])[C:16]([H:39])([H:40])[C:15]([H:37])([H:38])[C:17]2([H:41])[H:42])([H:52])[C:18]([H:43])([H:44])[C:13]3([H:33])[H:34])[n:22][c:6]([H:32])[c:7]1[C:12]([N:23]([C:21]([H:48])([H:49])[H:50])[H:51])=[O:25]: [(19, 23)]
+2026-02-17 11:41:07.116 | DEBUG    | __main__:test_coverage:419 -     [c:1]1([H:26])[c:3]([H:28])[c:9]([H:34])[c:17]2[c:13]([c:5]1[H:30])[O:22][c:14]1[c:6]([H:31])[c:2]([H:27])[c:4]([H:29])[c:10]([H:35])[c:18]1[S:25]2([c:16]1[c:11]([H:36])[c:7]([H:32])[c:15]([S:24][C:21]([C:20]([O:23][H:45])([H:41])[H:42])([H:43])[H:44])[c:8]([H:33])[c:12]1[H:37])[C:19]([H:38])([H:39])[H:40]: [(18, 24)]
+2026-02-17 11:41:07.116 | DEBUG    | __main__:test_coverage:419 -     [N:1]([C:2](=[O:3])[c:4]1[c:5]([H:33])[c:6]([H:34])[n:7][c:8]2[c:9]([N:10]([C@:11]([C:12]([N+:13]3([H:50])[C:14]([H:39])([H:40])[C:15]([H:41])([H:42])[C:16]3([H:43])[H:44])([H:37])[H:38])([c:17]3[c:18]([H:45])[c:19]([H:46])[c:20]([F:21])[c:22]([C:23]([F:24])([F:25])[H:47])[c:26]3[H:48])[H:36])[H:35])[n:27][c:28]([H:49])[n:29][c:30]12)([H:31])[H:32]: [(12, 13), (12, 49), (12, 15), (11, 12)]
+2026-02-17 11:41:07.116 | DEBUG    | __main__:test_coverage:419 -     [C:1]([c:2]1[c:3]([C:20]2=[N:21][C:22]3([C:23]([H:45])([H:46])[C:24]3([H:47])[H:48])[C:25](=[O:26])[N:27]2[C:28]([C:29]2([H:51])[C:30]([H:52])([H:53])[N:31]([H:54])[C:32]2([H:55])[H:56])([H:49])[H:50])[c:4]([H:36])[c:5]([H:37])[c:6](-[c:8]2[c:9]([H:39])[c:10]([H:40])[c:11]3[c:12]([H:41])[c:13]([C:18]#[N:19])[c:14]([H:42])[c:15]([H:43])[c:16]3[c:17]2[H:44])[c:7]1[H:38])([H:33])([H:34])[H:35]: [(20, 21)]
+2026-02-17 11:41:07.116 | DEBUG    | __main__:test_coverage:419 -     [F:1][c:2]1[c:3]([H:27])[c:4]([H:28])[c:5]([H:29])[c:6]([C:7]([C@@:8]2([C:13](=[O:14])[N:15]3[C:16]([H:39])([H:40])[C:17]([H:41])([H:42])[C:18]([H:43])([H:44])[N:19]([C:22]4([H:49])[C:23]([H:50])([H:51])[C:24]([H:52])([H:53])[C:25]4([H:54])[H:55])[C:20]([H:45])([H:46])[C:21]3([H:47])[H:48])[C:9]([H:32])([H:33])[C:10]([H:34])([H:35])[C:11]([H:36])([H:37])[N:12]2[H:38])([H:30])[H:31])[c:26]1[H:56]: [(18, 21)]
+2026-02-17 11:41:07.116 | DEBUG    | __main__:test_coverage:419 -     [c:1]1([H:26])[c:3]([H:28])[c:7]([H:32])[c:16]2[c:14]([c:5]1[H:30])[S:24][c:15]1[c:6]([H:31])[c:2]([H:27])[c:4]([H:29])[c:8]([H:33])[c:17]1[S:25]2([c:18]1[c:11]([C:21]([C:19]([H:36])([H:37])[H:38])([H:42])[H:43])[c:9]([H:34])[c:12]([F:22])[c:10]([H:35])[c:13]1[F:23])[C:20]([H:39])([H:40])[H:41]: [(19, 24)]
+2026-02-17 11:41:07.116 | DEBUG    | __main__:test_coverage:419 -     [C:1]([N:2]1[C:3]([H:32])=[C:4]2[C:5](=[C:16]1[C:17](=[O:18])[N:19]([c:20]1[c:21]([H:43])[c:22]([F:23])[c:24]([F:25])[c:26]([F:27])[c:28]1[H:44])[H:42])[C:6]([H:33])([H:34])[C:7]([H:35])([H:36])[C:8]1([C:9]([H:37])([H:38])[O:10][C:11]1([H:39])[H:40])[N:12]([H:41])[S:13]2(=[O:14])=[O:15])([H:29])([H:30])[H:31]: [(3, 12), (7, 11)]
+2026-02-17 11:41:07.116 | DEBUG    | __main__:test_coverage:419 -     [C:1]([C@:2]([O:3][H:34])([C@:4]1([H:35])[N:5]([H:36])[S:6](=[O:7])(=[O:8])[C:9]2=[C:10]([H:37])[N:11]([C:12]([H:38])([H:39])[H:40])[C:13]([C:14](=[O:15])[N:16]([c:17]3[c:18]([H:42])[c:19]([C:20]([F:21])([F:22])[H:43])[c:23]([F:24])[c:25]([H:44])[c:26]3[H:45])[H:41])=[C:27]2[C:28]([H:46])=[C:29]1[H:47])[H:33])([H:30])([H:31])[H:32]: [(5, 8)]
+2026-02-17 11:41:07.116 | DEBUG    | __main__:test_coverage:419 -     [N:1]([c:2]1[n:3][c:4]([H:36])[n:5][c:6]([N:7]2[C:8]([H:37])([H:38])[C:9]([H:39])([H:40])[N:10]([C@:11]([C:12]([N+:13]3([H:62])[C:14]([H:44])([H:45])[C:15]([H:46])([H:47])[C:16]3([H:48])[H:49])([H:42])[H:43])([c:17]3[c:18]([H:50])[c:19]([H:51])[c:20]([H:52])[c:21]([F:22])[c:23]3[H:53])[H:41])[C:24]([H:54])([H:55])[C:25]2([H:56])[H:57])[c:26]1-[c:27]1[c:28]([H:58])[c:29]([H:59])[c:30]([F:31])[c:32]([H:60])[c:33]1[H:61])([H:34])[H:35]: [(12, 13), (12, 61), (12, 15), (11, 12)]
+2026-02-17 11:41:07.116 | DEBUG    | __main__:test_coverage:419 -     [C:1]([C:2]([N:3]1[C:4]([H:40])=[c:5]2[n:6][c:7]([N:8]([H:41])[H:42])[n:9][c:10]([C:11]3=[C:12]([H:43])[N:13]([C:14]4([H:44])[C:15]([H:45])([H:46])[N:16]([C:18]5([H:49])[C:19]([H:50])([H:51])[C:20]5([H:52])[H:53])[C:17]4([H:47])[H:48])[c:21]4[c:22]3[c:23]([H:54])[c:24]([C:27]#[C:28][C:29]([C:30]([H:56])([H:57])[H:58])([C:31]([H:59])([H:60])[H:61])[O:32][H:62])[n:25][c:26]4[H:55])[c:33]2=[N:34]1)([H:38])[H:39])([H:35])([H:36])[H:37]: [(15, 17)]
+2026-02-17 11:41:07.116 | DEBUG    | __main__:test_coverage:419 -     [F:1][C:2]([F:3])([F:4])[C:5]1=[C:33]([H:54])[N:32]2[C:8](=[N:9][C:10]([H:36])=[C:11]2[c:12]2[c:13]([H:37])[c:14]([H:38])[n:15][c:16]([N:17]3[C:18]([H:39])([H:40])[C:19]([H:41])([H:42])[N@@+:20]([C:21]4([H:43])[C:22]([H:44])([H:45])[C:23]4([H:46])[H:47])([H:55])[C@@:24]([C:25]4=[C:29]([H:51])[N:28]([H:50])[N:27]=[C:26]4[H:49])([H:48])[C:30]3([H:52])[H:53])[n:31]2)[C:7]([H:35])=[C:6]1[H:34]: [(19, 20)]
+2026-02-17 11:41:07.116 | DEBUG    | __main__:test_coverage:419 -     [C:1]([C@:2]([N:3]1[C:4]([H:35])([H:36])[C:5]([H:37])=[C:6]([H:38])[C:7]2=[C:8]([C:16](=[O:17])[N:18]([c:19]3[c:20]([H:44])[c:21]([F:22])[c:23]([F:24])[c:25]([H:45])[c:26]3[H:46])[H:43])[N:9]([C:10]([H:39])([H:40])[H:41])[C:11]([H:42])=[C:12]2[S:13]1(=[O:14])=[O:15])([C:27]([F:28])([F:29])[F:30])[H:34])([H:31])([H:32])[H:33]: [(11, 12)]
+2026-02-17 11:41:07.116 | DEBUG    | __main__:test_coverage:419 -     [C:1]([C@@:2]([c:3]1[c:4]([H:39])[c:5]([H:40])[c:6]([Cl:7])[c:8]([H:41])[c:9]1[O:10][C:11]1([H:42])[C:12]([H:43])([H:44])[N+:13]([H:45])([H:63])[C:14]1([H:46])[H:47])([N+:15]1([H:64])[C:16]([H:48])([H:49])[C:17]([H:50])([H:51])[N:18]([c:19]2[n:20][c:21]([H:52])[n:22][c:23]([N:24]([H:53])[H:54])[c:25]2-[c:26]2[c:27]([H:55])[c:28]([H:56])[c:29]([F:30])[c:31]([H:57])[c:32]2[H:58])[C:33]([H:59])([H:60])[C:34]1([H:61])[H:62])[H:38])([H:35])([H:36])[H:37]: [(12, 62), (12, 13), (11, 12), (12, 44)]
+2026-02-17 11:41:07.116 | DEBUG    | __main__:test_coverage:419 -     [N:1]([C:2](=[O:3])[c:4]1[c:5]([H:30])[c:6]([H:31])[c:7]([H:32])[c:8]2[c:9]([N:10]([C@:11]([C:12]([N+:13]3([H:48])[C:14]([H:37])([H:38])[C:15]([H:39])([H:40])[C:16]3([H:41])[H:42])([H:35])[H:36])([c:17]3[c:18]([H:43])[c:19]([H:44])[c:20]([H:45])[c:21]([Br:22])[c:23]3[H:46])[H:34])[H:33])[n:24][c:25]([H:47])[n:26][c:27]12)([H:28])[H:29]: [(12, 13), (12, 15), (11, 12), (12, 47)]
+2026-02-17 11:41:07.116 | DEBUG    | __main__:test_coverage:419 -     [c:1]1([H:26])[c:3]([H:28])[c:9]([H:34])[c:17]2[c:13]([c:5]1[H:30])[O:22][c:14]1[c:6]([H:31])[c:2]([H:27])[c:4]([H:29])[c:10]([H:35])[c:18]1[S:25]2([c:16]1[c:11]([H:36])[c:7]([H:32])[c:15]([O:24][C:21]([C:20]([O:23][H:45])([H:41])[H:42])([H:43])[H:44])[c:8]([H:33])[c:12]1[H:37])[C:19]([H:38])([H:39])[H:40]: [(18, 24)]
+2026-02-17 11:41:07.116 | DEBUG    | __main__:test_coverage:419 -     [C:1]([O:2][c:3]1[c:4]([H:37])[c:5]([C:6]([N:7]([H:38])[H:39])=[O:8])[c:9]2[n:10][c:11]([H:40])[n:12][c:13]([N:14]([C@:15]([C:16]([N+:17]3([H:55])[C:18]([H:45])([H:46])[C:19]([H:47])([H:48])[C:20]3([H:49])[H:50])([H:43])[H:44])([c:21]3[c:22]([H:51])[c:23]([H:52])[c:24]([F:25])[c:26]([C:27]([F:28])([F:29])[F:30])[c:31]3[H:53])[H:42])[H:41])[c:32]2[c:33]1[H:54])([H:34])([H:35])[H:36]: [(16, 17), (16, 19), (15, 16), (16, 54)]
+2026-02-17 11:41:07.116 | DEBUG    | __main__:test_coverage:419 -     [C:1]([C@:2]1([H:30])[C:3]([H:31])([H:32])[C:4]([H:33])([H:34])[C:5]2=[C:6]([C:15](=[O:16])[N:17]([c:18]3[c:19]([H:41])[c:20]([H:42])[c:21]([F:22])[c:23]([Cl:24])[c:25]3[F:26])[H:40])[N:7]([C:8]([H:35])([H:36])[H:37])[C:9]([H:38])=[C:10]2[S:11](=[O:12])(=[O:13])[N:14]1[H:39])([H:27])([H:28])[H:29]: [(9, 10)]
+2026-02-17 11:41:07.116 | DEBUG    | __main__:test_coverage:419 -     [c:1]1([H:25])[c:3]([H:27])[c:9]([H:33])[c:17]2[c:14]([c:7]1[H:31])[O:22][c:15]1[c:8]([H:32])[c:2]([H:26])[c:4]([H:28])[c:10]([H:34])[c:18]1[S:24]2([c:16]1[c:11]([H:35])[c:5]([H:29])[c:13]([C:20]([C:21]([O:23][H:44])([H:42])[H:43])([H:40])[H:41])[c:6]([H:30])[c:12]1[H:36])[C:19]([H:37])([H:38])[H:39]: [(18, 23)]
+2026-02-17 11:41:07.116 | DEBUG    | __main__:test_coverage:419 -     [C:1]([C:2]([C:3]([H:34])([H:35])[H:36])([c:4]1[c:5]([H:37])[c:6]([H:38])[c:7]([C@@:8]([C:9]([N+:10]2([H:57])[C:11]([H:42])([H:43])[C:12]([H:44])([H:45])[C:13]2([H:46])[H:47])([H:40])[H:41])([N:14]([c:15]2[n:16][c:17]([H:49])[n:18][c:19]3[c:20]([C:21]([N:22]([H:50])[H:51])=[O:23])[c:24]([H:52])[c:25]([H:53])[c:26]([H:54])[c:27]23)[H:48])[H:39])[c:28]([H:55])[c:29]1[H:56])[H:33])([H:30])([H:31])[H:32]: [(8, 9), (9, 56), (9, 10), (9, 12)]
+2026-02-17 11:41:07.116 | DEBUG    | __main__:test_coverage:419 -     [N:1]([C:2](=[O:3])[c:4]1[c:5]([N:6]([H:36])[H:37])[n:7][c:8]([H:38])[n:9][c:10]1[N:11]1[C:12]([H:39])([H:40])[C:13]([H:41])([H:42])[C:14]([C:15]2=[N+:16]([H:71])[C:17]([C:18]3([H:44])[C:19]([H:45])([H:46])[C:20]([H:47])([H:48])[C:21]([H:49])([H:50])[C:22]([H:51])([H:52])[C:23]3([H:53])[H:54])=[C:24]([H:55])[N:25]2[C:26]([C:27]([N+:28]2([H:70])[C:29]([H:60])([H:61])[C:30]([H:62])([H:63])[C:31]2([H:64])[H:65])([H:58])[H:59])([H:56])[H:57])([H:43])[C:32]([H:66])([H:67])[C:33]1([H:68])[H:69])([H:34])[H:35]: [(26, 27), (27, 28), (27, 30), (27, 69)]
+2026-02-17 11:41:07.116 | DEBUG    | __main__:test_coverage:419 -     [C:1]([N:2]1[C:3]([H:35])=[C:4]2[C:5](=[C:20]1[C:21](=[O:22])[N:23]([c:24]1[c:25]([H:47])[c:26]([H:48])[c:27]([F:28])[c:29]([C:30]([H:49])([H:50])[H:51])[c:31]1[H:52])[H:46])[O:6][C:7]([H:36])([H:37])[C@@:8]([C:9]([c:10]1[c:11]([H:41])[c:12]([H:42])[c:13]([H:43])[n:14][c:15]1[H:44])([H:39])[H:40])([H:38])[N:16]([H:45])[S:17]2(=[O:18])=[O:19])([H:32])([H:33])[H:34]: [(3, 16)]
+2026-02-17 11:41:07.116 | DEBUG    | __main__:test_coverage:419 -     [c:1]1([H:27])[c:3]([O:18][H:36])[c:4]([C:6]([H:28])([H:29])[H:30])[c:16]([H:34])[c:17]([H:35])[c:14]1[N:12]([C:7]1=[N:13][S:19][N:15]=[C:8]([N:21]([c:5]2[c:10]([H:31])[c:11]([H:32])[c:2]([C:24](=[O:25])[N:26]([H:40])[H:41])[c:22]([H:38])[c:23]2[H:39])[H:37])[C:9]1=[O:20])[H:33]: [(14, 18), (12, 18)]
+2026-02-17 11:41:07.116 | DEBUG    | __main__:test_coverage:419 -     [F:1][c:2]1[c:3]([S:4][C:5]([C:6]([O:7][H:31])([H:29])[H:30])([H:27])[H:28])[c:8]([F:9])[c:16]([F:17])[c:11]([S:12](=[O:13])([N:14]([H:32])[H:33])=[O:15])[c:10]1[N:18]([C:19]1([H:35])[C:20]([H:36])([H:37])[C:21]([H:38])([H:39])[C:22]([H:40])([H:41])[C:23]([H:42])([H:43])[C:24]([H:44])([H:45])[C:25]([H:46])([H:47])[C:26]1([H:48])[H:49])[H:34]: [(17, 18)]
+2026-02-17 11:41:07.116 | DEBUG    | __main__:test_coverage:419 -     [c:1]1([H:28])[c:3]([H:30])[c:9]([H:36])[c:17]2[c:14]([c:7]1[H:34])[S:26][c:15]1[c:8]([H:35])[c:2]([H:29])[c:4]([H:31])[c:10]([H:37])[c:18]1[S:27]2([c:16]1[c:11]([H:38])[c:5]([H:32])[c:13]([O:25]/[C:20](=[C:19](/[C:21]([H:40])([H:41])[H:42])[O-:24])[C:22]([H:43])([H:44])[H:45])[c:6]([H:33])[c:12]1[H:39])[C:23]([H:46])([H:47])[H:48]: [(22, 26)]
+2026-02-17 11:41:07.116 | DEBUG    | __main__:test_coverage:419 -     [N:1]([C:2]1=[C:3]([H:39])/[C:4]([H:40])=[C:5](/[C@@:10]2([H:46])[C:11]([H:47])([H:48])[C:12]([H:49])([H:50])[N:13]([C:19](=[O:20])[c:21]3[c:22]([F:23])[c:24]([H:56])[c:25]([O:26][c:27]4[c:28]([H:57])[c:29]([H:58])[c:30]([F:31])[c:32]([H:59])[c:33]4[H:60])[c:34]([F:35])[c:36]3[H:61])[C@:14]([H:15])([C:16]([O:17][H:53])([H:51])[H:52])[C:18]2([H:54])[H:55])[C:6]([H:41])([H:42])[C:7]([H:43])([H:44])/[C:8]([H:45])=[N:9]\1)([H:37])[H:38]: [(4, 9), (0, 1), (2, 3)]
+2026-02-17 11:41:07.116 | DEBUG    | __main__:test_coverage:419 -     [C:1]([c:2]1[c:3]([O:4][C@:5]2([H:31])[C:6]([H:32])([H:33])[N:7]([H:34])[C@:8]([C:10](=[O:11])[N:12]3[C:13]([H:38])([H:39])[C:14]([H:40])([H:41])[C:15]([H:42])([H:43])[N:16]([C:19]4([H:48])[C:20]([H:49])([H:50])[C:21]([H:51])([H:52])[C:22]4([H:53])[H:54])[C:17]([H:44])([H:45])[C:18]3([H:46])[H:47])([H:35])[C:9]2([H:36])[H:37])[c:23]([H:55])[c:24]([F:25])[n:26][c:27]1[H:56])([H:28])([H:29])[H:30]: [(15, 18)]
+2026-02-17 11:41:07.116 | DEBUG    | __main__:test_coverage:419 -     [C:1]([N:2]1[C:3]([H:37])=[C:4]2[C:5](=[C:21]1[C:22](=[O:23])[N:24]([c:25]1[c:26]([H:51])[c:27]([C:28]#[N:29])[c:30]([F:31])[c:32]([H:52])[c:33]1[H:53])[H:50])[O:6][C:7]([H:38])([H:39])[C@@:8]([C:9]([H:40])([H:41])[H:42])([C:10]([C:11]1=[N:12][O:13][C:14]([C:15]([H:45])([H:46])[H:47])=[C:16]1[H:48])([H:43])[H:44])[N:17]([H:49])[S:18]2(=[O:19])=[O:20])([H:34])([H:35])[H:36]: [(3, 17)]
+2026-02-17 11:41:07.116 | DEBUG    | __main__:test_coverage:419 -     [c:1]1([H:18])[c:3]([N:13]([C:10]([H:25])([H:26])[H:27])[H:29])[c:6]([Cl:17])[c:2]([H:19])[c:5]([S@:16]2([S:15][H:30])[C:8]([H:21])=[C:7]([H:20])[N:12]([C:9]([H:22])([H:23])[H:24])[N:11]2[H:28])[c:4]1[F:14]: [(4, 15), (14, 15)]
+2026-02-17 11:41:07.116 | DEBUG    | __main__:test_coverage:419 -     [C:1]([c:2]1[c:3]([H:28])[c:4]2[c:5]([n:15][c:16]1[O:17][C:18]([C:19]([N:20]1[C:21]([H:40])([H:41])[C:22]([H:42])([H:43])[C:23]([H:44])([H:45])[C:24]1([H:46])[H:47])([H:38])[H:39])([H:36])[H:37])[O:6][C:7]1([C:8]([H:29])([H:30])[C:9]1([H:31])[H:32])[C:10]([H:33])([H:34])[N:11]([H:35])[S:12]2(=[O:13])=[O:14])([H:25])([H:26])[H:27]: [(5, 6)]
+2026-02-17 11:41:07.116 | DEBUG    | __main__:test_coverage:419 -     [C:1]([C@:2]1([H:38])[C@@:3]([C:4]([N:5]([S:6]([C:7]([H:43])([H:44])[H:45])(=[O:8])=[O:9])[H:42])([H:40])[H:41])([H:39])[N@+:10]([C:11]2([H:46])[C:12]([H:47])([H:48])[C:13]2([H:49])[H:50])([H:62])[C:14]([H:51])([H:52])[C:15]([H:53])([H:54])[N:16]1[c:17]1[c:18]([H:55])[c:19]([H:56])[n:20][c:21]([C:22]2=[C:23]([H:57])[N:24]=[C:25]3[C:26]([H:58])=[C:27]([H:59])[C:28]([C:29]([F:30])([F:31])[H:60])=[C:32]([H:61])[N:33]23)[n:34]1)([H:35])([H:36])[H:37]: [(9, 10)]
+2026-02-17 11:41:07.116 | DEBUG    | __main__:test_coverage:419 -     [C:1]([C:2]([C:3]([H:35])([H:36])[H:37])([O:4][c:5]1[c:6]([H:38])[c:7]([H:39])[c:8]([C@@:9]([C:10]([N+:11]2([H:58])[C:12]([H:43])([H:44])[C:13]([H:45])([H:46])[C:14]2([H:47])[H:48])([H:41])[H:42])([N:15]([c:16]2[n:17][c:18]([H:50])[n:19][c:20]3[c:21]([C:22]([N:23]([H:51])[H:52])=[O:24])[c:25]([H:53])[c:26]([H:54])[c:27]([H:55])[c:28]23)[H:49])[H:40])[c:29]([H:56])[c:30]1[H:57])[H:34])([H:31])([H:32])[H:33]: [(10, 57), (9, 10), (10, 11), (10, 13)]
+2026-02-17 11:41:07.116 | DEBUG    | __main__:test_coverage:419 -     [N:1]#[C:2][c:3]1[c:4]([N:5]([H:33])[H:34])[n:6][c:7]([H:35])[n:8][c:9]1[N:10]1[C:11]([H:36])([H:37])[C:12]([H:38])([H:39])[C:13]([C:14]2=[N+:15]([H:68])[C:16]([C:17]3([H:41])[C:18]([H:42])([H:43])[C:19]([H:44])([H:45])[C:20]([H:46])([H:47])[C:21]([H:48])([H:49])[C:22]3([H:50])[H:51])=[C:23]([H:52])[N:24]2[C:25]([C:26]([N+:27]2([H:67])[C:28]([H:57])([H:58])[C:29]([H:59])([H:60])[C:30]2([H:61])[H:62])([H:55])[H:56])([H:53])[H:54])([H:40])[C:31]([H:63])([H:64])[C:32]1([H:65])[H:66]: [(26, 27), (25, 26), (26, 66), (26, 29)]
+2026-02-17 11:41:07.116 | DEBUG    | __main__:test_coverage:419 -     [O:1]=[C:2]([N:3]1[C:4]([H:27])([H:28])[C:5]([H:29])([H:30])[C:6]([H:31])([H:32])[N:7]([C:10]2([H:37])[C:11]([H:38])([H:39])[C:12]([H:40])([H:41])[C:13]2([H:42])[H:43])[C:8]([H:33])([H:34])[C:9]1([H:35])[H:36])[c:14]1[n:15][c:16]([O:17][C:18]2([H:44])[C:19]([H:45])([H:46])[C:20]([H:47])([H:48])[O:21][C:22]([H:49])([H:50])[C:23]2([H:51])[H:52])[c:24]([H:53])[c:25]([H:54])[c:26]1[H:55]: [(6, 9)]
+2026-02-17 11:41:07.116 | DEBUG    | __main__:test_coverage:419 -     [C:1](=[C:10]1[C@@:18]2([H:49])[C@@:12]([C@@:13]3([H:46])[C:9]([H:42])([H:43])[C:17](=[O:22])[O:25][C:19]3([C:2]([H:28])([H:29])[H:30])[C:3]([H:31])([H:32])[H:33])([H:45])[C:5]([H:36])=[C:7]([H:39])[C:16](=[O:21])[O:23][C@@:14]2([H:47])[C:8]([H:40])([H:41])[C@@:11]2([H:44])[C:4]([H:34])([H:35])[C:6]([H:37])([H:38])[C@@:15]3([H:48])[C@@:20]12[O:24]3)([H:26])[H:27]: [(11, 12)]
+2026-02-17 11:41:07.116 | DEBUG    | __main__:test_coverage:419 -     [c:1]1([H:21])[c:3]2[c:4]([c:2]([H:22])[c:5]([S:17]([N:11]([H:26])[H:27])(=[O:14])=[O:15])[c:6]1[Cl:18])[S@@:16](=[O:12])([O-:13])=[N:9][C@@:7]([C:8]([Cl:19])([Cl:20])[H:24])([H:23])[N:10]2[H:25]: [(12, 15)]
+2026-02-17 11:41:07.116 | DEBUG    | __main__:test_coverage:419 -     [C:1]([C@:2]1([H:30])[C:3]([H:31])=[C:4]([H:32])[C:5]2=[C:6]([C:16](=[O:17])[N:18]([c:19]3[c:20]([H:41])[c:21]([F:22])[c:23]([F:24])[c:25]([H:42])[c:26]3[H:43])[H:40])[N:7]([C:8]([H:33])([H:34])[H:35])[C:9]([H:36])=[C:10]2[S:11](=[O:12])(=[O:13])[N:14]1[C:15]([H:37])([H:38])[H:39])([H:27])([H:28])[H:29]: [(9, 10)]
+2026-02-17 11:41:07.116 | DEBUG    | __main__:test_coverage:419 -     [C:1]([N:2]1[C:3]([H:30])=[C:4]2[C:5](=[C:15]1[C:16](=[O:17])[N:18]([c:19]1[c:20]([H:41])[c:21]([F:22])[c:23]([F:24])[c:25]([H:42])[c:26]1[H:43])[H:40])[O:6][C:7]([H:31])([H:32])[C:8]([C:9]([H:33])([H:34])[H:35])([C:10]([H:36])([H:37])[H:38])[N:11]([H:39])[S:12]2(=[O:13])=[O:14])([H:27])([H:28])[H:29]: [(3, 11)]
+2026-02-17 11:41:07.116 | DEBUG    | __main__:test_coverage:419 -     [N:1]([c:2]1[n:3][c:4]([H:35])[c:5]([F:6])[c:7]([C:9]2=[C:10]([H:36])[N:11]([C:12]3([H:37])[C:13]([H:38])([H:39])[N:14]([C:16]4([H:42])[C:17]([H:43])([H:44])[C:18]4([H:45])[H:46])[C:15]3([H:40])[H:41])[c:19]3[c:20]([H:47])[n:21][c:22]([C:25]#[C:26][C:27]4([O:28][H:49])[C:29]([H:50])([H:51])[C:30]([H:52])([H:53])[C:31]([H:54])([H:55])[C:32]4([H:56])[H:57])[c:23]([H:48])[c:24]32)[n:8]1)([H:33])[H:34]: [(13, 15)]
+2026-02-17 11:41:07.116 | DEBUG    | __main__:test_coverage:419 -     [c:1]1([H:28])[c:2]([H:29])[c:5]([H:32])[c:16]2[c:14]([c:4]1[H:31])[S:26][c:15]1[c:7]([H:34])[c:10]([C:22]([C:23]([O:25][H:51])([H:48])[H:49])([H:46])[H:47])[c:3]([H:30])[c:6]([H:33])[c:17]1[S@:27]2([c:18]1[c:8]([H:35])[c:11]([C:19]([H:37])([H:38])[H:39])[c:13]([O:24][H:50])[c:12]([C:20]([H:40])([H:41])[H:42])[c:9]1[H:36])[C:21]([H:43])([H:44])[H:45]: [(20, 26)]
+2026-02-17 11:41:07.117 | DEBUG    | __main__:test_coverage:419 -     [C:1]([c:2]1[c:3]([H:32])[c:4]([C@@:5]([C:6]([N+:7]2([H:50])[C:8]([H:36])([H:37])[C:9]([H:38])([H:39])[C:10]2([H:40])[H:41])([H:34])[H:35])([N:11]([c:12]2[n:13][c:14]([H:43])[n:15][c:16]3[c:17]([C:18]([N:19]([H:44])[H:45])=[O:20])[c:21]([H:46])[c:22]([H:47])[n:23][c:24]23)[H:42])[H:33])[c:25]([H:48])[c:26]([H:49])[c:27]1[Cl:28])([H:29])([H:30])[H:31]: [(5, 6), (6, 7), (6, 49), (6, 9)]
+2026-02-17 11:41:07.117 | DEBUG    | __main__:test_coverage:419 -     [C:1]([N:2]([c:3]1[n:4][c:5]([H:38])[n:6][c:7]([N:8]2[C:9]([H:39])([H:40])[C:10]([H:41])([H:42])[C:11]([C:12]3=[N:13][C:14]([c:15]4[c:16]([H:44])[c:17]([H:45])[c:18]([F:19])[c:20]([C:21]([H:46])([H:47])[H:48])[c:22]4[H:49])=[C:23]([H:50])[N:24]3[C:25]([C:26]3([H:53])[C:27]([H:54])([H:55])[N+:28]([H:56])([H:63])[C:29]3([H:57])[H:58])([H:51])[H:52])([H:43])[C:30]([H:59])([H:60])[C:31]2([H:61])[H:62])[c:32]1[Cl:33])[H:37])([H:34])([H:35])[H:36]: [(26, 27), (27, 62), (27, 28), (27, 55)]
+2026-02-17 11:41:07.117 | DEBUG    | __main__:test_coverage:419 -     [C:1]1([H:23])([H:24])[C:2]([H:25])([H:26])[C:6]([H:33])=[C:16]([c:17]2[c:8]([H:36])[c:10]([H:38])[c:18]([C@@:19]3([H:48])[C:15]([H:46])([H:47])[N:22]4[C:13]([H:42])([H:43])[C:5]([H:31])([H:32])[C:4]([H:29])([H:30])[C:12]([H:40])([H:41])[N:21]([H:50])[C:14]([H:44])([H:45])[C@@:20]34[H:49])[c:11]([H:39])[c:9]2[H:37])[C:7]([H:34])([H:35])[C:3]1([H:27])[H:28]: [(12, 21)]
+2026-02-17 11:41:07.117 | DEBUG    | __main__:test_coverage:419 -     [N:1]([C:2](=[O:3])[c:4]1[c:5]([H:32])[c:6]([H:33])[c:7]([H:34])[c:8]2[c:9]([N:10]([C@:11]([C:12]([N+:13]3([H:48])[C:14]([H:39])([H:40])[C:15]([H:41])([H:42])[C:16]3([H:43])[H:44])([H:37])[H:38])([c:17]3[c:18]([H:45])[c:19]([F:20])[c:21]([F:22])[c:23]([F:24])[c:25]3[H:46])[H:36])[H:35])[n:26][c:27]([H:47])[n:28][c:29]12)([H:30])[H:31]: [(12, 13), (12, 15), (11, 12), (12, 47)]
+2026-02-17 11:41:07.117 | DEBUG    | __main__:test_coverage:419 -     [N:1]#[C:2][c:3]1[c:4]([H:29])[c:5]([H:30])[c:6]([C@@:7]([C:8]([N+:9]2([H:49])[C:10]([H:34])([H:35])[C:11]([H:36])([H:37])[C:12]2([H:38])[H:39])([H:32])[H:33])([N:13]([c:14]2[n:15][c:16]([H:41])[n:17][c:18]3[c:19]([C:20]([N:21]([H:42])[H:43])=[O:22])[c:23]([H:44])[c:24]([H:45])[c:25]([H:46])[c:26]23)[H:40])[H:31])[c:27]([H:47])[c:28]1[H:48]: [(8, 9), (8, 48), (8, 11), (7, 8)]
+2026-02-17 11:41:07.117 | DEBUG    | __main__:test_coverage:419 -     [F:1][S:2]([F:3])([F:4])([F:5])([F:6])[c:7]1[c:8]([H:24])[c:9]([C:13]2=[C:14]([H:28])[N:15]([C:16]([C:17]3=[N:18][N:19]([H:31])[C:20]([H:32])=[C:21]3[H:33])([H:29])[H:30])[N:22]=[C:23]2[H:34])[c:10]([H:25])[c:11]([H:26])[c:12]1[H:27]: [(1, 6), (1, 3), (0, 1), (1, 2), (1, 5), (1, 4)]
+2026-02-17 11:41:07.117 | DEBUG    | __main__:test_coverage:419 -     [C:1]([C:2]([c:3]1[c:4]([N:5]([H:39])[H:40])[n:6][c:7]([H:41])[n:8][c:9]1[N:10]1[C:11]([H:42])([H:43])[C:12]([H:44])([H:45])[C:13]([C:14]2=[N:15][C:16]([c:17]3[c:18]([H:47])[c:19]([H:48])[c:20]([H:49])[c:21]([Cl:22])[n:23]3)=[C:24]([H:50])[N:25]2[C:26]([C:27]([N+:28]2([H:65])[C:29]([H:55])([H:56])[C:30]([H:57])([H:58])[C:31]2([H:59])[H:60])([H:53])[H:54])([H:51])[H:52])([H:46])[C:32]([H:61])([H:62])[C:33]1([H:63])[H:64])([H:37])[H:38])([H:34])([H:35])[H:36]: [(26, 27), (27, 28), (27, 64), (27, 30)]
+2026-02-17 11:41:07.117 | DEBUG    | __main__:test_coverage:419 -     [C:1]([C@:2]([O:3][H:34])([C@:4]1([H:35])[C:5]([H:36])([H:37])[C:6]([H:38])([H:39])[C:7]2=[C:8]([C:17](=[O:18])[N:19]([c:20]3[c:21]([H:46])[c:22]([H:47])[c:23]([F:24])[c:25]([C:26]#[N:27])[c:28]3[F:29])[H:45])[N:9]([C:10]([H:40])([H:41])[H:42])[C:11]([H:43])=[C:12]2[S:13](=[O:14])(=[O:15])[N:16]1[H:44])[H:33])([H:30])([H:31])[H:32]: [(11, 12)]
+2026-02-17 11:41:07.117 | DEBUG    | __main__:test_coverage:419 -     [C:1]([C:2]([O:3][C:4](=[O:5])[C@@:6]1([H:31])[C:7]([H:32])([H:33])[C@:8]1([C:9]1=[C:10]([H:35])[C:11]([C:12]([H:36])([H:37])[H:38])([C:13]([H:39])([H:40])[H:41])[C:14]([H:42])=[C:15]([N:16]([C:17](=[O:18])[O:19][C:20]([C:21]([H:44])([H:45])[H:46])([C:22]([H:47])([H:48])[H:49])[C:23]([H:50])([H:51])[H:52])[H:43])[C:24]([H:53])=[N:25]1)[H:34])([H:29])[H:30])([H:26])([H:27])[H:28]: [(7, 8)]
+2026-02-17 11:41:07.117 | DEBUG    | __main__:test_coverage:419 -     [C:1]([C:2]([c:3]1[c:4]([N:5]([H:40])[H:41])[n:6][c:7]([H:42])[n:8][c:9]1[N:10]1[C:11]([H:43])([H:44])[C:12]([H:45])([H:46])[C:13]([C:14]2=[N:15][C:16]([c:17]3[c:18]([H:48])[c:19]([H:49])[c:20]([F:21])[c:22]([C:23]([H:50])([H:51])[H:52])[c:24]3[H:53])=[C:25]([H:54])[N:26]2[C:27]([C:28]2([H:57])[C:29]([H:58])([H:59])[N+:30]([C:31]([H:60])([H:61])[H:62])([H:69])[C:32]2([H:63])[H:64])([H:55])[H:56])([H:47])[C:33]([H:65])([H:66])[C:34]1([H:67])[H:68])([H:38])[H:39])([H:35])([H:36])[H:37]: [(29, 68), (29, 31), (28, 29), (29, 30)]
+2026-02-17 11:41:07.117 | DEBUG    | __main__:test_coverage:419 -     [C:1]([C@:2]([O:3][H:32])([C@:4]1([H:33])[C:5]([H:34])([H:35])[O:6][C:7]2=[C:8]([C:17](=[O:18])[N:19]([c:20]3[c:21]([H:42])[c:22]([H:43])[c:23]([F:24])[c:25]([C:26]([H:44])([H:45])[H:46])[c:27]3[H:47])[H:41])[N:9]([C:10]([H:36])([H:37])[H:38])[C:11]([H:39])=[C:12]2[S:13](=[O:14])(=[O:15])[N:16]1[H:40])[H:31])([H:28])([H:29])[H:30]: [(11, 12)]
+2026-02-17 11:41:07.117 | DEBUG    | __main__:test_coverage:419 -     [C:1]([C:2]([C:3]([H:33])([H:34])[H:35])([C@:4]1([H:36])[C:5]([H:37])([H:38])[C:6]([H:39])([H:40])[C:7]2=[C:8]([C:17](=[O:18])[N:19]([c:20]3[c:21]([H:47])[c:22]([C:26]([F:27])([F:28])[H:50])[n:23][c:24]([H:48])[c:25]3[H:49])[H:46])[N:9]([C:10]([H:41])([H:42])[H:43])[C:11]([H:44])=[C:12]2[S:13](=[O:14])(=[O:15])[N:16]1[H:45])[H:32])([H:29])([H:30])[H:31]: [(11, 12)]
+2026-02-17 11:41:07.117 | DEBUG    | __main__:test_coverage:419 -     [C:1]([c:2]1[c:3]([H:30])[c:4]([N:21]=[S:22]2(=[O:23])[C:24]([H:38])([H:39])[C:25]([H:40])([H:41])[C:26]2([H:42])[H:43])[c:5]([H:31])[c:6]2[n:7][c:8]([H:32])[n:9][c:10]([N:11]([c:12]3[c:13]([O:14][H:34])[c:15]([H:35])[c:16]([F:17])[c:18]([H:36])[c:19]3[H:37])[H:33])[c:20]12)([H:27])([H:28])[H:29]: [(20, 21)]
+2026-02-17 11:41:07.117 | DEBUG    | __main__:test_coverage:419 -     [N:1]([C:2](=[O:3])[c:4]1[c:5]([H:31])[c:6]([H:32])[c:7]([H:33])[c:8]2[c:9]([N:10]([C@:11]([C:12]([N+:13]3([H:47])[C:14]([H:38])([H:39])[C:15]([H:40])([H:41])[C:16]3([H:42])[H:43])([H:36])[H:37])([c:17]3[c:18]([H:44])[c:19]([H:45])[c:20]([Cl:21])[c:22]([Cl:23])[c:24]3[H:46])[H:35])[H:34])[n:25][n:26][n:27][c:28]12)([H:29])[H:30]: [(12, 13), (12, 46), (12, 15), (11, 12)]
+2026-02-17 11:41:07.117 | DEBUG    | __main__:test_coverage:419 -     [C:1]([N:2]1[C:3]([H:35])=[C:4]2[C:5](=[C:20]1[C:21](=[O:22])[N:23]([c:24]1[c:25]([H:53])[c:26]([H:54])[c:27]([F:28])[c:29]([F:30])[c:31]1[H:55])[H:52])[O:6][C:7]([H:36])([H:37])[C@:8]([C:13]1([H:40])[C:14]([H:41])([H:42])[C:15]([H:43])([H:44])[N:16]([C:17]([H:45])([H:46])[H:47])[C:18]([H:48])([H:49])[C:19]1([H:50])[H:51])([H:38])[N:9]([H:39])[S:10]2(=[O:11])=[O:12])([H:32])([H:33])[H:34]: [(3, 9)]
+2026-02-17 11:41:07.117 | DEBUG    | __main__:test_coverage:419 -     [C:1]([C:2]([c:3]1[c:4]([N:5]([H:40])[H:41])[n:6][c:7]([H:42])[n:8][c:9]1[N:10]1[C:11]([H:43])([H:44])[C:12]([H:45])([H:46])[C:13]([C:14]2=[N:15][C:16]([c:17]3[c:18]([H:48])[c:19]([H:49])[n:20][c:21]([O:22][C:23]([H:50])([H:51])[H:52])[c:24]3[H:53])=[C:25]([H:54])[N:26]2[C:27]([C:28]([N+:29]2([H:69])[C:30]([H:59])([H:60])[C:31]([H:61])([H:62])[C:32]2([H:63])[H:64])([H:57])[H:58])([H:55])[H:56])([H:47])[C:33]([H:65])([H:66])[C:34]1([H:67])[H:68])([H:38])[H:39])([H:35])([H:36])[H:37]: [(27, 28), (28, 29), (28, 68), (28, 31)]
+2026-02-17 11:41:07.117 | DEBUG    | __main__:test_coverage:419 -     [C:1]([C:2]([C:3]([H:34])([H:35])[H:36])([C:4]([H:37])([H:38])[H:39])[O:5][C:6](=[O:7])[N+:8]1([N:14]([C:15]2([H:50])[C:16]([H:51])([H:52])[C:17]2([H:53])[H:54])[C:18](=[O:19])[c:20]2[c:21]([H:55])[c:22]([H:56])[c:23]([C:26]3=[C:27]([H:59])[C:28]([H:60])=[C:29]([H:61])[O:30]3)[c:24]([H:57])[c:25]2[H:58])[C:9]([H:40])([H:41])[C:10]([H:42])([H:43])[C:11]([H:44])([H:45])[C:12]([H:46])([H:47])[C:13]1([H:48])[H:49])([H:31])([H:32])[H:33]: [(5, 7), (7, 13)]
+2026-02-17 11:41:07.119 | INFO     | __main__:test_coverage:413 - Uncovered Angles: 40 in 3 molecules
+2026-02-17 11:41:07.119 | DEBUG    | __main__:test_coverage:417 -     Uncovered Angles
+2026-02-17 11:41:07.120 | DEBUG    | __main__:test_coverage:419 -     [C:1]([C@:2]1([H:37])[C:3]([H:38])([H:39])[N:4]([c:5]2[c:6]([H:40])[c:7]([H:41])[c:8]([S:11]([F:12])([F:13])([F:14])([F:15])[F:16])[c:9]([H:42])[c:10]2[H:43])[C:17](=[O:18])[C:19]2=[C:20]([N:21]([C:22](=[O:23])[c:24]3[c:25]([H:45])[c:26]([H:46])[c:27]([H:47])[n:28][c:29]3[N:30]([H:48])[H:49])[H:44])[C:31]([H:50])=[N:32][N:33]12)([H:34])([H:35])[H:36]: [(7, 10, 11), (13, 10, 14), (14, 10, 15), (7, 10, 13), (7, 10, 15), (11, 10, 13), (11, 10, 15), (7, 10, 12), (13, 10, 15), (12, 10, 13), (7, 10, 14), (12, 10, 15), (12, 10, 14), (11, 10, 12), (11, 10, 14)]
+2026-02-17 11:41:07.120 | DEBUG    | __main__:test_coverage:419 -     [C:1]([O:2][c:3]1[c:4]([C:5]([C:6]([S:7]([C:8]([H:49])([H:50])[H:51])([C:9]([H:52])([H:53])[H:54])(=[O:10])[H:48])([H:46])[H:47])([H:44])[H:45])[c:11]([H:55])[c:12]2[c:38]([c:39]1[Cl:40])[C:17]([N:18]([c:19]1[c:20]([H:61])[c:21]([H:62])[c:22]([F:23])[c:24]([H:63])[c:25]1[O:26][C@:27]([H:28])([C:29]([H:64])([H:65])[H:66])[C:30](=[O:31])[N:32]([C:33]([C:34]([F:35])([F:36])[F:37])([H:68])[H:69])[H:67])[H:60])=[N:16][C:15]([H:59])=[C:14]([H:58])[C:13]2([H:56])[H:57])([H:41])([H:42])[H:43]: [(8, 6, 9), (5, 6, 8), (5, 6, 47), (9, 6, 47), (7, 6, 47), (5, 6, 7), (8, 6, 47), (7, 6, 8), (5, 6, 9), (7, 6, 9)]
+2026-02-17 11:41:07.120 | DEBUG    | __main__:test_coverage:419 -     [F:1][S:2]([F:3])([F:4])([F:5])([F:6])[c:7]1[c:8]([H:24])[c:9]([C:13]2=[C:14]([H:28])[N:15]([C:16]([C:17]3=[N:18][N:19]([H:31])[C:20]([H:32])=[C:21]3[H:33])([H:29])[H:30])[N:22]=[C:23]2[H:34])[c:10]([H:25])[c:11]([H:26])[c:12]1[H:27]: [(5, 1, 6), (2, 1, 6), (0, 1, 3), (2, 1, 3), (0, 1, 6), (3, 1, 5), (4, 1, 5), (0, 1, 5), (2, 1, 5), (0, 1, 2), (3, 1, 4), (2, 1, 4), (0, 1, 4), (3, 1, 6), (4, 1, 6)]
