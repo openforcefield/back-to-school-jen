@@ -20,7 +20,6 @@ ncpus=$SLURM_CPUS_ON_NODE
 echo "$ncpus allocated CPUs"
 
 nvcc --version
-nvidia-smi
 
 export OMP_NUM_THREADS=1
 export OPENBLAS_NUM_THREADS=1
@@ -32,11 +31,12 @@ echo "$(which python)"
 python -c "import torch; print(f'CUDA available: {torch.cuda.is_available()}'); print(f'CUDA version: {torch.version.cuda}'); print(f'Number of GPUs: {torch.cuda.device_count()}')"
 
 python ../fit_data.py --data-dir "../../3_split_train_test/full_split_uci/data-train" \
-                      --filename-forcefield "../../5_setup_train_ff_topologies/2026_02_20_uci_off_a/smee_force_field.pkl" \
-                      --filename-topo-dict "../../5_setup_train_ff_topologies/2026_02_20_uci_off_a/smee_topology_dict.pkl" \
-                      --offxml "../../4_make_offxmls/a_broad_specification/openff-2.3.0-ring-no-bond.offxml" \
-		      --val-data-dir "../../3_split_train_test/full_split_uci/data-test" \
+                      --filename-forcefield "../../5_setup_train_ff_topologies/2026_02_03_uci_c/smee_force_field.pkl" \
+                      --filename-topo-dict "../../5_setup_train_ff_topologies/2026_02_03_uci_c/smee_topology_dict.pkl" \
+                      --offxml "../../4_make_offxmls/c_no_bond_ring_recursive/openff-2.3.0-fit-bond_ring-no-bond-type.offxml" \
+                      --val-data-dir "../../3_split_train_test/full_split_uci/data-test" \
                       --n-epochs 40 \
                       --to-cuda true \
+		      --descent-reference "min" \
                       --valence-types "Bonds" \
                       --learning-rate 0.005 2>&1 | tee log.txt
