@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#SBATCH --job-name=e_ff  ## job name
+#SBATCH --job-name=d_ff_fit  ## job name
 #SBATCH --account DMOBLEY_LAB_GPU
 #SBATCH -p gpu              ## use free partition
 #SBATCH -t 4-00:00:00
@@ -20,7 +20,6 @@ ncpus=$SLURM_CPUS_ON_NODE
 echo "$ncpus allocated CPUs"
 
 nvcc --version
-nvidia-smi
 
 export OMP_NUM_THREADS=1
 export OPENBLAS_NUM_THREADS=1
@@ -32,9 +31,11 @@ echo "$(which python)"
 python -c "import torch; print(f'CUDA available: {torch.cuda.is_available()}'); print(f'CUDA version: {torch.version.cuda}'); print(f'Number of GPUs: {torch.cuda.device_count()}')"
 
 python ../fit_data.py --data-dir "../../3_split_train_test/full_split_uci/data-train" \
-                      --filename-forcefield "../../5_setup_train_ff_topologies/uci_off_e/smee_force_field.pkl" \
-                      --filename-topo-dict "../../5_setup_train_ff_topologies/uci_off_e/smee_topology_dict.pkl" \
-                      --offxml "../../4_make_offxmls/e_gen_bond_recursive/openff-2.3.0-gen_bond_atom_rec1.offxml" \
-                      --n-epochs 400 \
-		      --to-cuda true \
-                      --learning-rate 0.001 2>&1 | tee log.txt
+                      --filename-forcefield "../../5_setup_train_ff_topologies/uci_off_d/smee_force_field.pkl" \
+                      --filename-topo-dict "../../5_setup_train_ff_topologies/uci_off_d/smee_topology_dict.pkl" \
+                      --offxml "../../4_make_offxmls/d_gen_bond_recursive/openff-2.3.0-gen_bond_atom_rec1.offxml" \
+                      --val-data-dir "../../3_split_train_test/full_split_uci/data-test" \
+                      --n-epochs 500 \
+                      --to-cuda true \
+                      --valence-types "Bonds" \
+                      --learning-rate 0.005 2>&1 | tee log.txt
