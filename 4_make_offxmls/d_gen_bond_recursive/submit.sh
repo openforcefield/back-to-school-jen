@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#SBATCH --job-name=a_ff  ## job name
+#SBATCH --job-name=e_ff  ## job name
 #SBATCH -p standard              ## use free partition
 #SBATCH -t 3-00:00:00
 #SBATCH --nodes=1            ## use 1 node, don't ask for multiple
