@@ -1,0 +1,2 @@
+/export/spool/slurm/slurmd.spool/job49671315/slurm_script: line 22: nvcc: command not found
+[2026-03-17T06:19:16.005] error: *** JOB 49671315 ON hpc3-gpu-k54-01 CANCELLED AT 2026-03-17T06:19:16 DUE TO TIME LIMIT ***

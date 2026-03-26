@@ -1,3 +1,28 @@
+<<<<<<< HEAD
+/Users/jenniferclark/mamba/envs/bts/lib/python3.12/site-packages/openff/amber_ff_ports/amber_ff_ports.py:8: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  from pkg_resources import resource_filename
+2026-03-18 16:28:58.412 | INFO     | __main__:load_metrics:84 - Loading metrics from: ../0a_openff_2.3.0-rc2/benchmark_results/metrics.json
+2026-03-18 16:28:58.545 | INFO     | __main__:load_metrics:84 - Loading metrics from: ../0b_openff_2.3.0_smee_smirks/benchmark_results/metrics.json
+2026-03-18 16:28:58.674 | INFO     | __main__:load_metrics:84 - Loading metrics from: ../b_no_bond_with_ring_in_atom/benchmark_results/metrics.json
+2026-03-18 16:28:58.732 | INFO     | __main__:load_metrics:84 - Loading metrics from: ../b2_no_bond_with_ring_in_atom/benchmark_results/metrics.json
+2026-03-18 16:28:58.864 | INFO     | __main__:load_metrics:84 - Loading metrics from: ../b3_no_bond_with_ring_in_atom/benchmark_results/metrics.json
+2026-03-18 16:28:58.999 | INFO     | __main__:load_metrics:84 - Loading metrics from: ../c_bond_generalized/benchmark_results/metrics.json
+2026-03-18 16:28:59.130 | INFO     | __main__:main:1372 - Loaded 6 metrics file(s): ['OpenFF 2.3.0-rc2', 'OpenFF 2.3.0-rc2 SMEE-SPICE', 'SpecificGenBonds-b1', 'SpecificGenBonds-b2', 'SpecificGenBonds-b3', 'SpecificGenBonds-c']
+2026-03-18 16:28:59.130 | INFO     | __main__:generate_basic_plots:437 - Generating basic benchmark plots...
+2026-03-18 16:28:59.636 | INFO     | __main__:generate_basic_plots:529 - plot_difference=False, n_ff=6, plot_indices=[0, 1, 2, 3, 4, 5]
+2026-03-18 16:28:59.796 | INFO     | __main__:generate_basic_plots:593 - Saved: plots/dde_histogram.pdf
+2026-03-18 16:29:00.102 | INFO     | __main__:generate_basic_plots:644 - Saved: plots/rmsd_cdf.pdf
+2026-03-18 16:29:00.403 | INFO     | __main__:generate_basic_plots:695 - Saved: plots/tfd_cdf.pdf
+2026-03-18 16:29:00.611 | INFO     | __main__:generate_basic_plots:767 - Saved: plots/icrmsd_comparison.pdf
+2026-03-18 16:29:01.690 | INFO     | __main__:generate_basic_plots:834 - Saved: plots/icrmsd_by_type.pdf
+2026-03-18 16:29:01.690 | INFO     | __main__:generate_basic_plots:836 - Basic plots saved to: plots
+2026-03-18 16:29:01.715 | INFO     | __main__:load_parameter_type_summary:102 - Loading parameter type summary from: ../0a_openff_2.3.0-rc2/benchmark_results/metrics_by_parameter_type.json
+2026-03-18 16:29:01.716 | INFO     | __main__:load_parameter_type_summary:102 - Loading parameter type summary from: ../0b_openff_2.3.0_smee_smirks/benchmark_results/metrics_by_parameter_type.json
+2026-03-18 16:29:01.717 | INFO     | __main__:load_parameter_type_summary:102 - Loading parameter type summary from: ../b_no_bond_with_ring_in_atom/benchmark_results/metrics_by_parameter_type.json
+2026-03-18 16:29:01.721 | INFO     | __main__:load_parameter_type_summary:102 - Loading parameter type summary from: ../b2_no_bond_with_ring_in_atom/benchmark_results/metrics_by_parameter_type.json
+2026-03-18 16:29:01.727 | INFO     | __main__:load_parameter_type_summary:102 - Loading parameter type summary from: ../b3_no_bond_with_ring_in_atom/benchmark_results/metrics_by_parameter_type.json
+2026-03-18 16:29:01.733 | INFO     | __main__:load_parameter_type_summary:102 - Loading parameter type summary from: ../c_bond_generalized/benchmark_results/metrics_by_parameter_type.json
+=======
 2026-03-02 08:30:02.600 | INFO     | __main__:load_metrics:84 - Loading metrics from: ../0a_openff_2.3.0-rc2/benchmark_results/metrics.json
 2026-03-02 08:30:03.056 | INFO     | __main__:load_metrics:84 - Loading metrics from: ../0b_openff_2.3.0_smee_smirks/benchmark_results/metrics.json
 2026-03-02 08:30:03.619 | INFO     | __main__:load_metrics:84 - Loading metrics from: ../b3_no_bond_with_ring_in_atom/benchmark_results/metrics.json
@@ -17,6 +42,7 @@
 2026-03-02 08:30:10.879 | INFO     | __main__:load_parameter_type_summary:102 - Loading parameter type summary from: ../b3_no_bond_with_ring_in_atom/benchmark_results/metrics_by_parameter_type.json
 2026-03-02 08:30:10.934 | INFO     | __main__:load_parameter_type_summary:102 - Loading parameter type summary from: ../c_bond_generalized/benchmark_results/metrics_by_parameter_type.json
 2026-03-02 08:30:10.990 | INFO     | __main__:load_parameter_type_summary:102 - Loading parameter type summary from: ../a_broad_specification/benchmark_results/metrics_by_parameter_type.json
+>>>>>>> main
 
 ======================================================================
 BENCHMARK SUMMARY
@@ -287,6 +313,9 @@ Impropers (°):
        SMIRKS: [*:1]~[#7X3$(*~[#6X3]):2](~[*:3])~[*:4]
     5. i6: mean=1.6130 °, n=29927
        SMIRKS: [*:1]~[#7X3$(*@1-[*]=,:[*][*]=,:[*]@1):2](~[*:3])~[*:4]
+<<<<<<< HEAD
+2026-03-18 16:29:03.932 | INFO     | __main__:main:1423 - Plot generation complete!
+=======
 
   SpecificGenBonds-a:
     1. i3: mean=9.1525 °, n=984
@@ -299,3 +328,4 @@ Impropers (°):
     5. i6: mean=1.5610 °, n=29937
        SMIRKS: [*:1]~[#7X3$(*@1-[*]=,:[*][*]=,:[*]@1):2](~[*:3])~[*:4]
 2026-03-02 08:30:14.763 | INFO     | __main__:main:1403 - Plot generation complete!
+>>>>>>> main
