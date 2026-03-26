@@ -230,8 +230,8 @@ def get_parameter_limits() -> dict[str, dict[str, tuple[float | None, float | No
     -----
     SMEE internal units and typical ranges:
     - Bonds:
-        - k: [0, ∞) kcal/(mol·Å²) - force constant must be positive
-        - length: [0, ∞) Å - bond length must be positive
+        - k: [90, ∞) kcal/(mol·Å²) - force constant must be positive
+        - length: [0.8, ∞) Å - bond length must be positive
     - Angles:
         - k: [0, ∞) kcal/(mol·rad²) - force constant must be positive
         - angle: [0, π] radians - equilibrium angle range
@@ -248,8 +248,8 @@ def get_parameter_limits() -> dict[str, dict[str, tuple[float | None, float | No
     """
     return {
         "Bonds": {
-            "k": (0.0, None),  # kcal/(mol·Å²), must be positive
-            "length": (0.0, None),  # Å, must be positive
+            "k": (90, None),  # kcal/(mol·Å²), must be positive
+            "length": (0.8, None),  # Å, must be positive
         },
         "Angles": {
             "k": (0.0, None),  # kcal/(mol·rad²), must be positive
