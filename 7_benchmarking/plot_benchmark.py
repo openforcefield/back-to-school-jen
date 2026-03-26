@@ -490,60 +490,36 @@ def generate_basic_plots(
                     if icrmsd.get("Improper") is not None:
                         ff_data[label]["icrmsd_improper"][rec_id] = icrmsd["Improper"]
 
-    # Helper function to align data by record ID and optionally compute differences
-    def get_aligned_data(metric_key: str, plot_diff: bool) -> dict[str, np.ndarray]:
-        """Extract and align metric data across all force fields by record ID.
+    # Helper: extract all values for a metric for each FF (no record alignment)
+    def get_data(metric_key: str) -> dict[str, np.ndarray]:
+        """Extract metric data for all force fields independently.
 
         Parameters
         ----------
         metric_key : str
             Key in ff_data (e.g., "dde", "rmsd", "tfd", "icrmsd_bond").
-        plot_diff : bool
-            If True and multiple FFs, compute differences relative to first FF.
 
         Returns
         -------
         dict[str, np.ndarray]
-            Mapping of label to aligned data array.
+            Mapping of label to data array (all available records, unaligned).
         """
-        # Find common record IDs across all force fields
-        if plot_diff and n_ff > 1:
-            common_rec_ids = set(ff_data[labels[0]][metric_key].keys())
-            for label in labels[1:]:
-                common_rec_ids &= set(ff_data[label][metric_key].keys())
-        else:
-            # Use all records from each FF independently
-            common_rec_ids = None
+        return {
+            label: np.array(list(ff_data[label][metric_key].values()))
+            for label in labels
+        }
 
-        result: dict[str, np.ndarray] = {}
-        for i, label in enumerate(labels):
-            if common_rec_ids is not None:
-                # Extract only common records
-                data = np.array(
-                    [
-                        ff_data[label][metric_key][rec_id]
-                        for rec_id in sorted(common_rec_ids)
-                    ]
-                )
-            else:
-                # Use all available records for this FF
-                data = np.array(list(ff_data[label][metric_key].values()))
-
-            # Compute differences relative to first FF if requested
-            if plot_diff and i > 0 and common_rec_ids is not None:
-                data0 = result[labels[0]]
-                assert len(data) == len(
-                    data0
-                ), "Data lengths should match after alignment"
-                data = data - data0
-
-            result[label] = data
-
-        return result
+    # Helper: evaluate empirical CDF at specified x-grid points via interpolation
+    def evaluate_cdf(data: np.ndarray, x_grid: np.ndarray) -> np.ndarray:
+        """Evaluate empirical CDF on a grid of x values."""
+        sorted_data = np.sort(data)
+        cdf_vals = np.arange(1, len(sorted_data) + 1) / len(sorted_data)
+        return np.interp(x_grid, sorted_data, cdf_vals, left=0.0, right=1.0)
 
     # Plot 1: DDE Histogram
+    dde_bins = np.linspace(-15, 15, 31)
     fig, ax = plt.subplots(figsize=(10, 6))
-    dde_data = get_aligned_data("dde", plot_difference)
+    dde_data = get_data("dde")
     # Determine which labels to actually plot (skip reference when showing diffs)
     if plot_difference and n_ff > 1:
         plot_indices = list(range(1, n_ff))
@@ -554,19 +530,37 @@ def generate_basic_plots(
         f"plot_difference={plot_difference}, n_ff={n_ff}, plot_indices={plot_indices}"
     )
 
-    for i in plot_indices:
-        label = labels[i]
-        data = dde_data[label]
-        data = data[np.isfinite(data)]
-        if len(data) > 0:
-            counts, bins = np.histogram(data, bins=np.linspace(-15, 15, 31))
-            ax.stairs(
-                counts,
-                bins,
-                label=label,
-                color=colors[i % len(colors)],
-                linestyle=line_styles[i % len(line_styles)],
-            )
+    if plot_difference and n_ff > 1:
+        ref_dde = dde_data[labels[0]]
+        ref_dde = ref_dde[np.isfinite(ref_dde)]
+        ref_counts, _ = np.histogram(ref_dde, bins=dde_bins)
+        for i in plot_indices:
+            label = labels[i]
+            data = dde_data[label]
+            data = data[np.isfinite(data)]
+            if len(data) > 0:
+                counts, _ = np.histogram(data, bins=dde_bins)
+                ax.stairs(
+                    counts - ref_counts,
+                    dde_bins,
+                    label=label,
+                    color=colors[i % len(colors)],
+                    linestyle=line_styles[i % len(line_styles)],
+                )
+    else:
+        for i in plot_indices:
+            label = labels[i]
+            data = dde_data[label]
+            data = data[np.isfinite(data)]
+            if len(data) > 0:
+                counts, _ = np.histogram(data, bins=dde_bins)
+                ax.stairs(
+                    counts,
+                    dde_bins,
+                    label=label,
+                    color=colors[i % len(colors)],
+                    linestyle=line_styles[i % len(line_styles)],
+                )
     ax.set_xlabel("DDE (kcal/mol)")
     ax.set_ylabel("Count")
     if plot_difference:
@@ -586,11 +580,11 @@ def generate_basic_plots(
             alpha=ALPHA,
         )
         # Use a symmetric log scale on y to show orders-of-magnitude differences
-        try:
-            ax.set_yscale("symlog", linthresh=1)
-            logger.info("DDE histogram: using symlog y-scale for difference plot")
-        except Exception:
-            logger.debug("Could not set symlog y-scale for DDE histogram")
+        # try:
+        #    ax.set_yscale("symlog", linthresh=1)
+        #    logger.info("DDE histogram: using symlog y-scale for difference plot")
+        # except Exception:
+        #    logger.debug("Could not set symlog y-scale for DDE histogram")
     else:
         ax.axvline(x=0, color="gray", linestyle="--", linewidth=LINEWIDTH, alpha=ALPHA)
     fig.tight_layout()
@@ -600,42 +594,49 @@ def generate_basic_plots(
 
     # Plot 2: RMSD CDF
     fig, ax = plt.subplots(figsize=(10, 6))
-    rmsd_data = get_aligned_data("rmsd", plot_difference)
-    for i in plot_indices:
-        label = labels[i]
-        data = np.sort(rmsd_data[label])
-        if len(data) > 0:
-            cdf = np.arange(1, len(data) + 1) / len(data)
-            ls = line_styles[i % len(line_styles)]
-            ax.plot(
-                data,
-                cdf,
-                linestyle=ls,
-                label=label,
-                linewidth=LINEWIDTH,
-                color=colors[i % len(colors)],
-            )
+    rmsd_data = get_data("rmsd")
+    if plot_difference and n_ff > 1:
+        rmsd_x_grid = np.linspace(0, 3.0, 500)
+        ref_rmsd = rmsd_data[labels[0]]
+        ref_rmsd = ref_rmsd[np.isfinite(ref_rmsd)]
+        ref_cdf = evaluate_cdf(ref_rmsd, rmsd_x_grid)
+        for i in plot_indices:
+            label = labels[i]
+            data = rmsd_data[label]
+            data = data[np.isfinite(data)]
+            if len(data) > 0:
+                cdf_i = evaluate_cdf(data, rmsd_x_grid)
+                ls = line_styles[i % len(line_styles)]
+                ax.plot(
+                    rmsd_x_grid,
+                    cdf_i - ref_cdf,
+                    linestyle=ls,
+                    label=label,
+                    linewidth=LINEWIDTH,
+                    color=colors[i % len(colors)],
+                )
+        ax.axhline(y=0, color="black", linestyle="--", linewidth=LINEWIDTH, alpha=ALPHA)
+    else:
+        for i in plot_indices:
+            label = labels[i]
+            data = np.sort(rmsd_data[label])
+            data = data[np.isfinite(data)]
+            if len(data) > 0:
+                cdf = np.arange(1, len(data) + 1) / len(data)
+                ls = line_styles[i % len(line_styles)]
+                ax.plot(
+                    data,
+                    cdf,
+                    linestyle=ls,
+                    label=label,
+                    linewidth=LINEWIDTH,
+                    color=colors[i % len(colors)],
+                )
+        ax.set_ylim(0, 1.05)
     ax.set_xlabel("RMSD (Å)")
-    ax.set_ylabel("CDF")
+    ax.set_ylabel("CDF" if not plot_difference else "ΔCDF")
     ax.set_title("Root Mean Square Deviation - Cumulative Distribution")
     ax.set_xlim(0, 3.0)
-    if not plot_difference:
-        ax.set_ylim(0, 1.05)
-    else:
-        # vertical zero line for difference plots
-        ax.axvline(
-            x=0,
-            color="black",
-            linestyle="--",
-            linewidth=LINEWIDTH,
-            label=None,
-            alpha=ALPHA,
-        )
-        try:
-            ax.set_xscale("symlog", linthresh=1e-3)
-            logger.info("RMSD CDF: using symlog x-scale for difference plot")
-        except Exception:
-            logger.debug("Could not set symlog x-scale for RMSD CDF")
     ax.legend(loc="best")
     fig.tight_layout()
     fig.savefig(plots_dir / f"rmsd_cdf{suffix}.pdf", bbox_inches="tight")
@@ -644,41 +645,49 @@ def generate_basic_plots(
 
     # Plot 3: TFD CDF
     fig, ax = plt.subplots(figsize=(10, 6))
-    tfd_data = get_aligned_data("tfd", plot_difference)
-    for i in plot_indices:
-        label = labels[i]
-        data = np.sort(tfd_data[label])
-        if len(data) > 0:
-            cdf = np.arange(1, len(data) + 1) / len(data)
-            ls = line_styles[i % len(line_styles)]
-            ax.plot(
-                data,
-                cdf,
-                linestyle=ls,
-                label=label,
-                linewidth=LINEWIDTH,
-                color=colors[i % len(colors)],
-            )
+    tfd_data = get_data("tfd")
+    if plot_difference and n_ff > 1:
+        tfd_x_grid = np.linspace(0, 0.5, 500)
+        ref_tfd = tfd_data[labels[0]]
+        ref_tfd = ref_tfd[np.isfinite(ref_tfd)]
+        ref_cdf = evaluate_cdf(ref_tfd, tfd_x_grid)
+        for i in plot_indices:
+            label = labels[i]
+            data = tfd_data[label]
+            data = data[np.isfinite(data)]
+            if len(data) > 0:
+                cdf_i = evaluate_cdf(data, tfd_x_grid)
+                ls = line_styles[i % len(line_styles)]
+                ax.plot(
+                    tfd_x_grid,
+                    cdf_i - ref_cdf,
+                    linestyle=ls,
+                    label=label,
+                    linewidth=LINEWIDTH,
+                    color=colors[i % len(colors)],
+                )
+        ax.axhline(y=0, color="black", linestyle="--", linewidth=LINEWIDTH, alpha=ALPHA)
+    else:
+        for i in plot_indices:
+            label = labels[i]
+            data = np.sort(tfd_data[label])
+            data = data[np.isfinite(data)]
+            if len(data) > 0:
+                cdf = np.arange(1, len(data) + 1) / len(data)
+                ls = line_styles[i % len(line_styles)]
+                ax.plot(
+                    data,
+                    cdf,
+                    linestyle=ls,
+                    label=label,
+                    linewidth=LINEWIDTH,
+                    color=colors[i % len(colors)],
+                )
+        ax.set_ylim(0, 1.05)
     ax.set_xlabel("TFD")
-    ax.set_ylabel("CDF")
+    ax.set_ylabel("CDF" if not plot_difference else "ΔCDF")
     ax.set_title("Torsion Fingerprint Deviation - Cumulative Distribution")
     ax.set_xlim(0, 0.5)
-    if not plot_difference:
-        ax.set_ylim(0, 1.05)
-    else:
-        ax.axvline(
-            x=0,
-            color="black",
-            linestyle="--",
-            linewidth=LINEWIDTH,
-            label=None,
-            alpha=ALPHA,
-        )
-        try:
-            ax.set_xscale("symlog", linthresh=1e-4)
-            logger.info("TFD CDF: using symlog x-scale for difference plot")
-        except Exception:
-            logger.debug("Could not set symlog x-scale for TFD CDF")
     ax.legend(loc="best")
     fig.tight_layout()
     fig.savefig(plots_dir / f"tfd_cdf{suffix}.pdf", bbox_inches="tight")
@@ -697,15 +706,23 @@ def generate_basic_plots(
 
     for idx, (ic_type, ic_key, unit) in enumerate(zip(ic_types, ic_keys, ic_units)):
         ax = axes[idx]
-        ic_data = get_aligned_data(ic_key, plot_difference)
+        ic_data = get_data(ic_key)
         means = []
         stds = []
+        ref_mean = 0.0
+        if plot_difference and n_ff > 1:
+            ref_ic = ic_data[labels[0]]
+            ref_ic = ref_ic[np.isfinite(ref_ic)] if ref_ic.size > 0 else np.array([])
+            ref_mean = np.mean(ref_ic) if ref_ic.size > 0 else 0.0
         for idx_i, i in enumerate(plot_indices):
             label = labels[i]
             data = ic_data[label]
             data = data[np.isfinite(data)] if data.size > 0 else np.array([])
             if data.size > 0:
-                means.append(np.mean(data))
+                m = np.mean(data)
+                if plot_difference and n_ff > 1:
+                    m = m - ref_mean
+                means.append(m)
                 stds.append(np.std(data))
             else:
                 means.append(0)
@@ -762,49 +779,58 @@ def generate_basic_plots(
 
     for idx, (ic_type, ic_key, unit) in enumerate(zip(ic_types, ic_keys, ic_units)):
         ax = axes[idx]
-        ic_data = get_aligned_data(ic_key, plot_difference)
-        for i in plot_indices:
-            label = labels[i]
-            data = ic_data[label]
-            data = data[np.isfinite(data)]
-            if data.size > 0:
-                sorted_data = np.sort(data)
-                cdf = np.arange(1, len(sorted_data) + 1) / len(sorted_data)
-                ls = line_styles[i % len(line_styles)]
-                ax.plot(
-                    sorted_data,
-                    cdf,
-                    linestyle=ls,
-                    label=label,
-                    linewidth=LINEWIDTH,
-                    color=colors[i % len(colors)],
-                )
+        ic_data = get_data(ic_key)
+        xlim = xlims[ic_key]
+        if plot_difference and n_ff > 1:
+            x_grid = np.linspace(xlim[0], xlim[1], 500)
+            ref_ic = ic_data[labels[0]]
+            ref_ic = ref_ic[np.isfinite(ref_ic)]
+            ref_cdf = (
+                evaluate_cdf(ref_ic, x_grid)
+                if ref_ic.size > 0
+                else np.zeros_like(x_grid)
+            )
+            for i in plot_indices:
+                label = labels[i]
+                data = ic_data[label]
+                data = data[np.isfinite(data)]
+                if data.size > 0:
+                    cdf_i = evaluate_cdf(data, x_grid)
+                    ls = line_styles[i % len(line_styles)]
+                    ax.plot(
+                        x_grid,
+                        cdf_i - ref_cdf,
+                        linestyle=ls,
+                        label=label,
+                        linewidth=LINEWIDTH,
+                        color=colors[i % len(colors)],
+                    )
+            ax.axhline(
+                y=0, color="black", linestyle="--", linewidth=LINEWIDTH, alpha=ALPHA
+            )
+        else:
+            for i in plot_indices:
+                label = labels[i]
+                data = ic_data[label]
+                data = data[np.isfinite(data)]
+                if data.size > 0:
+                    sorted_data = np.sort(data)
+                    cdf = np.arange(1, len(sorted_data) + 1) / len(sorted_data)
+                    ls = line_styles[i % len(line_styles)]
+                    ax.plot(
+                        sorted_data,
+                        cdf,
+                        linestyle=ls,
+                        label=label,
+                        linewidth=LINEWIDTH,
+                        color=colors[i % len(colors)],
+                    )
+            ax.set_ylim(0, 1.05)
 
         ax.set_xlabel(f"{ic_type} RMSD ({unit})")
-        ax.set_ylabel("CDF")
+        ax.set_ylabel("CDF" if not plot_difference else "ΔCDF")
         ax.set_title(f"{ic_type} Internal Coordinate RMSD")
-        ax.set_xlim(xlims[ic_key])
-        if not plot_difference:
-            ax.set_ylim(0, 1.05)
-        else:
-            # vertical zero reference for difference plots
-            ax.axvline(
-                x=0,
-                color="black",
-                linestyle="--",
-                linewidth=LINEWIDTH,
-                label=None,
-                alpha=ALPHA,
-            )
-            # Try symmetric log on x to expose orders-of-magnitude differences while
-            # allowing negative values near zero.
-            try:
-                ax.set_xscale("symlog", linthresh=1e-6)
-                logger.info(
-                    f"ICRMSD CDF ({ic_key}): using symlog x-scale for difference plot"
-                )
-            except Exception:
-                logger.debug(f"Could not set symlog x-scale for ICRMSD CDF {ic_key}")
+        ax.set_xlim(xlim)
         ax.legend(loc="best", fontsize=8)
 
     fig.suptitle("Internal Coordinate RMSD - Cumulative Distributions", fontsize=14)

@@ -54,6 +54,13 @@ from openff.toolkit.typing.engines.smirnoff.parameters import ParameterType
 
 from .molecular_classes import MMComponent, SpecificityLevel
 
+TYPE_TO_SMARTS = {
+    Chem.BondType.SINGLE: "-",
+    Chem.BondType.DOUBLE: "=",
+    Chem.BondType.TRIPLE: "#",
+    Chem.BondType.AROMATIC: ":",
+}
+
 
 class TerminalBehavior(Enum):
     """Behavior for terminal atoms in SMIRKS patterns."""
@@ -87,20 +94,51 @@ class BondSpecificity(Enum):
 
 @dataclass
 class AtomSMIRKSConfig:
-    """Configuration for atom SMIRKS pattern generation."""
+    """
+    Configuration for atom SMIRKS pattern generation.
+
+    Attributes
+    ----------
+    include_ring_info : bool, default=False
+        Whether to include ring membership in atom patterns (e.g., ";r6" or
+        ";!r3;!r4;!r5;!r6;!r7;!r8").
+    bonded_atom_behavior : BondedAtomBehavior, default=BondedAtomBehavior.NONE
+        Controls how neighboring atom information is encoded via recursive SMARTS.
+        Any value other than ``NONE`` requires at least one level of recursion.
+        If ``bonded_atom_behavior != NONE`` and ``recursion_level == 0``, the
+        recursion level is automatically promoted to 1 and a warning is logged.
+    terminal_behavior : TerminalBehavior, default=TerminalBehavior.STANDARD
+        How terminal atoms (first/last in a component) are represented in patterns.
+    recursion_level : int, default=0
+        Depth of recursive neighbor encoding in atom SMIRKS patterns. 0 encodes
+        only the atom itself; 1 encodes immediate neighbors; 2 encodes neighbors
+        of neighbors, etc. Automatically promoted to 1 if ``bonded_atom_behavior``
+        is not ``NONE`` and this is left at 0.
+    """
 
     include_ring_info: bool = False
     bonded_atom_behavior: BondedAtomBehavior = BondedAtomBehavior.NONE
     terminal_behavior: TerminalBehavior = TerminalBehavior.STANDARD
+    recursion_level: int = 0
 
     def __post_init__(self):
-        """Validate configuration consistency."""
+        """Validate configuration consistency and auto-promote recursion_level."""
         if not isinstance(self.bonded_atom_behavior, BondedAtomBehavior):
             raise ValueError(
                 f"Invalid bonded_atom_behavior: {self.bonded_atom_behavior}"
             )
         if not isinstance(self.terminal_behavior, TerminalBehavior):
             raise ValueError(f"Invalid terminal_behavior: {self.terminal_behavior}")
+        if (
+            self.bonded_atom_behavior != BondedAtomBehavior.NONE
+            and self.recursion_level == 0
+        ):
+            logger.warning(
+                f"bonded_atom_behavior={self.bonded_atom_behavior.value!r} requires "
+                "recursion to encode neighbor information, but recursion_level=0. "
+                "Automatically promoting recursion_level to 1."
+            )
+            self.recursion_level = 1
 
 
 @dataclass
@@ -166,7 +204,7 @@ def get_atom_descriptors(at_idx: int, mol: Chem.Mol) -> dict[str, str]:
     # Format charge
     descriptors["charge"] = (
         f"+{descriptors['charge']}"
-        if descriptors["charge"] >= 0
+        if descriptors["charge"] > 0
         else str(descriptors["charge"])
     )
 
@@ -205,14 +243,6 @@ def get_bond_descriptors(
     if bond is None:
         raise ValueError(f"No bond found between atoms {atom_idxs} in the molecule.")
 
-    # Get the bond order description
-    TYPE_TO_SMARTS = {
-        Chem.BondType.SINGLE: "-",
-        Chem.BondType.DOUBLE: "=",
-        Chem.BondType.TRIPLE: "#",
-        Chem.BondType.AROMATIC: ":",
-    }
-
     bond_smarts = TYPE_TO_SMARTS.get(bond.GetBondType(), "~")
     # Check if bond is in a ring of size <= max_ring_size
     in_small_ring = False
@@ -227,6 +257,91 @@ def get_bond_descriptors(
     return {"bond_smarts": bond_smarts, "ring_info": ring_info}
 
 
+def get_atom_recursive_smirks(
+    idx: int,
+    mol: Chem.Mol,
+    recursion_level: int = 1,
+    return_recursions: bool = False,
+    include_bond_order: bool = True,
+) -> str | list[str]:
+    """
+    Generate recursive SMIRKS pattern encoding atom identity and bonded connectivity.
+
+    Builds an atom pattern that uses SMARTS recursive queries to capture the local
+    bonded environment up to `recursion_level` bonds away.  Each neighbor is encoded
+    as ``&$([current_atom]~[neighbor_pattern])`` so the query correctly tests for
+    connectivity (bonds) rather than the (incorrect) ``&$([neighbor_pattern])`` form
+    which would require the current atom to simultaneously *be* the neighbor atom type.
+
+    Parameters
+    ----------
+    idx : int
+        Atom index in *mol*.
+    mol : rdkit.Chem.Mol
+        RDKit molecule (should already have explicit Hs added if needed).
+    recursion_level : int, default=1
+        Depth of recursive neighbor encoding.  0 returns only the base atom pattern.
+    return_recursions : bool, default=False
+        When True, return the list of ``&$(...)`` recursion strings instead of the
+        fully assembled atom SMIRKS.  Used internally by :func:`SMIRKSFactory._generate_atom_smirks`.
+
+    Returns
+    -------
+    str | list[str]
+        Full atom SMIRKS string (``return_recursions=False``) such as
+        ``[$([#6X4]~[#7X4+1])]``, or the raw list of recursion strings
+        (``return_recursions=True``) such as ``["&$([#6X4+0]~[#7X4+1])", ...]``.
+
+    Examples
+    --------
+    >>> from rdkit import Chem
+    >>> mol = Chem.AddHs(Chem.MolFromSmiles("CN"))
+    >>> get_atom_recursive_smirks(0, mol, recursion_level=1)
+    '[#6X4+0&$([#6X4+0]~[#1X1+0])&$([#6X4+0]~[#1X1+0])&$([#6X4+0]~[#1X1+0])]'
+    """
+    ds = get_atom_descriptors(idx, mol)
+    if ds["charge"] == str(0):
+        ds["charge"] = ""  # remove charge
+    base = f"[{ds['atomic_num']}{ds['degree']}]"
+
+    if recursion_level <= 0:
+        if return_recursions:
+            return []
+        else:
+            return base
+
+    bonded_atoms = mol.GetAtomWithIdx(idx).GetNeighbors()
+    recursions = []
+    for bonded_atom in bonded_atoms:
+        bonded_idx = bonded_atom.GetIdx()
+        neighbor = get_atom_recursive_smirks(
+            bonded_idx,
+            mol,
+            recursion_level=recursion_level - 1,
+            include_bond_order=include_bond_order,
+        )
+        # include explicit bond order between the current atom and the neighbor
+        if include_bond_order:
+            bond = mol.GetBondBetweenAtoms(idx, bonded_idx)
+            bond_smarts = TYPE_TO_SMARTS.get(bond.GetBondType(), "~")
+        else:
+            bond_smarts = "~"  # always wildcard when order not requested
+
+        recursions.append(f"{bond_smarts}{neighbor}")
+
+    # Sort so that chemically equivalent atoms produce the same string
+    # regardless of the arbitrary neighbor iteration order from RDKit.
+    recursions.sort()
+
+    if return_recursions:
+        return recursions
+    else:
+        if recursions:
+            rec_str = "".join(f"({r})" for r in recursions[:-1]) + recursions[-1]
+            base = "[$(" + base + rec_str + ")]"
+        return base
+
+
 class SMIRKSFactory:
     """
     Factory for generating SMIRKS patterns with configurable specificity.
@@ -239,6 +354,10 @@ class SMIRKSFactory:
         How to handle bonded atom information.
     atom_terminal_behavior : TerminalBehavior, default=STANDARD
         How to handle terminal atoms.
+    atom_recursion_level : int, default=0
+        Depth of recursive neighbor encoding. 0 encodes only the atom itself;
+        1 encodes immediate neighbors, etc. Automatically promoted to 1 if
+        ``atom_bonded_behavior`` is not ``NONE`` and this is left at 0.
     bond_include_ring_info : bool, default=False
         Include ring membership in bond patterns.
     bond_specificity : BondSpecificity, default=STANDARD
@@ -257,6 +376,7 @@ class SMIRKSFactory:
         atom_include_ring_info: bool = False,
         atom_bonded_behavior: BondedAtomBehavior = BondedAtomBehavior.NONE,
         atom_terminal_behavior: TerminalBehavior = TerminalBehavior.STANDARD,
+        atom_recursion_level: int = 0,
         # Bond configuration
         bond_include_ring_info: bool = False,
         bond_specificity: BondSpecificity = BondSpecificity.STANDARD,
@@ -272,6 +392,10 @@ class SMIRKSFactory:
             How to handle bonded atom information in patterns.
         atom_terminal_behavior : TerminalBehavior, default=TerminalBehavior.STANDARD
             How to handle terminal atoms in patterns.
+        atom_recursion_level : int, default=0
+            Depth of recursive neighbor encoding. 0 encodes only the atom itself;
+            1 encodes immediate neighbors, etc. Automatically promoted to 1 if
+            ``atom_bonded_behavior`` is not ``NONE`` and this is left at 0.
         bond_include_ring_info : bool, default=False
             Whether to include ring membership information in bond patterns.
         bond_specificity : BondSpecificity, default=BondSpecificity.STANDARD
@@ -281,6 +405,7 @@ class SMIRKSFactory:
             include_ring_info=atom_include_ring_info,
             bonded_atom_behavior=atom_bonded_behavior,
             terminal_behavior=atom_terminal_behavior,
+            recursion_level=atom_recursion_level,
         )
 
         self.bond_config = BondSMIRKSConfig(
@@ -316,7 +441,11 @@ class SMIRKSFactory:
         """
         mol = Chem.AddHs(mol, explicitOnly=False)
         return self._generate_atom_smirks(
-            at_idx, at_id, mol, terminal_idxs, self.atom_config
+            at_idx,
+            at_id,
+            mol,
+            terminal_idxs,
+            self.atom_config,
         )
 
     def get_bond_smirks(
@@ -389,6 +518,8 @@ class SMIRKSFactory:
         into a single configurable implementation.
         """
         ds = get_atom_descriptors(at_idx, mol)
+        if ds["charge"] == str(0):
+            ds["charge"] = ""
         is_terminal = at_id in terminal_idxs
         ring_part = ds["ring_info"] if config.include_ring_info else ""
 
@@ -418,36 +549,42 @@ class SMIRKSFactory:
         ):
             return base_pattern
 
-        # Generate bonded atom patterns
-        bonded_atoms = mol.GetAtomWithIdx(at_idx).GetNeighbors()
-        bonded_patterns = []
+        if config.recursion_level > 0:
+            include_bond_order = (
+                True
+                if config.bonded_atom_behavior
+                in [
+                    BondedAtomBehavior.EXPLICIT_ATOMS_BONDS,
+                    BondedAtomBehavior.CENTRAL_EXPLICIT_ATOMS_BONDS,
+                ]
+                else False
+            )
+            recursions = get_atom_recursive_smirks(
+                at_idx,
+                mol,
+                recursion_level=config.recursion_level,
+                return_recursions=True,
+                include_bond_order=include_bond_order,
+            )
 
-        for bonded_atom in bonded_atoms:
-            bonded_idx = bonded_atom.GetIdx()
-            bonded_ds = get_atom_descriptors(bonded_idx, mol)
+        # Handle terminal behavior
+        if is_terminal and config.terminal_behavior == TerminalBehavior.WILDCARD:
+            atom_base = f"*{ring_part}"
+        elif is_terminal and config.terminal_behavior == TerminalBehavior.H_NO_H:
+            atomic_num = ds["atomic_num"] if ds["atomic_num"] == "#1" else "!#1"
+            atom_base = f"{atomic_num}{ring_part}"
+        else:
+            atom_base = f"{ds['atomic_num']}{ds['degree']}{ring_part}"
 
-            # Determine bond type
-            bond_descriptors = get_bond_descriptors((at_idx, bonded_idx), mol)
-            if config.bonded_atom_behavior in [
-                BondedAtomBehavior.EXPLICIT_ATOMS_BONDS,
-                BondedAtomBehavior.CENTRAL_EXPLICIT_ATOMS_BONDS,
-            ]:
-                bond_type = bond_descriptors["bond_smarts"]
-            else:  # Wildcard behaviors
-                bond_type = (
-                    "~" + bond_descriptors["ring_info"]
-                    if config.include_ring_info
-                    else ""
-                )
+        if config.recursion_level > 0 and recursions:
+            branches = "".join(f"({r})" for r in recursions)
+            rec_str = f"&$([{atom_base}]{branches})"
+        else:
+            rec_str = ""
 
-            # Build bonded atom pattern - use bonded atom's ring info, not central atom's
-            bonded_pattern_parts = [bonded_ds["atomic_num"], bonded_ds["degree"]]
-            if config.include_ring_info:
-                bonded_pattern_parts.append(bonded_ds["ring_info"])
+        base_pattern = f"[{atom_base}{rec_str}:{at_id + 1}]"
 
-            bonded_patterns.append(f"({bond_type}[{''.join(bonded_pattern_parts)}])")
-
-        return base_pattern + "".join(bonded_patterns)
+        return base_pattern
 
     @staticmethod
     def _generate_bond_smirks(
@@ -623,6 +760,8 @@ def create_specificity_factories(
             "EXPLICIT_ATOMS", or "EXPLICIT_ATOMS_BONDS"
         - atom_terminal_behavior : str
             "STANDARD" ([#6X4:1]), "WILDCARD" ([*:1]), or "H_NO_H" ([#1:1]/[!#1:1])
+        - atom_resursion_level : int, default=0
+            Level of recursion in definitions
 
         **Bond Configuration Options:**
         - bond_include_ring_info : bool
@@ -665,6 +804,11 @@ def create_specificity_factories(
         if "atom_terminal_behavior" in factory_args:
             factory_args["atom_terminal_behavior"] = getattr(
                 TerminalBehavior, factory_args["atom_terminal_behavior"]
+            )
+
+        if "atom_bonded_behavior" in factory_args:
+            factory_args["atom_bonded_behavior"] = getattr(
+                BondedAtomBehavior, factory_args["atom_bonded_behavior"]
             )
 
         if "bond_specificity" in factory_args:
