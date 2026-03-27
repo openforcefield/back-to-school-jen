@@ -1,4 +1,4 @@
-# FF-D: Generalized Bond Recursive
+# FF-D2: Generalized Bonds with Recursive Ring SMIRKS
 
 Bond SMIRKS use recursive ring detection with generalized atom environments.
 Source OFFXML: `4_make_offxmls/d_gen_bond_recursive/openff-2.3.0-gen_bond_atom_rec1.offxml`.
@@ -20,9 +20,10 @@ PARAMETERS = {
 The process of taking the mean from the initial dataset is done in `fit_data.py`.
 
 Learning Rate: 0.005
-Number of Epochs: 220 (ended early)
+Number of Epochs: 50
 
 Previous Step:
+`d_gen_bond_recursive` — early incomplete fit using the same SMIRKS.
 
 Conclusion:
 

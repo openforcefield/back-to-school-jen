@@ -19,10 +19,11 @@ Unless noted otherwise, bond parameter limits are `k ≥ 0`, `length ≥ 0`; ang
 | `c_bond_generalized` | `c_no_bond_ring_recursive/openff-2.3.0-fit-bond_ring-no-bond-type` | Recursive ring SMIRKS, no bond type | Bonds | 0.005 | 40 | mean | ✓ | mean | ✓ |
 | `c2_bond_generalized_min` | `c_no_bond_ring_recursive/openff-2.3.0-fit-bond_ring-no-bond-type` | Same as c | Bonds | 0.005 | 40 | mean | ✓ | **min** | ✓ |
 | `d_gen_bond_recursive` | — | — | — | — | — | — | — | — | ✓ |
+| `d2_gen_bond_recursive` | `d_gen_bond_recursive/openff-2.3.0-gen_bond_atom_rec1` | Generalized bonds, recursive ring SMIRKS | Bonds | 0.005 | 500 | mean | ✓ | mean | ✓ |
 
 > `d_gen_bond_recursive` is incomplete; only the output `final-force-field.offxml` is preserved (no run scripts).
 
-**Note:** `d2_*` fits differ from all others in that bond lower bounds are set to **90** (not 0), and use minibatching.
+**Note:** `d2_gen_bond_recursive` differs from all others: bond `k` lower bound is **90** (not 0), and uses minibatching.
 
 ---
 
@@ -32,6 +33,7 @@ Unless noted otherwise, bond parameter limits are `k ≥ 0`, `length ≥ 0`; ang
 | a | `a_broad_specification/openff-2.3.0-ring-no-bond.offxml` |
 | b / b2 / b3 | `b_no_bond_with_ring_in_atom/openff-2.2.1-ring-no-bond.offxml` |
 | c / c2 | `c_no_bond_ring_recursive/openff-2.3.0-fit-bond_ring-no-bond-type.offxml` |
+| d / d2 | `d_gen_bond_recursive/openff-2.3.0-gen_bond_atom_rec1.offxml` |
 
 ## Topology Sources (`5_setup_train_ff_topologies/`)
 | Label | Topology directory |
@@ -40,6 +42,7 @@ Unless noted otherwise, bond parameter limits are `k ≥ 0`, `length ≥ 0`; ang
 | a | `2026_02_20_uci_off_a` |
 | b / b2 / b3 | `2025_12_08_uci_off_b` |
 | c / c2 | `2026_02_03_uci_c` |
+| d / d2 | `uci_off_d` |
 
 ---
 
