@@ -62,6 +62,27 @@ def get_off_unit_string(handler_name: str, param_col: str) -> str:
     return str(off_unit) if off_unit else ""
 
 
+def escape_smirks_for_mpl(smirks: str) -> str:
+    """Escape SMIRKS string for use as a matplotlib label.
+
+    Matplotlib's mathtext parser treats ``$`` as a math-mode delimiter.
+    SMIRKS recursive primitives (e.g. ``$([...])``) therefore cause a
+    ``ParseException`` when used directly as legend labels.  This helper
+    replaces every ``$`` with ``\\$`` so the character is rendered literally.
+
+    Parameters
+    ----------
+    smirks : str
+        Raw SMIRKS pattern.
+
+    Returns
+    -------
+    str
+        SMIRKS with ``$`` characters escaped for matplotlib.
+    """
+    return smirks.replace("$", r"\$")
+
+
 def convert_to_off_units(
     quantity: unit.Quantity, handler_name: str, param_col: str
 ) -> unit.Quantity:
@@ -503,12 +524,12 @@ def generate_training_plots(
                     )
                     continue
 
-                # Truncate SMIRKS for legend
+                # Truncate SMIRKS for legend and escape $ for matplotlib
                 smirks_short = param_info["smirks"]
                 if len(smirks_short) > 30:
                     smirks_short = smirks_short[:27] + "..."
 
-                label = f"{smirks_short}"
+                label = escape_smirks_for_mpl(smirks_short)
                 ax.plot(
                     param_history["epochs"],
                     values,
@@ -543,7 +564,7 @@ def generate_training_plots(
                 values = param_history["parameters"].get(key, [])
 
                 if values:
-                    label = f"{param_info['smirks']}"
+                    label = escape_smirks_for_mpl(param_info["smirks"])
                     ax.plot(
                         param_history["epochs"],
                         values,

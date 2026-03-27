@@ -1,31 +1,55 @@
+<<<<<<< HEAD
 /Users/jenniferclark/mamba/envs/bts/lib/python3.12/site-packages/openff/amber_ff_ports/amber_ff_ports.py:8: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
   from pkg_resources import resource_filename
-2026-03-27 15:34:16.542 | INFO     | __main__:load_metrics:86 - Loading metrics from: ../0a_openff_2.3.0-rc2/benchmark_results/metrics.json
-2026-03-27 15:34:16.670 | INFO     | __main__:load_metrics:86 - Loading metrics from: ../0b_openff_2.3.0_smee_smirks/benchmark_results/metrics.json
-2026-03-27 15:34:16.796 | INFO     | __main__:load_metrics:86 - Loading metrics from: ../a_broad_specification/benchmark_results/metrics.json
-2026-03-27 15:34:16.921 | INFO     | __main__:load_metrics:86 - Loading metrics from: ../b3_no_bond_with_ring_in_atom/benchmark_results/metrics.json
-2026-03-27 15:34:17.051 | INFO     | __main__:load_metrics:86 - Loading metrics from: ../c_bond_generalized/benchmark_results/metrics.json
-2026-03-27 15:34:17.178 | INFO     | __main__:main:1359 - Loaded 5 metrics file(s): ['OpenFF 2.3.0-rc2', 'OpenFF 2.3.0-rc2 SMEE-SPICE', 'SpecificGenBonds-a', 'SpecificGenBonds-b3', 'SpecificGenBonds-c']
-2026-03-27 15:34:17.178 | INFO     | __main__:generate_basic_plots:439 - Generating basic benchmark plots...
-2026-03-27 15:34:17.697 | INFO     | __main__:generate_basic_plots:555 - plot_difference=True, n_ff=5, plot_indices=[1, 2, 3, 4]
-2026-03-27 15:34:17.712 | INFO     | __main__:generate_basic_plots:593 - DDE histogram: using symlog y-scale for difference plot
-2026-03-27 15:34:17.826 | INFO     | __main__:generate_basic_plots:601 - Saved: plots/dde_histogram_diff.png
-2026-03-27 15:34:17.972 | INFO     | __main__:generate_basic_plots:638 - RMSD CDF: using symlog x-scale for difference plot
-2026-03-27 15:34:18.123 | INFO     | __main__:generate_basic_plots:645 - Saved: plots/rmsd_cdf_diff.png
-2026-03-27 15:34:18.270 | INFO     | __main__:generate_basic_plots:681 - TFD CDF: using symlog x-scale for difference plot
-2026-03-27 15:34:18.425 | INFO     | __main__:generate_basic_plots:688 - Saved: plots/tfd_cdf_diff.png
-2026-03-27 15:34:19.054 | INFO     | __main__:generate_basic_plots:754 - Saved: plots/icrmsd_comparison_diff.png
-2026-03-27 15:34:19.213 | INFO     | __main__:generate_basic_plots:807 - ICRMSD CDF (icrmsd_bond): using symlog x-scale for difference plot
-2026-03-27 15:34:19.355 | INFO     | __main__:generate_basic_plots:807 - ICRMSD CDF (icrmsd_angle): using symlog x-scale for difference plot
-2026-03-27 15:34:19.494 | INFO     | __main__:generate_basic_plots:807 - ICRMSD CDF (icrmsd_dihedral): using symlog x-scale for difference plot
-2026-03-27 15:34:19.630 | INFO     | __main__:generate_basic_plots:807 - ICRMSD CDF (icrmsd_improper): using symlog x-scale for difference plot
-2026-03-27 15:34:20.170 | INFO     | __main__:generate_basic_plots:818 - Saved: plots/icrmsd_by_type_diff.png
-2026-03-27 15:34:20.170 | INFO     | __main__:generate_basic_plots:820 - Basic plots saved to: plots
-2026-03-27 15:34:20.170 | INFO     | __main__:load_parameter_type_summary:104 - Loading parameter type summary from: ../0a_openff_2.3.0-rc2/benchmark_results/metrics_by_parameter_type.json
-2026-03-27 15:34:20.171 | INFO     | __main__:load_parameter_type_summary:104 - Loading parameter type summary from: ../0b_openff_2.3.0_smee_smirks/benchmark_results/metrics_by_parameter_type.json
-2026-03-27 15:34:20.172 | INFO     | __main__:load_parameter_type_summary:104 - Loading parameter type summary from: ../a_broad_specification/benchmark_results/metrics_by_parameter_type.json
-2026-03-27 15:34:20.174 | INFO     | __main__:load_parameter_type_summary:104 - Loading parameter type summary from: ../b3_no_bond_with_ring_in_atom/benchmark_results/metrics_by_parameter_type.json
-2026-03-27 15:34:20.178 | INFO     | __main__:load_parameter_type_summary:104 - Loading parameter type summary from: ../c_bond_generalized/benchmark_results/metrics_by_parameter_type.json
+2026-03-18 16:29:06.955 | INFO     | __main__:load_metrics:84 - Loading metrics from: ../0a_openff_2.3.0-rc2/benchmark_results/metrics.json
+2026-03-18 16:29:07.085 | INFO     | __main__:load_metrics:84 - Loading metrics from: ../0b_openff_2.3.0_smee_smirks/benchmark_results/metrics.json
+2026-03-18 16:29:07.212 | INFO     | __main__:load_metrics:84 - Loading metrics from: ../b_no_bond_with_ring_in_atom/benchmark_results/metrics.json
+2026-03-18 16:29:07.267 | INFO     | __main__:load_metrics:84 - Loading metrics from: ../b2_no_bond_with_ring_in_atom/benchmark_results/metrics.json
+2026-03-18 16:29:07.395 | INFO     | __main__:load_metrics:84 - Loading metrics from: ../b3_no_bond_with_ring_in_atom/benchmark_results/metrics.json
+2026-03-18 16:29:07.522 | INFO     | __main__:load_metrics:84 - Loading metrics from: ../c_bond_generalized/benchmark_results/metrics.json
+2026-03-18 16:29:07.647 | INFO     | __main__:main:1372 - Loaded 6 metrics file(s): ['OpenFF 2.3.0-rc2', 'OpenFF 2.3.0-rc2 SMEE-SPICE', 'SpecificGenBonds-b1', 'SpecificGenBonds-b2', 'SpecificGenBonds-b3', 'SpecificGenBonds-c']
+2026-03-18 16:29:07.647 | INFO     | __main__:generate_basic_plots:437 - Generating basic benchmark plots...
+2026-03-18 16:29:08.190 | INFO     | __main__:generate_basic_plots:529 - plot_difference=True, n_ff=6, plot_indices=[1, 2, 3, 4, 5]
+2026-03-18 16:29:08.316 | INFO     | __main__:generate_basic_plots:593 - Saved: plots/dde_histogram_diff.pdf
+2026-03-18 16:29:08.414 | INFO     | __main__:generate_basic_plots:644 - Saved: plots/rmsd_cdf_diff.pdf
+2026-03-18 16:29:08.505 | INFO     | __main__:generate_basic_plots:695 - Saved: plots/tfd_cdf_diff.pdf
+2026-03-18 16:29:08.710 | INFO     | __main__:generate_basic_plots:767 - Saved: plots/icrmsd_comparison_diff.pdf
+2026-03-18 16:29:09.029 | INFO     | __main__:generate_basic_plots:834 - Saved: plots/icrmsd_by_type_diff.pdf
+2026-03-18 16:29:09.029 | INFO     | __main__:generate_basic_plots:836 - Basic plots saved to: plots
+2026-03-18 16:29:09.055 | INFO     | __main__:load_parameter_type_summary:102 - Loading parameter type summary from: ../0a_openff_2.3.0-rc2/benchmark_results/metrics_by_parameter_type.json
+2026-03-18 16:29:09.058 | INFO     | __main__:load_parameter_type_summary:102 - Loading parameter type summary from: ../0b_openff_2.3.0_smee_smirks/benchmark_results/metrics_by_parameter_type.json
+2026-03-18 16:29:09.059 | INFO     | __main__:load_parameter_type_summary:102 - Loading parameter type summary from: ../b_no_bond_with_ring_in_atom/benchmark_results/metrics_by_parameter_type.json
+2026-03-18 16:29:09.062 | INFO     | __main__:load_parameter_type_summary:102 - Loading parameter type summary from: ../b2_no_bond_with_ring_in_atom/benchmark_results/metrics_by_parameter_type.json
+2026-03-18 16:29:09.067 | INFO     | __main__:load_parameter_type_summary:102 - Loading parameter type summary from: ../b3_no_bond_with_ring_in_atom/benchmark_results/metrics_by_parameter_type.json
+2026-03-18 16:29:09.071 | INFO     | __main__:load_parameter_type_summary:102 - Loading parameter type summary from: ../c_bond_generalized/benchmark_results/metrics_by_parameter_type.json
+=======
+2026-03-02 08:30:21.297 | INFO     | __main__:load_metrics:84 - Loading metrics from: ../0a_openff_2.3.0-rc2/benchmark_results/metrics.json
+2026-03-02 08:30:21.624 | INFO     | __main__:load_metrics:84 - Loading metrics from: ../0b_openff_2.3.0_smee_smirks/benchmark_results/metrics.json
+2026-03-02 08:30:21.952 | INFO     | __main__:load_metrics:84 - Loading metrics from: ../b3_no_bond_with_ring_in_atom/benchmark_results/metrics.json
+2026-03-02 08:30:22.269 | INFO     | __main__:load_metrics:84 - Loading metrics from: ../c_bond_generalized/benchmark_results/metrics.json
+2026-03-02 08:30:22.583 | INFO     | __main__:load_metrics:84 - Loading metrics from: ../a_broad_specification/benchmark_results/metrics.json
+2026-03-02 08:30:22.958 | INFO     | __main__:main:1352 - Loaded 5 metrics file(s): ['OpenFF 2.3.0-rc2', 'OpenFF 2.3.0-rc2 SMEE-SPICE', 'SpecificGenBonds-b3', 'SpecificGenBonds-c', 'SpecificGenBonds-a']
+2026-03-02 08:30:22.958 | INFO     | __main__:generate_basic_plots:437 - Generating basic benchmark plots...
+2026-03-02 08:30:24.063 | INFO     | __main__:generate_basic_plots:553 - plot_difference=True, n_ff=5, plot_indices=[1, 2, 3, 4]
+2026-03-02 08:30:24.081 | INFO     | __main__:generate_basic_plots:591 - DDE histogram: using symlog y-scale for difference plot
+2026-03-02 08:30:24.475 | INFO     | __main__:generate_basic_plots:599 - Saved: plots/dde_histogram_diff.pdf
+2026-03-02 08:30:24.820 | INFO     | __main__:generate_basic_plots:636 - RMSD CDF: using symlog x-scale for difference plot
+2026-03-02 08:30:25.258 | INFO     | __main__:generate_basic_plots:643 - Saved: plots/rmsd_cdf_diff.pdf
+2026-03-02 08:30:25.599 | INFO     | __main__:generate_basic_plots:679 - TFD CDF: using symlog x-scale for difference plot
+2026-03-02 08:30:26.021 | INFO     | __main__:generate_basic_plots:686 - Saved: plots/tfd_cdf_diff.pdf
+2026-03-02 08:30:27.673 | INFO     | __main__:generate_basic_plots:750 - Saved: plots/icrmsd_comparison_diff.pdf
+2026-03-02 08:30:28.038 | INFO     | __main__:generate_basic_plots:803 - ICRMSD CDF (icrmsd_bond): using symlog x-scale for difference plot
+2026-03-02 08:30:28.376 | INFO     | __main__:generate_basic_plots:803 - ICRMSD CDF (icrmsd_angle): using symlog x-scale for difference plot
+2026-03-02 08:30:28.715 | INFO     | __main__:generate_basic_plots:803 - ICRMSD CDF (icrmsd_dihedral): using symlog x-scale for difference plot
+2026-03-02 08:30:29.054 | INFO     | __main__:generate_basic_plots:803 - ICRMSD CDF (icrmsd_improper): using symlog x-scale for difference plot
+2026-03-02 08:30:30.647 | INFO     | __main__:generate_basic_plots:814 - Saved: plots/icrmsd_by_type_diff.pdf
+2026-03-02 08:30:30.647 | INFO     | __main__:generate_basic_plots:816 - Basic plots saved to: plots
+2026-03-02 08:30:30.647 | INFO     | __main__:load_parameter_type_summary:102 - Loading parameter type summary from: ../0a_openff_2.3.0-rc2/benchmark_results/metrics_by_parameter_type.json
+2026-03-02 08:30:30.649 | INFO     | __main__:load_parameter_type_summary:102 - Loading parameter type summary from: ../0b_openff_2.3.0_smee_smirks/benchmark_results/metrics_by_parameter_type.json
+2026-03-02 08:30:30.651 | INFO     | __main__:load_parameter_type_summary:102 - Loading parameter type summary from: ../b3_no_bond_with_ring_in_atom/benchmark_results/metrics_by_parameter_type.json
+2026-03-02 08:30:30.662 | INFO     | __main__:load_parameter_type_summary:102 - Loading parameter type summary from: ../c_bond_generalized/benchmark_results/metrics_by_parameter_type.json
+2026-03-02 08:30:30.666 | INFO     | __main__:load_parameter_type_summary:102 - Loading parameter type summary from: ../a_broad_specification/benchmark_results/metrics_by_parameter_type.json
+>>>>>>> main
 
 ======================================================================
 BENCHMARK SUMMARY
@@ -43,12 +67,6 @@ OpenFF 2.3.0-rc2 SMEE-SPICE
   RMSD: mean=0.265, std=0.264, n=62392
   TFD:  mean=0.0412, std=0.0403, n=62392
 
-SpecificGenBonds-a
---------------------------------------------------
-  DDE:  mean=-0.723, std=2.981, n=52247
-  RMSD: mean=0.274, std=0.269, n=61408
-  TFD:  mean=0.0428, std=0.0390, n=61408
-
 SpecificGenBonds-b3
 --------------------------------------------------
   DDE:  mean=-0.401, std=3.656, n=53105
@@ -60,6 +78,12 @@ SpecificGenBonds-c
   DDE:  mean=-0.860, std=3.202, n=52255
   RMSD: mean=0.480, std=1.360, n=61417
   TFD:  mean=0.0448, std=0.0412, n=61417
+
+SpecificGenBonds-a
+--------------------------------------------------
+  DDE:  mean=-0.723, std=2.981, n=52247
+  RMSD: mean=0.274, std=0.269, n=61408
+  TFD:  mean=0.0428, std=0.0390, n=61408
 
 ======================================================================
 TOP PARAMETER TYPES BY MEAN DEVIATION
@@ -92,13 +116,6 @@ Bonds (Å):
     5. b77: mean=0.0479 Å, n=13
        SMIRKS: [#7:1]-[#17:2]
 
-  SpecificGenBonds-a:
-    1. specificity=0 index=247 count=17: mean=0.3255 Å, n=391
-    2. specificity=0 index=774 count=5: mean=0.2448 Å, n=25
-    3. specificity=0 index=907 count=1: mean=0.1740 Å, n=5
-    4. specificity=0 index=702 count=14: mean=0.1551 Å, n=5
-    5. specificity=0 index=869 count=1: mean=0.1377 Å, n=4
-
   SpecificGenBonds-b3:
     1. specificity=0 index=95 count=1: mean=0.3762 Å, n=1
        SMIRKS: [#16X2:1]~[#16X4:2]
@@ -122,6 +139,13 @@ Bonds (Å):
        SMIRKS: [#6X3;r7:1]~;@[#6X3;r7:2]
     5. specificity=0 index=793 count=1: mean=0.1837 Å, n=5
        SMIRKS: [#16X4;r6:1]~;@[#7X2;r7:2]
+
+  SpecificGenBonds-a:
+    1. specificity=0 index=247 count=17: mean=0.3255 Å, n=391
+    2. specificity=0 index=774 count=5: mean=0.2448 Å, n=25
+    3. specificity=0 index=907 count=1: mean=0.1740 Å, n=5
+    4. specificity=0 index=702 count=14: mean=0.1551 Å, n=5
+    5. specificity=0 index=869 count=1: mean=0.1377 Å, n=4
 
 Angles (°):
 ----------------------------------------------------------------------
@@ -149,13 +173,6 @@ Angles (°):
     5. a7: mean=3.6155 °, n=6982
        SMIRKS: [#6r4:1]1-;@[#6r4:2]-;@[#6r4:3]~[*]~1
 
-  SpecificGenBonds-a:
-    1. a24a: mean=15.8858 °, n=26
-    2. unmatched: mean=15.1132 °, n=198
-    3. a15a: mean=7.4893 °, n=1002
-    4. a40: mean=6.8695 °, n=748
-    5. a24: mean=4.0822 °, n=177
-
   SpecificGenBonds-b3:
     1. specificity=0 index=10 count=48: mean=53.3681 °, n=47
        SMIRKS: [*:1]~[#15X3:2]~[*:3]
@@ -177,6 +194,13 @@ Angles (°):
        SMIRKS: [*:1]~[#15:2]~[*:3]
     5. a12: mean=4.7522 °, n=2185
        SMIRKS: [#1:1]-[#6X3:2]-[#1:3]
+
+  SpecificGenBonds-a:
+    1. a24a: mean=15.8858 °, n=26
+    2. unmatched: mean=15.1132 °, n=198
+    3. a15a: mean=7.4893 °, n=1002
+    4. a40: mean=6.8695 °, n=748
+    5. a24: mean=4.0822 °, n=177
 
 Dihedrals (°):
 ----------------------------------------------------------------------
@@ -205,13 +229,6 @@ Dihedrals (°):
     5. t84: mean=100.5954 °, n=71646
        SMIRKS: [*:1]~[#7X2:2]:[#6X3:3]~[*:4]
 
-  SpecificGenBonds-a:
-    1. t82b: mean=151.2995 °, n=85
-    2. t130b: mean=139.3407 °, n=28
-    3. t88: mean=128.6299 °, n=29
-    4. t107: mean=107.9172 °, n=5215
-    5. t82: mean=106.8835 °, n=8880
-
   SpecificGenBonds-b3:
     1. t141: mean=179.9919 °, n=4
        SMIRKS: [*:1]~[#7X3+1:2]=,:[#7X2:3]~[*:4]
@@ -235,6 +252,13 @@ Dihedrals (°):
        SMIRKS: [*:1]~[#6X3:2](=[#8,#16,#7])-[#8X2H0:3]-[*:4]
     5. t82: mean=107.8946 °, n=8507
        SMIRKS: [*:1]=[#7X2:2]-[#6X3:3]-[*:4]
+
+  SpecificGenBonds-a:
+    1. t82b: mean=151.2995 °, n=85
+    2. t130b: mean=139.3407 °, n=28
+    3. t88: mean=128.6299 °, n=29
+    4. t107: mean=107.9172 °, n=5215
+    5. t82: mean=106.8835 °, n=8880
 
 Impropers (°):
 ----------------------------------------------------------------------
@@ -261,13 +285,6 @@ Impropers (°):
     5. i6: mean=1.5018 °, n=30393
        SMIRKS: [*:1]~[#7X3$(*@1-[*]=,:[*][*]=,:[*]@1):2](~[*:3])~[*:4]
 
-  SpecificGenBonds-a:
-    1. i3: mean=9.1525 °, n=984
-    2. i5: mean=6.5196 °, n=1129
-    3. unmatched: mean=6.2237 °, n=4618
-    4. i4: mean=5.4892 °, n=68802
-    5. i6: mean=1.5610 °, n=29937
-
   SpecificGenBonds-b3:
     1. i3: mean=20.3056 °, n=2811
        SMIRKS: [*:1]~[#7X3$(*~[#15,#16](!-[*])):2](~[*:3])~[*:4]
@@ -289,4 +306,15 @@ Impropers (°):
        SMIRKS: [*:1]~[#7X3$(*~[#6X3]):2](~[*:3])~[*:4]
     5. i6: mean=1.6130 °, n=29927
        SMIRKS: [*:1]~[#7X3$(*@1-[*]=,:[*][*]=,:[*]@1):2](~[*:3])~[*:4]
-2026-03-27 15:34:21.140 | INFO     | __main__:main:1410 - Plot generation complete!
+<<<<<<< HEAD
+2026-03-18 16:29:11.272 | INFO     | __main__:main:1423 - Plot generation complete!
+=======
+
+  SpecificGenBonds-a:
+    1. i3: mean=9.1525 °, n=984
+    2. i5: mean=6.5196 °, n=1129
+    3. unmatched: mean=6.2237 °, n=4618
+    4. i4: mean=5.4892 °, n=68802
+    5. i6: mean=1.5610 °, n=29937
+2026-03-02 08:30:33.355 | INFO     | __main__:main:1403 - Plot generation complete!
+>>>>>>> main
