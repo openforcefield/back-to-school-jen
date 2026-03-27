@@ -18,8 +18,8 @@ Unless noted otherwise, bond parameter limits are `k ≥ 0`, `length ≥ 0`; ang
 | `b3_no_bond_with_ring_in_atom` | `b_no_bond_with_ring_in_atom/openff-2.2.1-ring-no-bond` | Same as b | Bonds + Angles | 0.005 | 400 | mean | ✗ | mean | ✗ |
 | `c_bond_generalized` | `c_no_bond_ring_recursive/openff-2.3.0-fit-bond_ring-no-bond-type` | Recursive ring SMIRKS, no bond type | Bonds | 0.005 | 40 | mean | ✓ | mean | ✓ |
 | `c2_bond_generalized_min` | `c_no_bond_ring_recursive/openff-2.3.0-fit-bond_ring-no-bond-type` | Same as c | Bonds | 0.005 | 40 | mean | ✓ | **min** | ✓ |
-| `d_gen_bond_recursive` | — | — | — | — | — | — | — | — | ✓ |
-| `d2_gen_bond_recursive` | `d_gen_bond_recursive/openff-2.3.0-gen_bond_atom_rec1` | Generalized bonds, recursive ring SMIRKS | Bonds | 0.005 | 500 | mean | ✓ | mean | ✓ |
+| `d_gen_bond_recursive` | `d_gen_bond_recursive/openff-2.3.0-gen_bond_atom_rec1` | Generalized bonds, recursive, ring SMIRKS | Bonds | 0.005 | 220 | mean | ✓ | mean | ✓ |
+| `d2_gen_bond_recursive` | `d_gen_bond_recursive/openff-2.3.0-gen_bond_atom_rec1` | Generalized bonds, recursive, ring SMIRKS | Bonds | 0.005 | 50 | mean | ✓ | mean | ✓ |
 
 > `d_gen_bond_recursive` is incomplete; only the output `final-force-field.offxml` is preserved (no run scripts).
 
