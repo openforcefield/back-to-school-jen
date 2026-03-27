@@ -9,20 +9,20 @@ Unless noted otherwise, bond parameter limits are `k ≥ 0`, `length ≥ 0`; ang
 
 ## Summary Table
 
-| Directory | Base OFFXML | SMIRKS | Fit | LR | Epochs | Scaling | Val Set | Ref |
-|---|---|---|---|---|---|---|---|---|
-| `0_openff_2.3-rc2` | `openff_unconstrained-2.3.0-rc2` | Stock OpenFF-2.3.0-rc2 | Bonds + Angles | 0.015 | 300 | mean | ✗ | mean |
-| `a_broad_specification` | `a_broad_specification/openff-2.3.0-ring-no-bond` | Broad element+ring (atom primitive) | Bonds | 0.005 | 40 | mean | ✓ | mean |
-| `b_no_bond_with_ring_in_atom` | `b_no_bond_with_ring_in_atom/openff-2.2.1-ring-no-bond` | Element connectivity + ring, no bond type | Bonds + Angles | 0.03 | 300 | mean | ✗ | mean |
-| `b2_no_bond_with_ring_in_atom` | `b_no_bond_with_ring_in_atom/openff-2.2.1-ring-no-bond` | Same as b | Bonds + Angles | 0.02 | 300 | fixed (`1e-2`/`1.0`) | ✗ | mean |
-| `b3_no_bond_with_ring_in_atom` | `b_no_bond_with_ring_in_atom/openff-2.2.1-ring-no-bond` | Same as b | Bonds + Angles | 0.005 | 400 | mean | ✗ | mean |
-| `c_bond_generalized` | `c_no_bond_ring_recursive/openff-2.3.0-fit-bond_ring-no-bond-type` | Recursive ring SMIRKS, no bond type | Bonds | 0.005 | 40 | mean | ✓ | mean |
-| `c2_bond_generalized_min` | `c_no_bond_ring_recursive/openff-2.3.0-fit-bond_ring-no-bond-type` | Same as c | Bonds | 0.005 | 40 | mean | ✓ | **min** |
-| `d_gen_bond_recursive` | — | — | — | — | — | — | — | — |
+| Directory | Base OFFXML | SMIRKS | Fit | LR | Epochs | Scaling | Val Set | Ref | Minibatch |
+|---|---|---|---|---|---|---|---|---|---|
+| `0_openff_2.3-rc2` | `openff_unconstrained-2.3.0-rc2` | Stock OpenFF-2.3.0-rc2 | Bonds + Angles | 0.015 | 300 | mean | ✗ | mean | ✗ |
+| `a_broad_specification` | `a_broad_specification/openff-2.3.0-ring-no-bond` | Broad element+ring (atom primitive) | Bonds | 0.005 | 40 | mean | ✓ | mean | ✓ |
+| `b_no_bond_with_ring_in_atom` | `b_no_bond_with_ring_in_atom/openff-2.2.1-ring-no-bond` | Element connectivity + ring, no bond type | Bonds + Angles | 0.03 | 300 | mean | ✗ | mean | ✗ |
+| `b2_no_bond_with_ring_in_atom` | `b_no_bond_with_ring_in_atom/openff-2.2.1-ring-no-bond` | Same as b | Bonds + Angles | 0.02 | 300 | fixed (`1e-2`/`1.0`) | ✗ | mean | ✗ |
+| `b3_no_bond_with_ring_in_atom` | `b_no_bond_with_ring_in_atom/openff-2.2.1-ring-no-bond` | Same as b | Bonds + Angles | 0.005 | 400 | mean | ✗ | mean | ✗ |
+| `c_bond_generalized` | `c_no_bond_ring_recursive/openff-2.3.0-fit-bond_ring-no-bond-type` | Recursive ring SMIRKS, no bond type | Bonds | 0.005 | 40 | mean | ✓ | mean | ✓ |
+| `c2_bond_generalized_min` | `c_no_bond_ring_recursive/openff-2.3.0-fit-bond_ring-no-bond-type` | Same as c | Bonds | 0.005 | 40 | mean | ✓ | **min** | ✓ |
+| `d_gen_bond_recursive` | — | — | — | — | — | — | — | — | ✓ |
 
 > `d_gen_bond_recursive` is incomplete; only the output `final-force-field.offxml` is preserved (no run scripts).
 
-**Note:** `d2_*` fits differ from all others in that bond lower bounds are **not** 0.
+**Note:** `d2_*` fits differ from all others in that bond lower bounds are set to **90** (not 0), and use minibatching.
 
 ---
 

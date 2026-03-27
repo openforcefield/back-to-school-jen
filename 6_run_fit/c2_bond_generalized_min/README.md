@@ -5,6 +5,7 @@ Source OFFXML: `4_make_offxmls/c_no_bond_ring_recursive/openff-2.3.0-fit-bond_ri
 Topology: `5_setup_train_ff_topologies/2026_02_03_uci_c`.
 
 **Bonds only** (Angles not fit). Validation set used during training (`full_split_uci/data-test`).
+**Minibatching**
 
 Scaling is data-derived (mean-based) as defined in `fit_data.py`:
 ```python
