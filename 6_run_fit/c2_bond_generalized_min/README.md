@@ -1,6 +1,6 @@
 # FF-C2: Generalized Bonds with Recursive Ring SMIRKS (descent-reference=min)
 
-Bond SMIRKS use recursive ring detection (`r:1` notation) to encode ring membership without specifying bond type.
+Bond SMIRKS generalized without specifying bond type, one level
 Source OFFXML: `4_make_offxmls/c_no_bond_ring_recursive/openff-2.3.0-fit-bond_ring-no-bond-type.offxml`.
 Topology: `5_setup_train_ff_topologies/2026_02_03_uci_c`.
 
