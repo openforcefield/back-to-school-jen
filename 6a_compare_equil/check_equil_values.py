@@ -784,6 +784,115 @@ def save_parameter_molecule_mapping(
     logger.info(f"Saved parameter-to-molecules mapping to: {output_path}")
 
 
+def save_statistics_to_csv(
+    dataset_ic_values: list[dict[str, list[float]]],
+    dataset_labels: list[str],
+    ff_params: dict[str, float],
+    ic_type: str,
+    force_field: ForceField,
+    output_path: pathlib.Path,
+) -> None:
+    """Save per-parameter statistics to a CSV file.
+
+    For each force field parameter, writes its SMIRKS pattern, equilibrium
+    value, and per-dataset descriptive statistics (n, mean, std, min, Q1,
+    median, Q3, max, IQR, lower whisker, upper whisker).  Whisker bounds
+    follow the Tukey convention used by matplotlib boxplot (Q1/Q3 ± 1.5×IQR,
+    clamped to the observed min/max).
+
+    Parameters
+    ----------
+    dataset_ic_values : list[dict[str, list[float]]]
+        Observed IC values per dataset: [{param_id: [values]}, ...].
+    dataset_labels : list[str]
+        Labels for each dataset (used as column prefixes).
+    ff_params : dict[str, float]
+        Force field equilibrium values keyed by simple param ID (e.g. "b0").
+    ic_type : str
+        "Bond" or "Angle".
+    force_field : ForceField
+        OpenFF ForceField object used to look up SMIRKS patterns.
+    output_path : pathlib.Path
+        Destination CSV file path.
+
+    Notes
+    -----
+    Columns written per dataset (prefixed with the dataset label)::
+
+        {label}_n, {label}_mean, {label}_std, {label}_min,
+        {label}_q1, {label}_median, {label}_q3, {label}_max,
+        {label}_iqr, {label}_whisker_low, {label}_whisker_high
+    """
+    handler_name = "Bonds" if ic_type == "Bond" else "Angles"
+    id_prefix = "b" if ic_type == "Bond" else "a"
+    handler = force_field.get_parameter_handler(handler_name)
+    simple_id_to_smirks = {
+        f"{id_prefix}{i}": param.smirks for i, param in enumerate(handler.parameters)
+    }
+
+    sorted_param_ids = sorted(ff_params.keys(), key=lambda x: int(x[len(id_prefix) :]))
+
+    stat_cols = [
+        "n",
+        "mean",
+        "std",
+        "min",
+        "q1",
+        "median",
+        "q3",
+        "max",
+        "iqr",
+        "whisker_low",
+        "whisker_high",
+    ]
+    header = ["param_id", "smirks", "ff_equilibrium"]
+    for label in dataset_labels:
+        for stat in stat_cols:
+            header.append(f"{label}_{stat}")
+
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    with open(output_path, "w", newline="") as f:
+        writer = csv.writer(f)
+        writer.writerow(header)
+
+        for param_id in sorted_param_ids:
+            smirks = simple_id_to_smirks.get(param_id, "")
+            equil_val = ff_params.get(param_id, "")
+            row: list = [param_id, smirks, equil_val]
+
+            for dataset_ic_vals in dataset_ic_values:
+                values = dataset_ic_vals.get(param_id, [])
+                if values:
+                    arr = np.array(values)
+                    q1 = float(np.percentile(arr, 25))
+                    median = float(np.percentile(arr, 50))
+                    q3 = float(np.percentile(arr, 75))
+                    iqr = q3 - q1
+                    whisker_low = max(float(arr.min()), q1 - 1.5 * iqr)
+                    whisker_high = min(float(arr.max()), q3 + 1.5 * iqr)
+                    row.extend(
+                        [
+                            len(values),
+                            float(arr.mean()),
+                            float(arr.std()),
+                            float(arr.min()),
+                            q1,
+                            median,
+                            q3,
+                            float(arr.max()),
+                            iqr,
+                            whisker_low,
+                            whisker_high,
+                        ]
+                    )
+                else:
+                    row.extend([""] * len(stat_cols))
+
+            writer.writerow(row)
+
+    logger.info(f"Saved {ic_type} statistics CSV to: {output_path}")
+
+
 def save_large_plot_with_fallback(
     fig,
     output_path: pathlib.Path,
@@ -1193,8 +1302,10 @@ def main(
         cache_file = cache_dir / f"dataset_{i}_ic_values.json"
 
         if cache_file.exists():
-            print(f"\nFound cached IC values for '{dataset_label}': {cache_file}")
-            print(f"Skipping '{dataset_label}' dataset analysis...")
+            logger.info(f"Found cached IC values for '{dataset_label}': {cache_file}")
+            logger.info(
+                f"Skipping '{dataset_label}' dataset analysis (delete cache to rerun)"
+            )
             ic_values = load_ic_values_from_json(cache_file)
         else:
             dataset = load_dataset(dataset_path)
@@ -1242,13 +1353,32 @@ def main(
             del first_dataset
             gc.collect()
 
-    # Generate plots with all datasets
-    print("\nGenerating plots...")
     plots_dir = output_dir / "plots"
     plots_dir.mkdir(parents=True, exist_ok=True)
 
-    # Extract bond data from all datasets
     bond_data = [ic_vals["Bond"] for ic_vals in all_ic_values]
+    angle_data = [ic_vals["Angle"] for ic_vals in all_ic_values]
+
+    # Save per-parameter statistics CSVs first (independent of plotting)
+    save_statistics_to_csv(
+        bond_data,
+        dataset_labels,
+        ff_params["Bonds"],
+        "Bond",
+        ff,
+        plots_dir / "bond_statistics.csv",
+    )
+    save_statistics_to_csv(
+        angle_data,
+        dataset_labels,
+        ff_params["Angles"],
+        "Angle",
+        ff,
+        plots_dir / "angle_statistics.csv",
+    )
+
+    # Generate plots with all datasets
+    print("\nGenerating plots...")
     plot_equilibrium_comparison(
         bond_data,
         dataset_labels,
@@ -1258,8 +1388,6 @@ def main(
         param_id_mapping=bond_mapping,
     )
 
-    # Extract angle data from all datasets
-    angle_data = [ic_vals["Angle"] for ic_vals in all_ic_values]
     plot_equilibrium_comparison(
         angle_data,
         dataset_labels,
