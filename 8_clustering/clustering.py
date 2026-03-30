@@ -37,8 +37,8 @@ Output Structure
 Creates the following outputs in specified output directory:
 - bonds_clusters.csv          # Bond parameter cluster assignments
 - angles_clusters.csv          # Angle parameter cluster assignments
-- bonds_clusters.pdf           # Scatter plot with cluster labels
-- angles_clusters.pdf          # Scatter plot with cluster labels
+- bonds_clusters.png           # Scatter plot with cluster labels
+- angles_clusters.png          # Scatter plot with cluster labels
 
 CSV Schema
 ----------
@@ -460,7 +460,7 @@ def plot_and_cluster(
         )
     plt.subplots_adjust(right=right_margin)
 
-    out_plot = output_dir / f"{handler_name.lower()}_clusters.pdf"
+    out_plot = output_dir / f"{handler_name.lower()}_clusters.png"
     fig.tight_layout()
     fig.savefig(out_plot, dpi=150, bbox_inches="tight")
     logger.info(f"Saved cluster plot to: {out_plot}")
@@ -522,7 +522,7 @@ def plot_k_vs_eq_by_element_pairs(
 
     Creates one PDF per element-element combination found in `entries` and
     saves them to `output_dir` with filenames of the form
-    `bonds_k_vs_length_<EL1>_<EL2>.pdf` where EL1 and EL2 are element symbols.
+    `bonds_k_vs_length_<EL1>_<EL2>.png` where EL1 and EL2 are element symbols.
     """
     if handler_name != "Bonds":
         logger.debug(
@@ -610,7 +610,7 @@ def plot_k_vs_eq_by_element_pairs(
                 title="Bond Order",
                 fontsize=10,
             )
-        out_plot = output_dir / f"bonds_k_vs_length_{safe_pair}.pdf"
+        out_plot = output_dir / f"bonds_k_vs_length_{safe_pair}.png"
         fig.tight_layout()
         fig.savefig(out_plot, dpi=150, bbox_inches="tight")
         logger.info(f"Saved element-pair plot to: {out_plot}")
@@ -665,8 +665,8 @@ def main(
     Output files created in output_dir:
     - bonds_clusters.csv: Bond parameter cluster assignments
     - angles_clusters.csv: Angle parameter cluster assignments
-    - bonds_clusters.pdf: Bond parameter scatter plot
-    - angles_clusters.pdf: Angle parameter scatter plot
+    - bonds_clusters.png: Bond parameter scatter plot
+    - angles_clusters.png: Angle parameter scatter plot
 
     Examples
     --------
