@@ -5,26 +5,26 @@ python ../plot_benchmark.py \
         ../0a_openff_2.3.0-rc2/benchmark_results/metrics.json \
         ../0b_openff_2.3.0_smee_smirks/benchmark_results/metrics.json \
         ../a_broad_specification/benchmark_results/metrics.json \
-        ../b3_no_bond_with_ring_in_atom/benchmark_results/metrics.json \
 	    ../c_bond_generalized/benchmark_results/metrics.json \
+	    ../d_gen_bond_recursive/benchmark_results/metrics.json \
     --labels \
-        "OpenFF 2.3.0-rc2" \
-        "OpenFF 2.3.0-rc2 SMEE-SPICE" \
-        "SpecificGenBonds-a" \
-        "SpecificGenBonds-b3" \
-        "SpecificGenBonds-c" \
+        "Sage 2.3.0" \
+        "Sage 2.3.0 SMEE-SPICE" \
+        "ff-a: Spec Bonds" \
+        "ff-c: Gen Bonds" \
+        "ff-d: Gen Bonds Recursive" \
     --param-json \
         ../0a_openff_2.3.0-rc2/benchmark_results/metrics_by_parameter_type.json \
         ../0b_openff_2.3.0_smee_smirks/benchmark_results/metrics_by_parameter_type.json \
         ../a_broad_specification/benchmark_results/metrics_by_parameter_type.json \
-        ../b3_no_bond_with_ring_in_atom/benchmark_results/metrics_by_parameter_type.json \
         ../c_bond_generalized/benchmark_results/metrics_by_parameter_type.json \
+        ../d_gen_bond_recursive/benchmark_results/metrics_by_parameter_type.json \
     --offxml \
         ../../forcefields/openff_unconstrained-2.3.0-rc2.offxml \
         ../../6_run_fit/0_openff_2.3-rc2/final-force-field.offxml \
 	    ../../6_run_fit/a_broad_specification/final-force-field.offxml \
-        ../../6_run_fit/b3_no_bond_with_ring_in_atom/final-force-field.offxml \
         ../../6_run_fit/c_bond_generalized/final-force-field.offxml \
+        ../../6_run_fit/d_gen_bond_recursive/final-force-field.offxml \
     --output-dir . \
     -vv 2>&1 | tee plotting_log.txt
 
@@ -33,26 +33,26 @@ python ../plot_benchmark.py \
         ../0a_openff_2.3.0-rc2/benchmark_results/metrics.json \
         ../0b_openff_2.3.0_smee_smirks/benchmark_results/metrics.json \
         ../a_broad_specification/benchmark_results/metrics.json \
-        ../b3_no_bond_with_ring_in_atom/benchmark_results/metrics.json \
 	    ../c_bond_generalized/benchmark_results/metrics.json \
+	    ../d_gen_bond_recursive/benchmark_results/metrics.json \
     --labels \
-        "OpenFF 2.3.0-rc2" \
-        "OpenFF 2.3.0-rc2 SMEE-SPICE" \
-        "SpecificGenBonds-a" \
-        "SpecificGenBonds-b3" \
-        "SpecificGenBonds-c" \
+        "Sage 2.3.0" \
+        "Sage 2.3.0 SMEE-SPICE" \
+        "ff-a: Spec Bonds" \
+        "ff-c: Gen Bonds" \
+        "ff-d: Gen Bonds Recursive" \
     --param-json \
         ../0a_openff_2.3.0-rc2/benchmark_results/metrics_by_parameter_type.json \
         ../0b_openff_2.3.0_smee_smirks/benchmark_results/metrics_by_parameter_type.json \
         ../a_broad_specification/benchmark_results/metrics_by_parameter_type.json \
-        ../b3_no_bond_with_ring_in_atom/benchmark_results/metrics_by_parameter_type.json \
         ../c_bond_generalized/benchmark_results/metrics_by_parameter_type.json \
+        ../d_gen_bond_recursive/benchmark_results/metrics_by_parameter_type.json \
     --offxml \
         ../../forcefields/openff_unconstrained-2.3.0-rc2.offxml \
         ../../6_run_fit/0_openff_2.3-rc2/final-force-field.offxml \
         ../a_broad_specification/benchmark_results/metrics.json \
-        ../../6_run_fit/b3_no_bond_with_ring_in_atom/final-force-field.offxml \
         ../../6_run_fit/c_bond_generalized/final-force-field.offxml \
+        ../../6_run_fit/d_gen_bond_recursive/final-force-field.offxml \
     --output-dir . \
     --plot-difference \
     -vv 2>&1 | tee plotting_log_diff.txt
