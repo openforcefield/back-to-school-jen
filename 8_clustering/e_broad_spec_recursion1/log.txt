@@ -1,0 +1,49 @@
+2026-03-30 09:57:02.183 | INFO     | __main__:main:683 - Output directory: /Users/jenniferclark/bin/back-to-school-jen/8_clustering/e_broad_spec_recursion1/clusters
+2026-03-30 09:57:02.183 | INFO     | __main__:load_offxml:134 - Loading OFFXML force field from: ../../6_run_fit/e_broad_spec_recursion1/final-force-field.offxml
+2026-03-30 09:57:06.310 | INFO     | __main__:main:688 - Extracting bond parameters...
+2026-03-30 09:57:06.743 | INFO     | __main__:main:694 - Found 22916 bond parameters
+2026-03-30 09:57:07.583 | INFO     | __main__:plot_k_vs_eq_by_element_pairs:616 - Saved element-pair plot to: clusters/bonds_k_vs_length_Br_C.png
+2026-03-30 09:57:07.698 | INFO     | __main__:plot_k_vs_eq_by_element_pairs:616 - Saved element-pair plot to: clusters/bonds_k_vs_length_Br_N.png
+2026-03-30 09:57:07.790 | INFO     | __main__:plot_k_vs_eq_by_element_pairs:616 - Saved element-pair plot to: clusters/bonds_k_vs_length_Br_P.png
+2026-03-30 09:57:07.887 | INFO     | __main__:plot_k_vs_eq_by_element_pairs:616 - Saved element-pair plot to: clusters/bonds_k_vs_length_Br_S.png
+2026-03-30 09:57:43.416 | INFO     | __main__:plot_k_vs_eq_by_element_pairs:616 - Saved element-pair plot to: clusters/bonds_k_vs_length_C_C.png
+2026-03-30 09:57:45.276 | INFO     | __main__:plot_k_vs_eq_by_element_pairs:616 - Saved element-pair plot to: clusters/bonds_k_vs_length_C_Cl.png
+2026-03-30 09:58:11.445 | INFO     | __main__:plot_k_vs_eq_by_element_pairs:616 - Saved element-pair plot to: clusters/bonds_k_vs_length_C_H.png
+2026-03-30 09:58:11.711 | INFO     | __main__:plot_k_vs_eq_by_element_pairs:616 - Saved element-pair plot to: clusters/bonds_k_vs_length_C_I.png
+2026-03-30 09:58:14.324 | INFO     | __main__:plot_k_vs_eq_by_element_pairs:616 - Saved element-pair plot to: clusters/bonds_k_vs_length_C_N.png
+2026-03-30 09:58:14.499 | INFO     | __main__:plot_k_vs_eq_by_element_pairs:616 - Saved element-pair plot to: clusters/bonds_k_vs_length_C_O.png
+2026-03-30 09:58:15.905 | INFO     | __main__:plot_k_vs_eq_by_element_pairs:616 - Saved element-pair plot to: clusters/bonds_k_vs_length_C_P.png
+2026-03-30 09:58:28.197 | INFO     | __main__:plot_k_vs_eq_by_element_pairs:616 - Saved element-pair plot to: clusters/bonds_k_vs_length_C_S.png
+2026-03-30 09:58:28.311 | INFO     | __main__:plot_k_vs_eq_by_element_pairs:616 - Saved element-pair plot to: clusters/bonds_k_vs_length_Cl_N.png
+2026-03-30 09:58:28.501 | INFO     | __main__:plot_k_vs_eq_by_element_pairs:616 - Saved element-pair plot to: clusters/bonds_k_vs_length_Cl_P.png
+2026-03-30 09:58:28.629 | INFO     | __main__:plot_k_vs_eq_by_element_pairs:616 - Saved element-pair plot to: clusters/bonds_k_vs_length_Cl_S.png
+2026-03-30 09:58:29.222 | INFO     | __main__:plot_k_vs_eq_by_element_pairs:616 - Saved element-pair plot to: clusters/bonds_k_vs_length_H_N.png
+2026-03-30 09:58:29.334 | INFO     | __main__:plot_k_vs_eq_by_element_pairs:616 - Saved element-pair plot to: clusters/bonds_k_vs_length_H_O.png
+2026-03-30 09:58:29.502 | INFO     | __main__:plot_k_vs_eq_by_element_pairs:616 - Saved element-pair plot to: clusters/bonds_k_vs_length_H_P.png
+2026-03-30 09:58:29.750 | INFO     | __main__:plot_k_vs_eq_by_element_pairs:616 - Saved element-pair plot to: clusters/bonds_k_vs_length_H_S.png
+2026-03-30 09:58:29.839 | INFO     | __main__:plot_k_vs_eq_by_element_pairs:616 - Saved element-pair plot to: clusters/bonds_k_vs_length_I_N.png
+2026-03-30 09:58:29.956 | INFO     | __main__:plot_k_vs_eq_by_element_pairs:616 - Saved element-pair plot to: clusters/bonds_k_vs_length_I_P.png
+2026-03-30 09:58:30.191 | INFO     | __main__:plot_k_vs_eq_by_element_pairs:616 - Saved element-pair plot to: clusters/bonds_k_vs_length_N_N.png
+2026-03-30 09:58:30.298 | INFO     | __main__:plot_k_vs_eq_by_element_pairs:616 - Saved element-pair plot to: clusters/bonds_k_vs_length_N_O.png
+2026-03-30 09:58:30.838 | INFO     | __main__:plot_k_vs_eq_by_element_pairs:616 - Saved element-pair plot to: clusters/bonds_k_vs_length_N_P.png
+2026-03-30 09:58:31.161 | INFO     | __main__:plot_k_vs_eq_by_element_pairs:616 - Saved element-pair plot to: clusters/bonds_k_vs_length_N_S.png
+2026-03-30 09:58:31.252 | INFO     | __main__:plot_k_vs_eq_by_element_pairs:616 - Saved element-pair plot to: clusters/bonds_k_vs_length_O_O.png
+2026-03-30 09:58:31.433 | INFO     | __main__:plot_k_vs_eq_by_element_pairs:616 - Saved element-pair plot to: clusters/bonds_k_vs_length_O_P.png
+2026-03-30 09:58:31.580 | INFO     | __main__:plot_k_vs_eq_by_element_pairs:616 - Saved element-pair plot to: clusters/bonds_k_vs_length_O_S.png
+2026-03-30 09:58:32.341 | INFO     | __main__:plot_k_vs_eq_by_element_pairs:616 - Saved element-pair plot to: clusters/bonds_k_vs_length_P_S.png
+2026-03-30 09:58:32.739 | INFO     | __main__:plot_k_vs_eq_by_element_pairs:616 - Saved element-pair plot to: clusters/bonds_k_vs_length_S_S.png
+2026-03-30 09:58:32.739 | INFO     | __main__:main:702 - Extracting angle parameters...
+2026-03-30 09:58:32.740 | INFO     | __main__:main:708 - Found 55 angle parameters
+2026-03-30 09:58:32.740 | INFO     | __main__:main:720 - Clustering bonds with kwargs: {'min_cluster_size': 3}
+2026-03-30 09:58:32.740 | INFO     | __main__:main:721 - Clustering angles with kwargs: {'min_cluster_size': 3, 'min_samples': 5}
+2026-03-30 09:58:32.743 | INFO     | __main__:cluster_parameters:292 - Feature scaling: X_means = [7.59012701 1.47284831]
+2026-03-30 09:58:34.100 | INFO     | __main__:plot_and_cluster:378 - Bonds: Found 1969 clusters and 7809 noise points
+2026-03-30 09:58:34.164 | INFO     | __main__:plot_and_cluster:407 - Saved cluster assignments to: clusters/bonds_clusters.csv
+/Users/jenniferclark/bin/back-to-school-jen/8_clustering/e_broad_spec_recursion1/../clustering.py:464: UserWarning: Tight layout not applied. The left and right margins cannot be made large enough to accommodate all Axes decorations.
+  fig.tight_layout()
+2026-03-30 09:58:44.695 | INFO     | __main__:plot_and_cluster:466 - Saved cluster plot to: clusters/bonds_clusters.png
+2026-03-30 09:58:44.695 | INFO     | __main__:cluster_parameters:292 - Feature scaling: X_means = [  6.30095013 117.62323363]
+2026-03-30 09:58:44.696 | INFO     | __main__:plot_and_cluster:378 - Angles: Found 2 clusters and 40 noise points
+2026-03-30 09:58:44.696 | INFO     | __main__:plot_and_cluster:407 - Saved cluster assignments to: clusters/angles_clusters.csv
+2026-03-30 09:58:44.806 | INFO     | __main__:plot_and_cluster:466 - Saved cluster plot to: clusters/angles_clusters.png
+2026-03-30 09:58:44.807 | INFO     | __main__:main:741 - Clustering analysis complete

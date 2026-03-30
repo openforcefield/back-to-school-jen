@@ -35,7 +35,7 @@ python ../fit_data.py --data-dir "../../3_split_train_test/full_split_uci/data-t
                       --filename-forcefield "../../5_setup_train_ff_topologies/2026_02_20_uci_off_a/smee_force_field.pkl" \
                       --filename-topo-dict "../../5_setup_train_ff_topologies/2026_02_20_uci_off_a/smee_topology_dict.pkl" \
                       --offxml "../../4_make_offxmls/a_broad_specification/openff-2.3.0-ring-no-bond.offxml" \
-		      --val-data-dir "../../3_split_train_test/full_split_uci/data-test" \
+                      --val-data-dir "../../3_split_train_test/full_split_uci/data-test" \
                       --n-epochs 40 \
                       --to-cuda true \
                       --valence-types "Bonds" \

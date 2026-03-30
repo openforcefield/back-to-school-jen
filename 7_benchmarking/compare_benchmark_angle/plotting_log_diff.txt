@@ -1,0 +1,303 @@
+/Users/jenniferclark/mamba/envs/bts/lib/python3.12/site-packages/openff/amber_ff_ports/amber_ff_ports.py:8: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  from pkg_resources import resource_filename
+2026-03-30 12:30:45.952 | INFO     | __main__:load_metrics:86 - Loading metrics from: ../0a_openff_2.3.0-rc2/benchmark_results/metrics.json
+2026-03-30 12:30:46.081 | INFO     | __main__:load_metrics:86 - Loading metrics from: ../0b_openff_2.3-rc2/benchmark_results/metrics.json
+2026-03-30 12:30:46.208 | INFO     | __main__:load_metrics:86 - Loading metrics from: ../0b_openff_2.3.0_smee_smirks/benchmark_results/metrics.json
+2026-03-30 12:30:46.335 | INFO     | __main__:load_metrics:86 - Loading metrics from: ../c_bond_generalized/benchmark_results/metrics.json
+2026-03-30 12:30:46.460 | INFO     | __main__:load_metrics:86 - Loading metrics from: ../b3_no_bond_with_ring_in_atom/benchmark_results/metrics.json
+2026-03-30 12:30:46.588 | INFO     | __main__:main:1385 - Loaded 5 metrics file(s): ['Sage 2.3.0', 'Sage 2.3.0 SMEE-SPICE Bonds', 'Sage 2.3.0 SMEE-SPICE Bonds/Angles', 'ff-c: Gen Bonds', 'ff-b: Gen Bonds / Angles']
+2026-03-30 12:30:46.588 | INFO     | __main__:generate_basic_plots:439 - Generating basic benchmark plots...
+2026-03-30 12:30:47.020 | INFO     | __main__:generate_basic_plots:531 - plot_difference=True, n_ff=5, plot_indices=[1, 2, 3, 4]
+2026-03-30 12:30:47.095 | INFO     | __main__:generate_basic_plots:595 - Saved: plots/dde_histogram_diff.png
+2026-03-30 12:30:47.192 | INFO     | __main__:generate_basic_plots:646 - Saved: plots/rmsd_cdf_diff.png
+2026-03-30 12:30:47.283 | INFO     | __main__:generate_basic_plots:697 - Saved: plots/tfd_cdf_diff.png
+2026-03-30 12:30:47.479 | INFO     | __main__:generate_basic_plots:771 - Saved: plots/icrmsd_comparison_diff.png
+2026-03-30 12:30:47.796 | INFO     | __main__:generate_basic_plots:844 - Saved: plots/icrmsd_by_type_diff.png
+2026-03-30 12:30:47.796 | INFO     | __main__:generate_basic_plots:846 - Basic plots saved to: plots
+2026-03-30 12:30:47.819 | INFO     | __main__:load_parameter_type_summary:104 - Loading parameter type summary from: ../0a_openff_2.3.0-rc2/benchmark_results/metrics_by_parameter_type.json
+2026-03-30 12:30:47.820 | INFO     | __main__:load_parameter_type_summary:104 - Loading parameter type summary from: ../0b_openff_2.3-rc2/benchmark_results/metrics_by_parameter_type.json
+2026-03-30 12:30:47.821 | INFO     | __main__:load_parameter_type_summary:104 - Loading parameter type summary from: ../0b_openff_2.3.0_smee_smirks/benchmark_results/metrics_by_parameter_type.json
+2026-03-30 12:30:47.821 | INFO     | __main__:load_parameter_type_summary:104 - Loading parameter type summary from: ../c_bond_generalized/benchmark_results/metrics_by_parameter_type.json
+2026-03-30 12:30:47.822 | INFO     | __main__:load_parameter_type_summary:104 - Loading parameter type summary from: ../b3_no_bond_with_ring_in_atom/benchmark_results/metrics_by_parameter_type.json
+
+======================================================================
+BENCHMARK SUMMARY
+======================================================================
+
+Sage 2.3.0
+--------------------------------------------------
+  DDE:  mean=-0.757, std=2.974, n=53111
+  RMSD: mean=0.272, std=0.263, n=62392
+  TFD:  mean=0.0418, std=0.0381, n=62392
+
+Sage 2.3.0 SMEE-SPICE Bonds
+--------------------------------------------------
+  DDE:  mean=-0.775, std=3.034, n=53111
+  RMSD: mean=0.274, std=0.271, n=62392
+  TFD:  mean=0.0424, std=0.0388, n=62392
+
+Sage 2.3.0 SMEE-SPICE Bonds/Angles
+--------------------------------------------------
+  DDE:  mean=-0.733, std=2.983, n=53111
+  RMSD: mean=0.265, std=0.264, n=62392
+  TFD:  mean=0.0412, std=0.0403, n=62392
+
+ff-c: Gen Bonds
+--------------------------------------------------
+  DDE:  mean=-0.860, std=3.202, n=52255
+  RMSD: mean=0.480, std=1.360, n=61417
+  TFD:  mean=0.0448, std=0.0412, n=61417
+
+ff-b: Gen Bonds / Angles
+--------------------------------------------------
+  DDE:  mean=-0.401, std=3.656, n=53105
+  RMSD: mean=0.340, std=0.320, n=62385
+  TFD:  mean=0.0501, std=0.0493, n=62385
+
+======================================================================
+TOP PARAMETER TYPES BY MEAN DEVIATION
+======================================================================
+
+Bonds (Å):
+----------------------------------------------------------------------
+
+  Sage 2.3.0:
+    1. b77: mean=0.2483 Å, n=13
+       SMIRKS: [#7:1]-[#17:2]
+    2. b54: mean=0.1661 Å, n=4
+       SMIRKS: [#16X2:1]-[#8X2:2]
+    3. b57a: mean=0.1101 Å, n=561
+       SMIRKS: [#16X4,#16X3:1]~[#7X2:2]
+    4. b57: mean=0.0862 Å, n=5516
+       SMIRKS: [#16X4,#16X3:1]~[#7:2]
+    5. b62a: mean=0.0742 Å, n=20
+       SMIRKS: [#7,#8]-[#15X4:1]-[#7:2]
+
+  Sage 2.3.0 SMEE-SPICE Bonds:
+    1. b54: mean=0.1380 Å, n=4
+       SMIRKS: [#16X2:1]-[#8X2:2]
+    2. b77: mean=0.0786 Å, n=13
+       SMIRKS: [#7:1]-[#17:2]
+    3. b57a: mean=0.0760 Å, n=561
+       SMIRKS: [#16X4,#16X3:1]~[#7X2:2]
+    4. b46: mean=0.0572 Å, n=46
+       SMIRKS: [#16:1]-[#16:2]
+    5. b44: mean=0.0559 Å, n=10
+       SMIRKS: [#16:1]-[#6:2]
+
+  Sage 2.3.0 SMEE-SPICE Bonds/Angles:
+    1. b54: mean=0.1382 Å, n=4
+       SMIRKS: [#16X2:1]-[#8X2:2]
+    2. b44: mean=0.1059 Å, n=10
+       SMIRKS: [#16:1]-[#6:2]
+    3. b62: mean=0.0750 Å, n=20
+       SMIRKS: [#15:1]-[#7:2]
+    4. b57: mean=0.0504 Å, n=5516
+       SMIRKS: [#16X4,#16X3:1]~[#7:2]
+    5. b77: mean=0.0479 Å, n=13
+       SMIRKS: [#7:1]-[#17:2]
+
+  ff-c: Gen Bonds:
+    1. specificity=0 index=71 count=483: mean=0.3121 Å, n=259
+       SMIRKS: [#6X3;r5:1]~[#7X2;!r3;!r4;!r5;!r6;!r7;!r8:2]
+    2. specificity=0 index=26 count=3414: mean=0.2642 Å, n=5270
+       SMIRKS: [#6X3;!r3;!r4;!r5;!r6;!r7;!r8:1]~[#6X3;!r3;!r4;!r5;!r6;!r7;!r8:2]
+    3. specificity=0 index=682 count=5: mean=0.2581 Å, n=25
+       SMIRKS: [#16X4;r7:1]~;@[#7X3;r7:2]
+    4. specificity=0 index=527 count=334: mean=0.2228 Å, n=272
+       SMIRKS: [#6X3;r7:1]~;@[#6X3;r7:2]
+    5. specificity=0 index=793 count=1: mean=0.1837 Å, n=5
+       SMIRKS: [#16X4;r6:1]~;@[#7X2;r7:2]
+
+  ff-b: Gen Bonds / Angles:
+    1. specificity=0 index=95 count=1: mean=0.3762 Å, n=1
+       SMIRKS: [#16X2:1]~[#16X4:2]
+    2. specificity=2 index=403 count=11: mean=0.3684 Å, n=10
+       SMIRKS: [#6X3;r5:1]~;@[#7X2;r7:2]
+    3. specificity=2 index=413 count=10: mean=0.2412 Å, n=12
+       SMIRKS: [#6X3;r6:1]~;@[#6X3;r8:2]
+    4. specificity=1 index=7 count=16: mean=0.2364 Å, n=27
+       SMIRKS: [#6X3:1]~[#6X3:2]
+    5. specificity=2 index=414 count=10: mean=0.2157 Å, n=7
+       SMIRKS: [#7X2;r7:1]~;@[#7X2;r7:2]
+
+Angles (°):
+----------------------------------------------------------------------
+
+  Sage 2.3.0:
+    1. unmatched: mean=33.4600 °, n=12
+    2. a24a: mean=13.5171 °, n=26
+       SMIRKS: [#1:1]-[#7X2:2]~[#16X4:3]
+    3. a15a: mean=7.5029 °, n=1002
+       SMIRKS: [#8X1:1]~[#6X3:2]~[#8X1:3]
+    4. a40: mean=6.9290 °, n=832
+       SMIRKS: [*:1]~[#15:2]~[*:3]
+    5. a24: mean=4.0234 °, n=177
+       SMIRKS: [#1:1]-[#7X2+0:2]~[*:3]
+
+  Sage 2.3.0 SMEE-SPICE Bonds:
+    1. a24a: mean=15.5057 °, n=26
+       SMIRKS: [#1:1]-[#7X2:2]~[#16X4:3]
+    2. a15a: mean=7.5158 °, n=1002
+       SMIRKS: [#8X1:1]~[#6X3:2]~[#8X1:3]
+    3. a40: mean=6.8643 °, n=832
+       SMIRKS: [*:1]~[#15:2]~[*:3]
+    4. unmatched: mean=5.1983 °, n=63
+    5. a24: mean=4.0554 °, n=177
+       SMIRKS: [#1:1]-[#7X2+0:2]~[*:3]
+
+  Sage 2.3.0 SMEE-SPICE Bonds/Angles:
+    1. a18a: mean=9.5103 °, n=3123
+       SMIRKS: [*:1]@-[r5;#7X4,#7X3,#7X2-1:2]@-[*:3]
+    2. a40: mean=6.9681 °, n=832
+       SMIRKS: [*:1]~[#15:2]~[*:3]
+    3. a33: mean=5.6638 °, n=684
+       SMIRKS: [*:1]~[#16X3$(*~[#8X1,#7X2]):2]~[*:3]
+    4. a24: mean=4.0541 °, n=202
+       SMIRKS: [#1:1]-[#7X2+0:2]~[*:3]
+    5. a7: mean=3.6155 °, n=6982
+       SMIRKS: [#6r4:1]1-;@[#6r4:2]-;@[#6r4:3]~[*]~1
+
+  ff-c: Gen Bonds:
+    1. a24a: mean=17.0837 °, n=26
+       SMIRKS: [#1:1]-[#7X2:2]~[#16X4:3]
+    2. unmatched: mean=12.1533 °, n=1243
+    3. a15a: mean=6.9860 °, n=1025
+       SMIRKS: [#8X1:1]~[#6X3:2]~[#8X1:3]
+    4. a40: mean=6.8540 °, n=748
+       SMIRKS: [*:1]~[#15:2]~[*:3]
+    5. a12: mean=4.7522 °, n=2185
+       SMIRKS: [#1:1]-[#6X3:2]-[#1:3]
+
+  ff-b: Gen Bonds / Angles:
+    1. specificity=0 index=10 count=48: mean=53.3681 °, n=47
+       SMIRKS: [*:1]~[#15X3:2]~[*:3]
+    2. specificity=4 index=1541 count=10: mean=20.3618 °, n=34
+       SMIRKS: [#6X3;r4:1]~;@[#6X3;r4:2]~[#8X2;!r3;!r4;!r5;!r6;!r7;!r8:3]
+    3. specificity=4 index=1518 count=11: mean=19.9876 °, n=14
+       SMIRKS: [#17X1;!r3;!r4;!r5;!r6;!r7;!r8:1]~[#7X3;r5:2]~;@[#6X3;r5:3]
+    4. specificity=4 index=613 count=19: mean=18.5960 °, n=25
+       SMIRKS: [#6X4;!r3;!r4;!r5;!r6;!r7;!r8:1]~[#15X3;!r3;!r4;!r5;!r6;!r7;!r8:2]~[#6X4;!r3;!r4;!r5;!r6;!r7;!r8:3]
+    5. unmatched: mean=17.7316 °, n=726
+
+Dihedrals (°):
+----------------------------------------------------------------------
+
+  Sage 2.3.0:
+    1. t130b: mean=139.3829 °, n=28
+       SMIRKS: [*:1]~[#7X3:2]-[#7X3:3]~[*:4]
+    2. t82b: mean=138.0830 °, n=104
+       SMIRKS: [*:1]=[#7X3+1:2]-[#6X3:3]-[*:4]
+    3. t107: mean=106.7977 °, n=5266
+       SMIRKS: [*:1]~[#6X3:2](=[#8,#16,#7])-[#8X2H0:3]-[*:4]
+    4. t82: mean=106.6392 °, n=9019
+       SMIRKS: [*:1]=[#7X2:2]-[#6X3:3]-[*:4]
+    5. t88: mean=104.8429 °, n=29
+       SMIRKS: [#16X4,#16X3+0:1]-[#7X2:2]=[#6X3:3]-[#7X3:4]
+
+  Sage 2.3.0 SMEE-SPICE Bonds:
+    1. t82b: mean=141.3871 °, n=104
+       SMIRKS: [*:1]=[#7X3+1:2]-[#6X3:3]-[*:4]
+    2. t130b: mean=139.4806 °, n=28
+       SMIRKS: [*:1]~[#7X3:2]-[#7X3:3]~[*:4]
+    3. t88: mean=128.2214 °, n=29
+       SMIRKS: [#16X4,#16X3+0:1]-[#7X2:2]=[#6X3:3]-[#7X3:4]
+    4. t107: mean=107.1656 °, n=5266
+       SMIRKS: [*:1]~[#6X3:2](=[#8,#16,#7])-[#8X2H0:3]-[*:4]
+    5. t82: mean=106.5314 °, n=9019
+       SMIRKS: [*:1]=[#7X2:2]-[#6X3:3]-[*:4]
+
+  Sage 2.3.0 SMEE-SPICE Bonds/Angles:
+    1. t107: mean=118.8026 °, n=5266
+       SMIRKS: [*:1]~[#6X3:2](=[#8,#16,#7])-[#8X2H0:3]-[*:4]
+    2. t82: mean=111.0766 °, n=9123
+       SMIRKS: [*:1]=[#7X2:2]-[#6X3:3]-[*:4]
+    3. t54: mean=106.9578 °, n=12
+       SMIRKS: [*:1]-[#6X4:2]-[#7X3:3]-[#7X2:4]=[#7X2,#8X1]
+    4. t155: mean=105.1055 °, n=43
+       SMIRKS: [#6X4:1]-[#16X4:2]-[#7X2:3]~[#6X3:4]
+    5. t84: mean=100.5954 °, n=71646
+       SMIRKS: [*:1]~[#7X2:2]:[#6X3:3]~[*:4]
+
+  ff-c: Gen Bonds:
+    1. t82b: mean=159.8756 °, n=85
+       SMIRKS: [*:1]=[#7X3+1:2]-[#6X3:3]-[*:4]
+    2. t130b: mean=139.1788 °, n=28
+       SMIRKS: [*:1]~[#7X3:2]-[#7X3:3]~[*:4]
+    3. t88: mean=128.2825 °, n=29
+       SMIRKS: [#16X4,#16X3+0:1]-[#7X2:2]=[#6X3:3]-[#7X3:4]
+    4. t107: mean=111.8045 °, n=5003
+       SMIRKS: [*:1]~[#6X3:2](=[#8,#16,#7])-[#8X2H0:3]-[*:4]
+    5. t82: mean=107.8946 °, n=8507
+       SMIRKS: [*:1]=[#7X2:2]-[#6X3:3]-[*:4]
+
+  ff-b: Gen Bonds / Angles:
+    1. t141: mean=179.9919 °, n=4
+       SMIRKS: [*:1]~[#7X3+1:2]=,:[#7X2:3]~[*:4]
+    2. t82b: mean=151.6223 °, n=104
+       SMIRKS: [*:1]=[#7X3+1:2]-[#6X3:3]-[*:4]
+    3. t147c: mean=133.7504 °, n=3
+       SMIRKS: [#6X3:1]-[#16X3+0:2]-[#7X3:3]-[#6X4:4]
+    4. t107: mean=113.9631 °, n=5266
+       SMIRKS: [*:1]~[#6X3:2](=[#8,#16,#7])-[#8X2H0:3]-[*:4]
+    5. t82: mean=112.5151 °, n=9019
+       SMIRKS: [*:1]=[#7X2:2]-[#6X3:3]-[*:4]
+
+Impropers (°):
+----------------------------------------------------------------------
+
+  Sage 2.3.0:
+    1. i3: mean=9.0570 °, n=752
+       SMIRKS: [*:1]~[#7X3$(*~[#15,#16](!-[*])):2](~[*:3])~[*:4]
+    2. i5: mean=6.8268 °, n=1117
+       SMIRKS: [*:1]~[#7X3$(*~[#7X2]):2](~[*:3])~[*:4]
+    3. i4: mean=5.4553 °, n=69493
+       SMIRKS: [*:1]~[#7X3$(*~[#6X3]):2](~[*:3])~[*:4]
+    4. unmatched: mean=5.1858 °, n=5123
+    5. i6: mean=1.5750 °, n=30384
+       SMIRKS: [*:1]~[#7X3$(*@1-[*]=,:[*][*]=,:[*]@1):2](~[*:3])~[*:4]
+
+  Sage 2.3.0 SMEE-SPICE Bonds:
+    1. i3: mean=8.9848 °, n=906
+       SMIRKS: [*:1]~[#7X3$(*~[#15,#16](!-[*])):2](~[*:3])~[*:4]
+    2. i5: mean=6.4965 °, n=1126
+       SMIRKS: [*:1]~[#7X3$(*~[#7X2]):2](~[*:3])~[*:4]
+    3. i4: mean=5.4705 °, n=69662
+       SMIRKS: [*:1]~[#7X3$(*~[#6X3]):2](~[*:3])~[*:4]
+    4. unmatched: mean=5.0353 °, n=5109
+    5. i6: mean=1.5753 °, n=30385
+       SMIRKS: [*:1]~[#7X3$(*@1-[*]=,:[*][*]=,:[*]@1):2](~[*:3])~[*:4]
+
+  Sage 2.3.0 SMEE-SPICE Bonds/Angles:
+    1. i4: mean=6.1413 °, n=73761
+       SMIRKS: [*:1]~[#7X3$(*~[#6X3]):2](~[*:3])~[*:4]
+    2. i3: mean=5.7967 °, n=447
+       SMIRKS: [*:1]~[#7X3$(*~[#15,#16](!-[*])):2](~[*:3])~[*:4]
+    3. i5: mean=5.5625 °, n=1133
+       SMIRKS: [*:1]~[#7X3$(*~[#7X2]):2](~[*:3])~[*:4]
+    4. unmatched: mean=3.4776 °, n=5119
+    5. i6: mean=1.5018 °, n=30393
+       SMIRKS: [*:1]~[#7X3$(*@1-[*]=,:[*][*]=,:[*]@1):2](~[*:3])~[*:4]
+
+  ff-c: Gen Bonds:
+    1. i3: mean=9.3536 °, n=946
+       SMIRKS: [*:1]~[#7X3$(*~[#15,#16](!-[*])):2](~[*:3])~[*:4]
+    2. i5: mean=6.8117 °, n=1124
+       SMIRKS: [*:1]~[#7X3$(*~[#7X2]):2](~[*:3])~[*:4]
+    3. unmatched: mean=6.3917 °, n=4962
+    4. i4: mean=5.6588 °, n=68643
+       SMIRKS: [*:1]~[#7X3$(*~[#6X3]):2](~[*:3])~[*:4]
+    5. i6: mean=1.6130 °, n=29927
+       SMIRKS: [*:1]~[#7X3$(*@1-[*]=,:[*][*]=,:[*]@1):2](~[*:3])~[*:4]
+
+  ff-b: Gen Bonds / Angles:
+    1. i3: mean=20.3056 °, n=2811
+       SMIRKS: [*:1]~[#7X3$(*~[#15,#16](!-[*])):2](~[*:3])~[*:4]
+    2. i5: mean=7.3666 °, n=803
+       SMIRKS: [*:1]~[#7X3$(*~[#7X2]):2](~[*:3])~[*:4]
+    3. unmatched: mean=6.2830 °, n=5202
+    4. i4: mean=5.5183 °, n=36807
+       SMIRKS: [*:1]~[#7X3$(*~[#6X3]):2](~[*:3])~[*:4]
+    5. i6: mean=2.0802 °, n=30255
+       SMIRKS: [*:1]~[#7X3$(*@1-[*]=,:[*][*]=,:[*]@1):2](~[*:3])~[*:4]
+2026-03-30 12:30:48.889 | INFO     | __main__:main:1436 - Plot generation complete!

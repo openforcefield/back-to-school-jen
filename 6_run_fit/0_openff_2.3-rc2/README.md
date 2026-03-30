@@ -1,8 +1,8 @@
-# FF-B, Generalized Bonds with Ring Definitions: Attempt 3
+# FF-0: Baseline Refit of OpenFF-2.3.0-rc2
 
-This is a bond and angle refit of OpenFF-2.3.0-rc2 using SMEE and the SPICE dataset.
+This is a bond and angle refit of `openff_unconstrained-2.3.0-rc2.offxml` using SMEE and the SPICE dataset. Uses the stock OpenFF-2.3.0-rc2 SMIRKS without modification. No validation set used during training.
 
-This fit was run with the parameters as is, and scaling defined (loosely) as:
+This fit was run with the parameters as is, and scaling defined as:
 ```python
 PARAMETERS = {
     "Bonds": descent.train.ParameterConfig(
