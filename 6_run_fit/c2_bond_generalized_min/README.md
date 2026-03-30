@@ -1,9 +1,13 @@
-# FF-B, Generalized Bonds with Ring Definitions: Attempt 3
+# FF-C2: Generalized Bonds with Recursive Ring SMIRKS (descent-reference=min)
 
-In this force field bond and angle SMIRKs are set to be specific in the degree of element connectivity, but the bond type is generalized.
-Information of whether the bond is in a ring or not is provided.
+Bond SMIRKS generalized without specifying bond type, one level
+Source OFFXML: `4_make_offxmls/c_no_bond_ring_recursive/openff-2.3.0-fit-bond_ring-no-bond-type.offxml`.
+Topology: `5_setup_train_ff_topologies/2026_02_03_uci_c`.
 
-This fit was run with the parameters as is, and scaling defined (loosely) as:
+**Bonds only** (Angles not fit). Validation set used during training (`full_split_uci/data-test`).
+**Minibatching**
+
+Scaling is data-derived (mean-based) as defined in `fit_data.py`:
 ```python
 PARAMETERS = {
     "Bonds": descent.train.ParameterConfig(
@@ -11,24 +15,20 @@ PARAMETERS = {
         scales={"k": 1/bond_k_mean, "length": 1/bond_x0_mean},
         limits={"k": [0.0, None], "length": [0.0, None]},
     ),
-    "Angles": descent.train.ParameterConfig(
-        cols=["k", "angle"],
-        scales={"k": 1/angle_k_mean, "angle": 1/angle_x0_mean},
-        limits={"k": [0.0, None], "angle": [0.0, math.pi]},
-    ),
 }
 ```
-The process of taking the mean from the initial dataset is done in fit_data.py
 
-Mean values for Bonds: {'k': 0.0018241198088180758, 'length': 0.638552889282609}
-Mean values for Angles: {'k': 0.008619126829830522, 'angle': 0.49716413002732057} # in radians
+Scaling values for Bonds: {'k': 0.001889332660956697, 'length': 0.6332648961569184}
+
+The process of taking the mean from the initial dataset is done in `fit_data.py`.
 
 Learning Rate: 0.005
-Number of Epochs: 400
+Number of Epochs: 40
 
 Previous Step:
-FF-B, Generalized Bonds with Ring Definitions: Attempt 3
-Showed descent progress in all parameters, but equilibrium bond lengths fell to half of what was expected, presumably from the high learning rate.
+Identical to `c_bond_generalized` except uses `--descent-reference min` instead of the default `mean`.
+The reference structure for computing the regression target is the per-molecule minimum-energy conformer
+rather than the mean over conformers.
 
 Conclusion:
 

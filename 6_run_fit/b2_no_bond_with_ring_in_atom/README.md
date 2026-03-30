@@ -20,7 +20,7 @@ PARAMETERS = {
 ```
 
 Learning Rate: 0.02
-Number of Epochs: 100
+Number of Epochs: 300
 
 Previous Step:
 Now overwritten in directory "b-*". Fit with a learning rate of 0.001 was unsatisfactory in its progress, similar to `0_openff2.2.1` which showed no benchmark improvement to the original `openff_2.2.1`.
