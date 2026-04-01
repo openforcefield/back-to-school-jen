@@ -1,0 +1,69 @@
+version: "0.1.0"
+experiment_name: spice2_linearised_harmonics_minibatch_sage_bondtypes_recursion
+experiment_description: Fit to SPICE 2 (filtered out larger forces) with linearised harmonics, with minibatching, and with very specific bond types (with recursion) and otherwise Sage 2.3.0 types. Initial force field from Jen (https://raw.githubusercontent.com/openforcefield/back-to-school-jen/refs/heads/main/4_make_offxmls/e_broad_spec_recursion1/openff-2.3.0-bondtypes-recursion.offxml).
+data_dir: data/spice2
+get_data_fn: descent_workflow.get_data.get_data_spice2_force_filtered
+get_data_output_smiles: data/spice2/smiles_test_train.json
+starting_force_field_path: input_ff/openff-2.3.0-bondtypes-recursion.offxml
+filter_and_cluster_fn: descent_workflow.filter.filter_spice2
+batch_size: 600
+n_epochs: 30
+learning_rate: 0.02
+energy_weight: 1.0
+force_weight: 1.0
+torsion_weight: 0.0
+torsion_reg: l1
+minibatch_size: 256
+attributes: {}
+parameters:
+  LinearBonds:
+    cols:
+    - k1
+    - k2
+    scales:
+      k1: 0.0028
+      k2: 0.0028
+    limits:
+      k1:
+      - 1E-8
+      - null
+      k2:
+      - 1E-8
+      - null
+  LinearAngles:
+    cols:
+    - k1
+    - k2
+    scales:
+      k1: 0.012
+      k2: 0.011
+    limits:
+      k1:
+      - 1E-8
+      - null
+      k2:
+      - 1E-8
+      - null
+  ProperTorsions:
+    cols:
+    - k
+    scales:
+      k: 1.3
+    exclude:
+    - id: '[*:1]-[*:2]#[*:3]-[*:4]'
+      mult: 0
+      associated_handler: ProperTorsions
+      bond_order: null
+    - id: '[*:1]~[*:2]-[*:3]#[*:4]'
+      mult: 0
+      associated_handler: ProperTorsions
+      bond_order: null
+    - id: '[*:1]~[*:2]=[#6,#7,#16,#15;X2:3]=[*:4]'
+      mult: 0
+      associated_handler: ProperTorsions
+      bond_order: null
+  ImproperTorsions:
+    cols:
+    - k
+    scales:
+      k: 0.12
