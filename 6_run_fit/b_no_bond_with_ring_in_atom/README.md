@@ -1,9 +1,9 @@
 # FF-B, Generalized Bonds with Ring Definitions: Attempt 3
 
 In this force field bond and angle SMIRKs are set to be specific in the degree of element connectivity, but the bond type is generalized.
-Information of whether the bond is in a ring or not is provided.
+Information of whether the bond is in a ring is provided.
 
-This fit was run with the parameters as is, and scaling defined (loosely) as:
+This fit was run with the parameters as is, and scaling defined as:
 ```python
 PARAMETERS = {
     "Bonds": descent.train.ParameterConfig(

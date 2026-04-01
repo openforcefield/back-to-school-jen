@@ -67,6 +67,8 @@ logger.remove()
 LINEWIDTH = 2
 ALPHA = 0.4
 
+EXTENSION = "png"
+
 
 def load_metrics(metrics_path: pathlib.Path) -> dict:
     """Load metrics from JSON file.
@@ -588,9 +590,9 @@ def generate_basic_plots(
     else:
         ax.axvline(x=0, color="gray", linestyle="--", linewidth=LINEWIDTH, alpha=ALPHA)
     fig.tight_layout()
-    fig.savefig(plots_dir / f"dde_histogram{suffix}.pdf", bbox_inches="tight")
+    fig.savefig(plots_dir / f"dde_histogram{suffix}.{EXTENSION}", bbox_inches="tight")
     plt.close(fig)
-    logger.info(f"Saved: {plots_dir / f'dde_histogram{suffix}.pdf'}")
+    logger.info(f"Saved: {plots_dir / f'dde_histogram{suffix}.{EXTENSION}'}")
 
     # Plot 2: RMSD CDF
     fig, ax = plt.subplots(figsize=(10, 6))
@@ -639,9 +641,9 @@ def generate_basic_plots(
     ax.set_xlim(0, 3.0)
     ax.legend(loc="best")
     fig.tight_layout()
-    fig.savefig(plots_dir / f"rmsd_cdf{suffix}.pdf", bbox_inches="tight")
+    fig.savefig(plots_dir / f"rmsd_cdf{suffix}.{EXTENSION}", bbox_inches="tight")
     plt.close(fig)
-    logger.info(f"Saved: {plots_dir / f'rmsd_cdf{suffix}.pdf'}")
+    logger.info(f"Saved: {plots_dir / f'rmsd_cdf{suffix}.{EXTENSION}'}")
 
     # Plot 3: TFD CDF
     fig, ax = plt.subplots(figsize=(10, 6))
@@ -690,9 +692,9 @@ def generate_basic_plots(
     ax.set_xlim(0, 0.5)
     ax.legend(loc="best")
     fig.tight_layout()
-    fig.savefig(plots_dir / f"tfd_cdf{suffix}.pdf", bbox_inches="tight")
+    fig.savefig(plots_dir / f"tfd_cdf{suffix}.{EXTENSION}", bbox_inches="tight")
     plt.close(fig)
-    logger.info(f"Saved: {plots_dir / f'tfd_cdf{suffix}.pdf'}")
+    logger.info(f"Saved: {plots_dir / f'tfd_cdf{suffix}.{EXTENSION}'}")
 
     # Plot 4: ICRMSD Comparison Bar Chart
     ic_types = ["Bond", "Angle", "Dihedral", "Improper"]
@@ -762,9 +764,11 @@ def generate_basic_plots(
 
     fig.suptitle("Internal Coordinate RMSD by Type", fontsize=14)
     fig.tight_layout()
-    fig.savefig(plots_dir / f"icrmsd_comparison{suffix}.pdf", bbox_inches="tight")
+    fig.savefig(
+        plots_dir / f"icrmsd_comparison{suffix}.{EXTENSION}", bbox_inches="tight"
+    )
     plt.close(fig)
-    logger.info(f"Saved: {plots_dir / f'icrmsd_comparison{suffix}.pdf'}")
+    logger.info(f"Saved: {plots_dir / f'icrmsd_comparison{suffix}.{EXTENSION}'}")
 
     # Plot 5: ICRMSD CDFs by type
     fig, axes = plt.subplots(2, 2, figsize=(12, 10))
@@ -835,9 +839,9 @@ def generate_basic_plots(
 
     fig.suptitle("Internal Coordinate RMSD - Cumulative Distributions", fontsize=14)
     fig.tight_layout()
-    fig.savefig(plots_dir / f"icrmsd_by_type{suffix}.pdf", bbox_inches="tight")
+    fig.savefig(plots_dir / f"icrmsd_by_type{suffix}.{EXTENSION}", bbox_inches="tight")
     plt.close(fig)
-    logger.info(f"Saved: {plots_dir / f'icrmsd_by_type{suffix}.pdf'}")
+    logger.info(f"Saved: {plots_dir / f'icrmsd_by_type{suffix}.{EXTENSION}'}")
 
     logger.info(f"Basic plots saved to: {plots_dir}")
 
@@ -1011,12 +1015,12 @@ def generate_parameter_type_plots(
         fig.tight_layout()
         fig.tight_layout()
         fig.savefig(
-            plots_dir / f"deviation_by_{ic_type.lower()}_type{suffix}.pdf",
+            plots_dir / f"deviation_by_{ic_type.lower()}_type{suffix}.{EXTENSION}",
             bbox_inches="tight",
         )
         plt.close(fig)
         logger.info(
-            f"Saved: {plots_dir / f'deviation_by_{ic_type.lower()}_type{suffix}.pdf'}"
+            f"Saved: {plots_dir / f'deviation_by_{ic_type.lower()}_type{suffix}.{EXTENSION}'}"
         )
 
     # Summary plot: All IC types comparison across force fields
@@ -1079,10 +1083,13 @@ def generate_parameter_type_plots(
     fig.suptitle("Internal Coordinate Deviation Distributions by Type", fontsize=14)
     fig.tight_layout()
     fig.savefig(
-        plots_dir / f"deviation_summary_all_types{suffix}.pdf", bbox_inches="tight"
+        plots_dir / f"deviation_summary_all_types{suffix}.{EXTENSION}",
+        bbox_inches="tight",
     )
     plt.close(fig)
-    logger.info(f"Saved: {plots_dir / f'deviation_summary_all_types{suffix}.pdf'}")
+    logger.info(
+        f"Saved: {plots_dir / f'deviation_summary_all_types{suffix}.{EXTENSION}'}"
+    )
 
     logger.info(f"Parameter type plots saved to: {plots_dir}")
 
