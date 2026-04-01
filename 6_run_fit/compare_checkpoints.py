@@ -549,10 +549,44 @@ def generate_training_plots(
     plt.tight_layout()
 
     # Save figure
-    output_path = output_dir / "training_progress.pdf"
-    fig.savefig(output_path, bbox_inches="tight", dpi=150)
+    output_path = output_dir / "training_progress.png"
+    fig.savefig(output_path, bbox_inches="tight", dpi=300)
     plt.close(fig)
     logger.info(f"Saved training progress plot to: {output_path}")
+
+    # Save standalone loss plot
+    fig_loss, ax_loss = plt.subplots(figsize=(6, 3))
+    if loss_history:
+        for tag, data in loss_history["scalars"].items():
+            epochs = data["epochs"]
+            values = data["values"]
+            if "val" in tag.lower() or "validation" in tag.lower():
+                style = "r-"
+            else:
+                style = "b-"
+            ax_loss.plot(epochs, values, style, linewidth=1.5, label=tag)
+        ax_loss.set_xlabel("Epoch")
+        ax_loss.set_ylabel("Loss")
+        ax_loss.set_title("Loss vs Epoch")
+        ax_loss.set_yscale("log")
+        ax_loss.grid(True, alpha=0.3)
+        ax_loss.legend()
+    else:
+        ax_loss.text(
+            0.5,
+            0.5,
+            "Loss history not available\n(TensorBoard events not found)",
+            ha="center",
+            va="center",
+            transform=ax_loss.transAxes,
+            fontsize=12,
+        )
+        ax_loss.set_title("Loss vs Epoch")
+    fig_loss.tight_layout()
+    loss_output_path = output_dir / "loss_history.png"
+    fig_loss.savefig(loss_output_path, bbox_inches="tight", dpi=300)
+    plt.close(fig_loss)
+    logger.info(f"Saved loss history plot to: {loss_output_path}")
 
     # Also create individual plots for each handler
     for handler_name, param_dict in results.items():
@@ -583,9 +617,9 @@ def generate_training_plots(
 
             output_path = (
                 output_dir
-                / f"parameter_evolution_{handler_name.lower()}_{param_type}.pdf"
+                / f"parameter_evolution_{handler_name.lower()}_{param_type}.png"
             )
-            fig.savefig(output_path, bbox_inches="tight", dpi=150)
+            fig.savefig(output_path, bbox_inches="tight", dpi=300)
             plt.close(fig)
             logger.info(
                 f"Saved {handler_name} {param_type} parameter plot to: {output_path}"
