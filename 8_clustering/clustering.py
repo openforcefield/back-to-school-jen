@@ -566,20 +566,31 @@ def plot_k_vs_eq_by_element_pairs(
     default_color = "#7f7f7f"
 
     def get_bond_order_from_smirks(smirks):
-        # Extract bond order from the symbol between the two atom brackets
-        # Example: [#6X4:1]-[#6X4:2] (single), [#6X3:1]=[#8X1:2] (double), [#7:1]#[#7:2] (triple)
-        m = re.match(r"\[[^\]]+\](.|~)\[[^\]]+\]", smirks)
-        if m:
-            bond_symbol = m.group(1)
-            if bond_symbol == "-":
-                return 1
-            elif bond_symbol == "=":
-                return 2
-            elif bond_symbol == "#":
-                return 3
-            else:
-                return 1  # fallback to single if unknown
-        return 1  # fallback to single if not matched
+        # Find the bond symbol after the first top-level bracket atom token,
+        # handling recursive SMIRKS where brackets may be nested (e.g. $([...])).
+        if not smirks or smirks[0] != "[":
+            return 1
+        depth = 0
+        end_first = -1
+        for i, c in enumerate(smirks):
+            if c == "[":
+                depth += 1
+            elif c == "]":
+                depth -= 1
+                if depth == 0:
+                    end_first = i
+                    break
+        if end_first == -1 or end_first + 1 >= len(smirks):
+            return 1
+        bond_symbol = smirks[end_first + 1]
+        if bond_symbol == "-":
+            return 1
+        elif bond_symbol == "=":
+            return 2
+        elif bond_symbol == "#":
+            return 3
+        else:
+            return 1  # aromatic (~, :) or unknown → treat as single
 
     for pair, values in sorted(groups.items()):
         pair_label = f"{pair[0]}-{pair[1]}"
@@ -600,6 +611,8 @@ def plot_k_vs_eq_by_element_pairs(
         ax.set_xlabel("Length (Å)")
         ax.set_ylabel("k (kJ / mol / Å²)")
         ax.set_yscale("log")
+        # ax.set_xlim(0.5, 4.0)
+        ax.set_ylim(ymin=90)
         ax.set_title(f"Bonds: k vs length for {pair_label} ({len(values)} params)")
         ax.grid(True, alpha=0.3)
         if legend_handles:
