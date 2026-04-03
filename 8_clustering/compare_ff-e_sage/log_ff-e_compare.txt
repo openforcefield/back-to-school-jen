@@ -1,0 +1,38 @@
+2026-04-02 09:58:46.543 | INFO     | __main__:_load_offxml:74 - Loading ../../6_run_fit/e_broad_spec_recursion1/final-force-field.offxml
+2026-04-02 09:58:50.797 | INFO     | __main__:_load_offxml:74 - Loading ../../7_benchmarking/e2_broad_spec_recursion1_finlay/spice2_linearised_harmonics_minibatch_sage_bondtypes_recursion.offxml
+2026-04-02 09:58:54.679 | INFO     | __main__:_load_offxml:74 - Loading openff-ff-e-msm.offxml
+2026-04-02 09:58:57.061 | INFO     | __main__:main:406 - Extracting bond parameters...
+2026-04-02 09:58:58.380 | INFO     | __main__:main:409 -   ff-e bonds only: 22916 bond parameters
+2026-04-02 09:58:58.380 | INFO     | __main__:main:409 -   ff-e all valance: 22916 bond parameters
+2026-04-02 09:58:58.380 | INFO     | __main__:main:409 -   ff-e MSM: 22916 bond parameters
+2026-04-02 09:58:59.550 | INFO     | __main__:_plot_handler_compare:346 - Saved plots_ff_e/bonds_compare_Br_C.png
+2026-04-02 09:58:59.659 | INFO     | __main__:_plot_handler_compare:346 - Saved plots_ff_e/bonds_compare_Br_N.png
+2026-04-02 09:58:59.766 | INFO     | __main__:_plot_handler_compare:346 - Saved plots_ff_e/bonds_compare_Br_P.png
+2026-04-02 09:58:59.869 | INFO     | __main__:_plot_handler_compare:346 - Saved plots_ff_e/bonds_compare_Br_S.png
+2026-04-02 10:05:32.714 | INFO     | __main__:_plot_handler_compare:346 - Saved plots_ff_e/bonds_compare_C_C.png
+2026-04-02 10:05:36.656 | INFO     | __main__:_plot_handler_compare:346 - Saved plots_ff_e/bonds_compare_C_Cl.png
+2026-04-02 10:09:41.472 | INFO     | __main__:_plot_handler_compare:346 - Saved plots_ff_e/bonds_compare_C_H.png
+2026-04-02 10:09:41.816 | INFO     | __main__:_plot_handler_compare:346 - Saved plots_ff_e/bonds_compare_C_I.png
+2026-04-02 10:09:48.242 | INFO     | __main__:_plot_handler_compare:346 - Saved plots_ff_e/bonds_compare_C_N.png
+2026-04-02 10:09:48.439 | INFO     | __main__:_plot_handler_compare:346 - Saved plots_ff_e/bonds_compare_C_O.png
+2026-04-02 10:09:50.829 | INFO     | __main__:_plot_handler_compare:346 - Saved plots_ff_e/bonds_compare_C_P.png
+2026-04-02 10:11:06.400 | INFO     | __main__:_plot_handler_compare:346 - Saved plots_ff_e/bonds_compare_C_S.png
+2026-04-02 10:11:06.531 | INFO     | __main__:_plot_handler_compare:346 - Saved plots_ff_e/bonds_compare_Cl_N.png
+2026-04-02 10:11:06.784 | INFO     | __main__:_plot_handler_compare:346 - Saved plots_ff_e/bonds_compare_Cl_P.png
+2026-04-02 10:11:06.957 | INFO     | __main__:_plot_handler_compare:346 - Saved plots_ff_e/bonds_compare_Cl_S.png
+2026-04-02 10:11:07.791 | INFO     | __main__:_plot_handler_compare:346 - Saved plots_ff_e/bonds_compare_H_N.png
+2026-04-02 10:11:07.919 | INFO     | __main__:_plot_handler_compare:346 - Saved plots_ff_e/bonds_compare_H_O.png
+2026-04-02 10:11:08.092 | INFO     | __main__:_plot_handler_compare:346 - Saved plots_ff_e/bonds_compare_H_P.png
+2026-04-02 10:11:08.395 | INFO     | __main__:_plot_handler_compare:346 - Saved plots_ff_e/bonds_compare_H_S.png
+2026-04-02 10:11:08.483 | INFO     | __main__:_plot_handler_compare:346 - Saved plots_ff_e/bonds_compare_I_N.png
+2026-04-02 10:11:08.587 | INFO     | __main__:_plot_handler_compare:346 - Saved plots_ff_e/bonds_compare_I_P.png
+2026-04-02 10:11:08.882 | INFO     | __main__:_plot_handler_compare:346 - Saved plots_ff_e/bonds_compare_N_N.png
+2026-04-02 10:11:08.999 | INFO     | __main__:_plot_handler_compare:346 - Saved plots_ff_e/bonds_compare_N_O.png
+2026-04-02 10:11:09.401 | INFO     | __main__:_plot_handler_compare:346 - Saved plots_ff_e/bonds_compare_N_P.png
+2026-04-02 10:11:09.830 | INFO     | __main__:_plot_handler_compare:346 - Saved plots_ff_e/bonds_compare_N_S.png
+2026-04-02 10:11:09.927 | INFO     | __main__:_plot_handler_compare:346 - Saved plots_ff_e/bonds_compare_O_O.png
+2026-04-02 10:11:10.874 | INFO     | __main__:_plot_handler_compare:346 - Saved plots_ff_e/bonds_compare_O_P.png
+2026-04-02 10:11:11.033 | INFO     | __main__:_plot_handler_compare:346 - Saved plots_ff_e/bonds_compare_O_S.png
+2026-04-02 10:11:12.228 | INFO     | __main__:_plot_handler_compare:346 - Saved plots_ff_e/bonds_compare_P_S.png
+2026-04-02 10:11:12.800 | INFO     | __main__:_plot_handler_compare:346 - Saved plots_ff_e/bonds_compare_S_S.png
+2026-04-02 10:11:12.800 | INFO     | __main__:main:427 - Done.
