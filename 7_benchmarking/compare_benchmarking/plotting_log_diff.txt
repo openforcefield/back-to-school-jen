@@ -1,26 +1,26 @@
 /Users/jenniferclark/mamba/envs/bts/lib/python3.12/site-packages/openff/amber_ff_ports/amber_ff_ports.py:8: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
   from pkg_resources import resource_filename
-2026-03-30 12:29:20.401 | INFO     | __main__:load_metrics:86 - Loading metrics from: ../0a_openff_2.3.0-rc2/benchmark_results/metrics.json
-2026-03-30 12:29:20.528 | INFO     | __main__:load_metrics:86 - Loading metrics from: ../0b_openff_2.3-rc2/benchmark_results/metrics.json
-2026-03-30 12:29:20.656 | INFO     | __main__:load_metrics:86 - Loading metrics from: ../a_broad_specification/benchmark_results/metrics.json
-2026-03-30 12:29:20.781 | INFO     | __main__:load_metrics:86 - Loading metrics from: ../c_bond_generalized/benchmark_results/metrics.json
-2026-03-30 12:29:20.904 | INFO     | __main__:load_metrics:86 - Loading metrics from: ../d_gen_bond_recursive/benchmark_results/metrics.json
-2026-03-30 12:29:21.014 | INFO     | __main__:load_metrics:86 - Loading metrics from: ../e_broad_spec_recursion1/benchmark_results/metrics.json
-2026-03-30 12:29:21.126 | INFO     | __main__:main:1385 - Loaded 6 metrics file(s): ['Sage 2.3.0', 'Sage 2.3.0 SMEE-SPICE', 'ff-a: Specific Bonds', 'ff-c: Gen Bonds', 'ff-d: Gen Bonds Recursive', 'ff-e: Specific Bonds Recursive']
-2026-03-30 12:29:21.126 | INFO     | __main__:generate_basic_plots:439 - Generating basic benchmark plots...
-2026-03-30 12:29:21.621 | INFO     | __main__:generate_basic_plots:531 - plot_difference=True, n_ff=6, plot_indices=[1, 2, 3, 4, 5]
-2026-03-30 12:29:21.709 | INFO     | __main__:generate_basic_plots:595 - Saved: plots/dde_histogram_diff.png
-2026-03-30 12:29:21.814 | INFO     | __main__:generate_basic_plots:646 - Saved: plots/rmsd_cdf_diff.png
-2026-03-30 12:29:21.917 | INFO     | __main__:generate_basic_plots:697 - Saved: plots/tfd_cdf_diff.png
-2026-03-30 12:29:22.134 | INFO     | __main__:generate_basic_plots:771 - Saved: plots/icrmsd_comparison_diff.png
-2026-03-30 12:29:22.473 | INFO     | __main__:generate_basic_plots:844 - Saved: plots/icrmsd_by_type_diff.png
-2026-03-30 12:29:22.473 | INFO     | __main__:generate_basic_plots:846 - Basic plots saved to: plots
-2026-03-30 12:29:22.499 | INFO     | __main__:load_parameter_type_summary:104 - Loading parameter type summary from: ../0a_openff_2.3.0-rc2/benchmark_results/metrics_by_parameter_type.json
-2026-03-30 12:29:22.500 | INFO     | __main__:load_parameter_type_summary:104 - Loading parameter type summary from: ../0b_openff_2.3-rc2/benchmark_results/metrics_by_parameter_type.json
-2026-03-30 12:29:22.501 | INFO     | __main__:load_parameter_type_summary:104 - Loading parameter type summary from: ../a_broad_specification/benchmark_results/metrics_by_parameter_type.json
-2026-03-30 12:29:22.503 | INFO     | __main__:load_parameter_type_summary:104 - Loading parameter type summary from: ../c_bond_generalized/benchmark_results/metrics_by_parameter_type.json
-2026-03-30 12:29:22.504 | INFO     | __main__:load_parameter_type_summary:104 - Loading parameter type summary from: ../d_gen_bond_recursive/benchmark_results/metrics_by_parameter_type.json
-2026-03-30 12:29:22.513 | INFO     | __main__:load_parameter_type_summary:104 - Loading parameter type summary from: ../e_broad_spec_recursion1/benchmark_results/metrics_by_parameter_type.json
+2026-04-06 14:51:53.510 | INFO     | __main__:load_metrics:86 - Loading metrics from: ../0a_openff_2.3.0-rc2/benchmark_results/metrics.json
+2026-04-06 14:51:53.848 | INFO     | __main__:load_metrics:86 - Loading metrics from: ../0b_openff_2.3-rc2/benchmark_results/metrics.json
+2026-04-06 14:51:54.217 | INFO     | __main__:load_metrics:86 - Loading metrics from: ../a_broad_specification/benchmark_results/metrics.json
+2026-04-06 14:51:54.560 | INFO     | __main__:load_metrics:86 - Loading metrics from: ../c_bond_generalized/benchmark_results/metrics.json
+2026-04-06 14:51:54.869 | INFO     | __main__:load_metrics:86 - Loading metrics from: ../d_gen_bond_recursive/benchmark_results/metrics.json
+2026-04-06 14:51:55.111 | INFO     | __main__:load_metrics:86 - Loading metrics from: ../e_broad_spec_recursion1/benchmark_results/metrics.json
+2026-04-06 14:51:55.364 | INFO     | __main__:main:1385 - Loaded 6 metrics file(s): ['Sage 2.3.0', 'Sage 2.3.0 SMEE-SPICE', 'ff-a: Specific Bonds', 'ff-c: Gen Bonds', 'ff-d: Gen Bonds Recursive', 'ff-e: Specific Bonds Recursive']
+2026-04-06 14:51:55.365 | INFO     | __main__:generate_basic_plots:439 - Generating basic benchmark plots...
+2026-04-06 14:51:56.434 | INFO     | __main__:generate_basic_plots:531 - plot_difference=True, n_ff=6, plot_indices=[1, 2, 3, 4, 5]
+2026-04-06 14:51:56.574 | INFO     | __main__:generate_basic_plots:595 - Saved: plots/dde_histogram_diff.png
+2026-04-06 14:51:56.749 | INFO     | __main__:generate_basic_plots:646 - Saved: plots/rmsd_cdf_diff.png
+2026-04-06 14:51:56.915 | INFO     | __main__:generate_basic_plots:697 - Saved: plots/tfd_cdf_diff.png
+2026-04-06 14:51:57.276 | INFO     | __main__:generate_basic_plots:771 - Saved: plots/icrmsd_comparison_diff.png
+2026-04-06 14:51:57.832 | INFO     | __main__:generate_basic_plots:844 - Saved: plots/icrmsd_by_type_diff.png
+2026-04-06 14:51:57.832 | INFO     | __main__:generate_basic_plots:846 - Basic plots saved to: plots
+2026-04-06 14:51:57.874 | INFO     | __main__:load_parameter_type_summary:104 - Loading parameter type summary from: ../0a_openff_2.3.0-rc2/benchmark_results/metrics_by_parameter_type.json
+2026-04-06 14:51:57.876 | INFO     | __main__:load_parameter_type_summary:104 - Loading parameter type summary from: ../0b_openff_2.3-rc2/benchmark_results/metrics_by_parameter_type.json
+2026-04-06 14:51:57.877 | INFO     | __main__:load_parameter_type_summary:104 - Loading parameter type summary from: ../a_broad_specification/benchmark_results/metrics_by_parameter_type.json
+2026-04-06 14:51:57.879 | INFO     | __main__:load_parameter_type_summary:104 - Loading parameter type summary from: ../c_bond_generalized/benchmark_results/metrics_by_parameter_type.json
+2026-04-06 14:51:57.882 | INFO     | __main__:load_parameter_type_summary:104 - Loading parameter type summary from: ../d_gen_bond_recursive/benchmark_results/metrics_by_parameter_type.json
+2026-04-06 14:51:57.896 | INFO     | __main__:load_parameter_type_summary:104 - Loading parameter type summary from: ../e_broad_spec_recursion1/benchmark_results/metrics_by_parameter_type.json
 
 ======================================================================
 BENCHMARK SUMMARY
@@ -336,4 +336,4 @@ Impropers (°):
     4. unmatched: mean=5.1968 °, n=3645
     5. i6: mean=1.5513 °, n=27350
        SMIRKS: [*:1]~[#7X3$(*@1-[*]=,:[*][*]=,:[*]@1):2](~[*:3])~[*:4]
-2026-03-30 12:29:30.958 | INFO     | __main__:main:1436 - Plot generation complete!
+2026-04-06 14:52:11.346 | INFO     | __main__:main:1436 - Plot generation complete!

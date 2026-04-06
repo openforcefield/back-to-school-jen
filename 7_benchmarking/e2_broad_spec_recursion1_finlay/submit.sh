@@ -23,5 +23,5 @@ python ../benchmarking.py --offxml "spice2_linearised_harmonics_minibatch_sage_b
                           --input-dataset "$HOME/bin/yammbs-dataset-submission/datasets/OpenFF-Industry-Benchmark-Season-1-v1.2/cache.json" \
                           --force-field-name "SpecificGenBondsE2" \
                           --output-dir benchmark_results \
-			  --n-processes $SLURM_CPUS_ON_NODE \
+                          --n-processes $SLURM_CPUS_ON_NODE \
                           -vvv 2>&1 | tee log.txt
