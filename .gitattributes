@@ -1,5 +1,5 @@
 *.sqlite filter=lfs diff=lfs merge=lfs -text
 *minimized.json filter=lfs diff=lfs merge=lfs -text
-*parameter_to_molecules.json diff=lfs merge=lfs -text
-*msm-out.json diff=lfs merge=lfs -text
+*parameter_to_molecules.json filter=lfs diff=lfs merge=lfs -text
+*msm-out.json filter=lfs diff=lfs merge=lfs -text
 4_make_offxmls/g_gen_recursion2/openff-2.3.0-bondanglegen-recursion2.offxml filter=lfs diff=lfs merge=lfs -text
