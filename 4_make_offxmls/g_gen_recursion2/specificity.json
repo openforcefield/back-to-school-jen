@@ -8,7 +8,7 @@
       "bond_include_ring_info": true
     }
   },
-  "bond_specificities": {
+  "angle_specificities": {
     "AtomRec2Ring-BondGeneralizedRing": {
       "atom_include_ring_info": true,
       "atom_recursion_level": 2,
