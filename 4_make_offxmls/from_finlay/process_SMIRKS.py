@@ -263,6 +263,7 @@ def get_atom_recursive_smirks(
     recursion_level: int = 1,
     return_recursions: bool = False,
     include_bond_order: bool = True,
+    include_ring_info: bool = False,
 ) -> str | list[str]:
     """
     Generate recursive SMIRKS pattern encoding atom identity and bonded connectivity.
@@ -319,6 +320,7 @@ def get_atom_recursive_smirks(
             mol,
             recursion_level=recursion_level - 1,
             include_bond_order=include_bond_order,
+            include_ring_info=include_ring_info,
         )
         # include explicit bond order between the current atom and the neighbor
         if include_bond_order:
@@ -326,6 +328,10 @@ def get_atom_recursive_smirks(
             bond_smarts = TYPE_TO_SMARTS.get(bond.GetBondType(), "~")
         else:
             bond_smarts = "~"  # always wildcard when order not requested
+
+        if include_ring_info:
+            bond_ds = get_bond_descriptors((idx, bonded_idx), mol)
+            bond_smarts += bond_ds["ring_info"]
 
         recursions.append(f"{bond_smarts}{neighbor}")
 
@@ -446,6 +452,7 @@ class SMIRKSFactory:
             mol,
             terminal_idxs,
             self.atom_config,
+            bond_include_ring_info=self.bond_config.include_ring_info,
         )
 
     def get_bond_smirks(
@@ -510,6 +517,7 @@ class SMIRKSFactory:
         mol: Chem.Mol,
         terminal_idxs: tuple[int, int],
         config: AtomSMIRKSConfig,
+        bond_include_ring_info: bool = False,
     ) -> str:
         """
         Core atom SMIRKS generation logic.
@@ -565,6 +573,7 @@ class SMIRKSFactory:
                 recursion_level=config.recursion_level,
                 return_recursions=True,
                 include_bond_order=include_bond_order,
+                include_ring_info=bond_include_ring_info,
             )
 
         # Handle terminal behavior
@@ -616,6 +625,24 @@ class SMIRKSFactory:
         return bond_type
 
 
+# Module-level globals set once per worker via Pool initializer.
+# This avoids pickling ff and component_class for every task.
+_worker_ff = None
+_worker_component_class = None
+
+
+def _worker_init(ff, component_class):
+    """
+    Pool worker initializer — stores shared objects in module globals.
+
+    Called once per worker process so that ``ff`` and ``component_class``
+    are not re-pickled for every task.
+    """
+    global _worker_ff, _worker_component_class
+    _worker_ff = ff
+    _worker_component_class = component_class
+
+
 def _process_component_for_ff(args):
     """
     Helper function for parallel processing in add_types_to_ff.
@@ -625,15 +652,17 @@ def _process_component_for_ff(args):
     Parameters
     ----------
     args : tuple
-        (i, (smirks, components), component_class, specificity_num, ff)
+        (i, smirks, components, specificity_num)
 
     Returns
     -------
     ParameterType
         Generated parameter for the component.
     """
-    i, (smirks, components), component_class, specificity_num, ff = args
-    return component_class.get_parameter(smirks, specificity_num, components, i, ff)
+    i, smirks, components, specificity_num = args
+    return _worker_component_class.get_parameter(
+        smirks, specificity_num, components, i, _worker_ff
+    )
 
 
 def add_types_to_ff(
@@ -672,47 +701,60 @@ def add_types_to_ff(
     ff_copy = deepcopy(ff)
     handler = component_class.handler_class(version=component_class.handler_version)
 
-    logger.info(f"Using {n_workers} workers to assemble the force field.")
     if n_workers is None:
         n_workers = os.cpu_count() or 1  # Fallback to 1 if cpu_count() returns None
+    logger.info(f"Using {n_workers} workers to assemble the force field.")
 
-    # Write the lowest specificity level first
-    for specificity_num, components_by_type in sorted(
-        component_types.items(), key=lambda item: item[0]
-    ):
-        # Prepare items for parallel processing
-        items = list(
-            enumerate(
-                sorted(
-                    components_by_type.items(),
-                    key=lambda item: (
-                        # Sort by number of ";@" patterns (fewer instances first)
-                        item[0].count(";@"),
-                        # Secondary sort by number of components (descending)
-                        -len(item[1]),
-                    ),
+    # Create pool once for all specificity levels.
+    # ff and component_class are sent once per worker via the initializer,
+    # avoiding re-pickling them for every task (critical at 500k+ tasks).
+    ctx = get_context("spawn")
+    with ctx.Pool(
+        processes=n_workers,
+        initializer=_worker_init,
+        initargs=(ff, component_class),
+    ) as pool:
+        # Write the lowest specificity level first
+        for specificity_num, components_by_type in sorted(
+            component_types.items(), key=lambda item: item[0]
+        ):
+            # Prepare items for parallel processing
+            items = list(
+                enumerate(
+                    sorted(
+                        components_by_type.items(),
+                        key=lambda item: (
+                            # Sort by number of ";@" patterns (fewer instances first)
+                            item[0].count(";@"),
+                            # Secondary sort by number of components (descending)
+                            -len(item[1]),
+                        ),
+                    )
                 )
             )
-        )
 
-        # Prepare arguments for parallel processing
-        args_list = [
-            (i, (smirks, components), component_class, specificity_num, ff)
-            for i, (smirks, components) in items
-        ]
+            # Each task only carries (i, smirks, components, specificity_num);
+            # ff and component_class live in worker globals after initialization.
+            args_list = [
+                (i, smirks, components, specificity_num)
+                for i, (smirks, components) in items
+            ]
 
-        # Process in parallel using Pool with spawn context for HPC compatibility
-        ctx = get_context("spawn")
-        with ctx.Pool(processes=n_workers) as pool:
-            results_iter = pool.imap(_process_component_for_ff, args_list, chunksize=10)
+            total_items = len(args_list)
+            # Larger chunksize reduces IPC round-trips at scale.
+            chunksize = max(10, total_items // (n_workers * 4))
 
             parameters = []
             next_log_threshold = 0.05
             processed = 0
-            total_items = len(args_list)
 
-            logger.info(f"Adding parameters for specificity {specificity_num}...")
-            for parameter in results_iter:
+            logger.info(
+                f"Adding parameters for specificity {specificity_num} "
+                f"({total_items} items, chunksize={chunksize})..."
+            )
+            for parameter in pool.imap(
+                _process_component_for_ff, args_list, chunksize=chunksize
+            ):
                 parameters.append(parameter)
                 processed += 1
 
@@ -723,9 +765,9 @@ def add_types_to_ff(
                     )
                     next_log_threshold += 0.05
 
-        # Add parameters to handler in order
-        for parameter in parameters:
-            handler.parameters.append(parameter)
+            # Add parameters to handler in order
+            for parameter in parameters:
+                handler.parameters.append(parameter)
 
     # Add any extra parameters at the end
     if extra_parameters:
