@@ -2,7 +2,7 @@
 
 #SBATCH --job-name=ff-g  ## job name
 #SBATCH -p standard              ## use free partition
-#SBATCH -t 7-00:00:00
+#SBATCH -t 1-00:00:00
 #SBATCH --nodes=1            ## use 1 node, don't ask for multiple
 #SBATCH --ntasks 1
 #SBATCH --cpus-per-task=16

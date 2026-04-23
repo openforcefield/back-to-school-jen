@@ -53,8 +53,12 @@ Parameter length: 1.52 angstrom
 from typing import Optional, Callable, cast
 from abc import ABC, abstractmethod
 from collections import namedtuple
+import os
+from multiprocessing import get_context as mp_get_context
+import re
 
 import numpy as np
+from loguru import logger
 from rdkit import Chem
 
 from openff.units import unit as off_unit
@@ -468,6 +472,8 @@ class MMComponent(ABC):
         components: list["MMComponent"],
         index: int,
         base_ff: ForceField,
+        component_count: int | None = None,
+        cached_params: list | None = None,
     ) -> ParameterType:
         """
         Generate force field parameter for component type.
@@ -483,7 +489,14 @@ class MMComponent(ABC):
         index : int
             Parameter index for identification.
         base_ff : openff.toolkit.ForceField
-            Base force field to derive initial parameter values.
+            Base force field to derive initial parameter values.  Only
+            consulted when ``cached_params`` is ``None``.
+        component_count : int, optional
+            Explicit population count stored in the parameter id.
+        cached_params : list, optional
+            Pre-computed base-FF parameter objects (from
+            :func:`precompute_ff_parameter_cache`).  When supplied,
+            ``base_ff`` is not used and no ``label_molecules`` call is made.
 
         Returns
         -------
@@ -538,6 +551,8 @@ class Bond(MMComponent):
         components: list["MMComponent"],
         index: int,
         base_ff: ForceField,
+        component_count: int | None = None,
+        cached_params: list | None = None,
     ) -> BondHandler.BondType:
         """
         Generate bond parameter from component statistics.
@@ -556,16 +571,23 @@ class Bond(MMComponent):
         index : int
             Parameter index for identification.
         base_ff : openff.toolkit.ForceField
-            Base force field to extract reference parameters.
+            Base force field to extract reference parameters.  Only used
+            when ``cached_params`` is ``None``.
+        component_count : int, optional
+            Explicit population count stored in the parameter id.
+        cached_params : list, optional
+            Pre-computed base-FF parameters (avoids ``label_molecules`` call).
 
         Returns
         -------
         BondHandler.BondType
             Bond parameter with averaged force constant and equilibrium length.
         """
-        # assert all(isinstance(c, Bond) for c in components), f"All components must be Bond instances but got {[type(c) for c in components]}"
-
-        base_ff_parameters = get_parameters_for_components(components, base_ff)
+        base_ff_parameters = (
+            cached_params
+            if cached_params is not None
+            else get_parameters_for_components(components, base_ff)
+        )
         k_unit = off_unit.kilocalorie_per_mole / off_unit.angstroms**2
         mean_k = np.mean([p.k.m_as(k_unit) for p in base_ff_parameters]) * k_unit
         length_unit = off_unit.angstroms
@@ -574,11 +596,13 @@ class Bond(MMComponent):
             * length_unit
         )
 
+        count = component_count if component_count is not None else len(components)
+
         parameter = BondHandler.BondType(
             smirks=smirks,
             k=mean_k,
             length=mean_length,
-            id=f"specificity={specificity_num} index={index} count={len(components)}",
+            id=f"specificity={specificity_num} index={index} count={count}",
         )
         return parameter
 
@@ -674,6 +698,8 @@ class Angle(MMComponent):
         components: list["MMComponent"],
         index: int,
         base_ff: ForceField,
+        component_count: int | None = None,
+        cached_params: list | None = None,
     ) -> AngleHandler.AngleType:
         """
         Generate angle parameter from component statistics.
@@ -692,16 +718,23 @@ class Angle(MMComponent):
         index : int
             Parameter index for identification.
         base_ff : openff.toolkit.ForceField
-            Base force field to extract reference parameters.
+            Base force field to extract reference parameters.  Only used
+            when ``cached_params`` is ``None``.
+        component_count : int, optional
+            Explicit population count stored in the parameter id.
+        cached_params : list, optional
+            Pre-computed base-FF parameters (avoids ``label_molecules`` call).
 
         Returns
         -------
         AngleHandler.AngleType
             Angle parameter with averaged force constant and equilibrium angle.
         """
-        # assert all(isinstance(c, Angle) for c in components), f"All components must be Angle instances but got {[type(c) for c in components]}"
-
-        base_ff_parameters = get_parameters_for_components(components, base_ff)
+        base_ff_parameters = (
+            cached_params
+            if cached_params is not None
+            else get_parameters_for_components(components, base_ff)
+        )
         k_unit = off_unit.kilocalorie_per_mole / off_unit.radians**2
         mean_k = np.mean([p.k.m_as(k_unit) for p in base_ff_parameters]) * k_unit
         angle_unit = off_unit.degrees
@@ -709,11 +742,13 @@ class Angle(MMComponent):
             np.mean([p.angle.m_as(angle_unit) for p in base_ff_parameters]) * angle_unit
         )
 
+        count = component_count if component_count is not None else len(components)
+
         parameter = AngleHandler.AngleType(
             smirks=smirks,
             k=mean_k,
             angle=mean_angle,
-            id=f"specificity={specificity_num} index={index} count={len(components)}",
+            id=f"specificity={specificity_num} index={index} count={count}",
         )
         return parameter
 
@@ -819,6 +854,8 @@ class ProperTorsion(MMComponent):
         components: list["MMComponent"],
         index: int,
         base_ff: ForceField,
+        component_count: int | None = None,
+        cached_params: list | None = None,
     ) -> ProperTorsionHandler.ProperTorsionType:
         """
         Generate proper torsion parameter with default values.
@@ -845,6 +882,8 @@ class ProperTorsion(MMComponent):
             Proper torsion parameter with default values for 4 periodicities.
         """
         # assert all(isinstance(c, ProperTorsion) for c in components), "All components must be ProperTorsion instances"
+        count = component_count if component_count is not None else len(components)
+
         parameter = ProperTorsionHandler.ProperTorsionType(
             smirks=smirks,
             k=[0 * off_unit.kilocalorie_per_mole / off_unit.radian**2]
@@ -852,7 +891,7 @@ class ProperTorsion(MMComponent):
             phase=[0 * off_unit.degrees] * 4,  # Default phase values
             periodicity=[1, 2, 3, 4],  # Default periodicities
             idivf=[1.0] * 4,  # Default idivf values
-            id=f"specificity={specificity_num} index={index} count={len(components)}",
+            id=f"specificity={specificity_num} index={index} count={count}",
         )
         return parameter
 
@@ -985,6 +1024,8 @@ class ImproperTorsion(MMComponent):
         components: list["MMComponent"],
         index: int,
         base_ff: ForceField,
+        component_count: int | None = None,
+        cached_params: list | None = None,
     ) -> ImproperTorsionHandler.ImproperTorsionType:
         """
         Generate improper torsion parameter with default values.
@@ -1011,6 +1052,8 @@ class ImproperTorsion(MMComponent):
             Improper torsion parameter with default values.
         """
         # assert all(isinstance(c, ImproperTorsion) for c in components), "All components must be ImproperTorsion instances"
+        count = component_count if component_count is not None else len(components)
+
         parameter = ImproperTorsionHandler.ImproperTorsionType(
             smirks=smirks,
             k=[
@@ -1019,9 +1062,220 @@ class ImproperTorsion(MMComponent):
             phase=[180 * off_unit.degrees],  # Default phase value
             periodicity=[2],  # Default periodicity
             idivf=[1.0],  # Default idivf value
-            id=f"specificity={specificity_num} index={index} count={len(components)}",
+            id=f"specificity={specificity_num} index={index} count={count}",
         )
         return parameter
+
+
+# ---------------------------------------------------------------------------
+# Memory-check helpers for pre-flight fork safety
+# ---------------------------------------------------------------------------
+
+
+def _read_meminfo_kb(key: str) -> int:
+    """Return the value (kB) for *key* from /proc/meminfo, or 0 if unavailable."""
+    try:
+        with open("/proc/meminfo") as fh:
+            for line in fh:
+                if line.startswith(key + ":"):
+                    return int(re.split(r"\s+", line.strip())[1])
+    except (OSError, ValueError):
+        pass
+    return 0
+
+
+def _read_self_rss_kb() -> int:
+    """Return the resident set size (kB) of this process from /proc/self/status."""
+    try:
+        with open("/proc/self/status") as fh:
+            for line in fh:
+                if line.startswith("VmRSS:"):
+                    return int(re.split(r"\s+", line.strip())[1])
+    except (OSError, ValueError):
+        pass
+    return 0
+
+
+# Module-level globals/helpers for cache precomputation workers.
+_cache_worker_ff = None
+
+
+def _cache_worker_init(ff: ForceField):
+    """Initialize shared force field object for cache labeling workers."""
+    global _cache_worker_ff
+    _cache_worker_ff = ff
+
+
+def _cache_label_one(args: tuple[str, Molecule]) -> tuple[str, dict]:
+    """Label one molecule in a worker and return (mapped_smiles, assignments)."""
+    smiles, mol = args
+    if _cache_worker_ff is None:
+        raise RuntimeError("Cache worker force field was not initialized")
+    assigned = _cache_worker_ff.label_molecules(mol.to_topology())[0]
+    return smiles, assigned
+
+
+def precompute_ff_parameter_cache(
+    component_types: dict[int, dict[str, list["MMComponent"]]],
+    forcefield: ForceField,
+    component_class: type["MMComponent"],
+    n_workers: int | None = None,
+    max_samples: int = 10,
+) -> dict[tuple[str, tuple], object]:
+    """
+    Pre-compute base FF parameter assignments for all sampled components.
+
+    Rather than calling ``forcefield.label_molecules`` once per SMIRKS type
+    inside a multiprocessing pool (which serialises full ``Molecule`` objects
+    over IPC for every task), this function calls it once per *unique* molecule
+    across all component types, then caches the result.  The cache is keyed by
+    ``(mapped_smiles, indices)`` so individual ``get_parameter`` calls can do a
+    plain dict lookup instead of an expensive SMIRKS-matching round-trip.
+
+    Parameters
+    ----------
+    component_types : dict[int, dict[str, list[MMComponent]]]
+        Output of ``get_components_by_type``: {specificity_level: {smirks: [comps]}}.
+    forcefield : ForceField
+        Base force field used to derive initial parameter values (read-only).
+    component_class : type[MMComponent]
+        The component class (Bond, Angle, …) being processed.
+    n_workers : int, optional
+        Number of parallel workers for the label_molecules step. Uses a
+        ``spawn`` multiprocessing pool with module-level worker initialization
+        for HPC compatibility. Falls back to a thread pool if process workers
+        are unavailable.
+    max_samples : int, default 10
+        Maximum number of components sampled per SMIRKS type (mirrors the
+        sampling in ``get_parameters_for_components``).
+
+    Returns
+    -------
+    dict[tuple[str, tuple], object]
+        Mapping ``{(mapped_smiles, indices_tuple): ParameterType}`` for every
+        (molecule, component) pair encountered in the sampled components.
+
+    Notes
+    -----
+    The cache will include entries for every unique (mapped_smiles, component
+    indices) pair seen across all sampled components.  Missing entries (e.g.
+    because the base FF does not cover the component) are silently skipped so
+    callers should handle absent keys gracefully.
+    """
+
+    tag_name = component_class.handler_class._TAGNAME
+
+    # --- 1. Collect unique (mapped_smiles, mol) pairs from sampled components ---
+    unique_mols: dict[str, "Molecule"] = {}
+    for level_dict in component_types.values():
+        for comps in level_dict.values():
+            for c in comps[:max_samples]:
+                if c.mapped_smiles not in unique_mols:
+                    unique_mols[c.mapped_smiles] = c.mol
+
+    logger.info(
+        f"Pre-computing base FF parameter cache for {len(unique_mols):,} unique molecules "
+        f"({component_class.__name__})..."
+    )
+
+    # --- 2. label_molecules once per unique molecule, in parallel ---
+    if n_workers is None:
+        n_workers = os.cpu_count() or 1
+
+    smiles_list = list(unique_mols.keys())
+    mol_list = [unique_mols[s] for s in smiles_list]
+    cache: dict[tuple[str, tuple], object] = {}
+
+    # Use spawn context so workers start with a clean Python process (~100 MB)
+    # rather than inheriting the parent's full heap via fork copy-on-write.
+    # At the Angle stage the parent may be >60 GB; fork would give each of
+    # n_workers workers a CoW copy of that entire heap, and Python's reference
+    # counting immediately dirties those pages throughout, causing peak usage
+    # of n_workers × parent_RSS.  With spawn, workers receive only what they
+    # actually need: the ForceField (pickled once per worker via the
+    # initializer) and individual (smiles, Molecule) pairs per task.
+    ctx = mp_get_context("spawn")
+    with ctx.Pool(
+        processes=n_workers,
+        initializer=_cache_worker_init,
+        initargs=(forcefield,),
+    ) as pool:
+        results_iter = pool.imap_unordered(
+            _cache_label_one,
+            zip(smiles_list, mol_list),
+            chunksize=max(1, len(smiles_list) // (n_workers * 8) or 1),
+        )
+        # Use a per-next timeout so that if a worker is OOM-killed (and
+        # the pool silently respawns it without resubmitting the lost task)
+        # we detect the stall within *timeout* seconds and raise a clear
+        # error instead of hanging indefinitely.
+        _WORKER_TIMEOUT = 300  # seconds between liveness checks
+        while True:
+            try:
+                smiles, assigned = results_iter.next(timeout=_WORKER_TIMEOUT)
+            except StopIteration:
+                break
+            except TimeoutError:
+                dead = [p for p in pool._pool if not p.is_alive()]  # type: ignore[attr-defined]
+                if dead:
+                    pool.terminate()
+                    avail_gb = _read_meminfo_kb("MemAvailable") / 1024**2
+                    rss_gb = _read_self_rss_kb() / 1024**2
+                    raise RuntimeError(
+                        f"{len(dead)}/{n_workers} cache-build worker process(es) died "
+                        f"unexpectedly during label_molecules (OOM is likely). "
+                        f"Process RSS at failure: {rss_gb:.1f} GB; "
+                        f"available memory: {avail_gb:.1f} GB. "
+                        f"To fix: (1) increase --mem-per-cpu in the SLURM script, or "
+                        f"(2) reduce -n (number of workers)."
+                    )
+                # Spurious timeout (very slow molecule or heavy node load) — keep waiting.
+                continue
+            if tag_name and tag_name in assigned:
+                for indices, param in assigned[tag_name].items():
+                    cache[(smiles, indices)] = param
+
+    logger.info(f"Parameter cache built: {len(cache):,} entries.")
+    return cache
+
+
+def get_parameters_for_components_cached(
+    components: list["MMComponent"],
+    cache: dict[tuple[str, tuple], object],
+    max_samples: int = 10,
+) -> ParameterList:
+    """
+    Retrieve base FF parameters for components using a pre-computed cache.
+
+    Drop-in replacement for ``get_parameters_for_components`` that avoids
+    calling ``forcefield.label_molecules`` at runtime.
+
+    Parameters
+    ----------
+    components : list[MMComponent]
+        Components to look up.
+    cache : dict[tuple[str, tuple], object]
+        Cache produced by :func:`precompute_ff_parameter_cache`.
+    max_samples : int, default 10
+        Maximum number of components to sample.
+
+    Returns
+    -------
+    ParameterList
+        Parameters found in the cache for the sampled components.
+    """
+    subsampled = (
+        components
+        if len(components) <= max_samples
+        else np.random.choice(components, max_samples, replace=False)
+    )
+    params = []
+    for c in subsampled:
+        key = (c.mapped_smiles, c.indices)
+        param = cache.get(key)
+        if param is not None:
+            params.append(param)
+    return cast(ParameterList, params)
 
 
 def get_parameters_for_components(

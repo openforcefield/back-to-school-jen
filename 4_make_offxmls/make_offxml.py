@@ -265,6 +265,11 @@ def write_forcefield_file(
     filename_offxml_in = pathlib.Path(filename_offxml_in)
     logger.info(f"Reading template force field: {filename_offxml_in.resolve()}")
     new_ff = ForceField(str(filename_offxml_in))
+    # Keep a reference to the compact template FF so that label_molecules
+    # inside precompute_ff_parameter_cache always runs against the original
+    # ~100-parameter FF, not the accumulated FF that grows after each
+    # component pass (e.g. 205,693 Bond SMIRKS when processing Angles).
+    template_ff = ForceField(str(filename_offxml_in))
 
     if not components_by_type:
         logger.info(
@@ -281,6 +286,7 @@ def write_forcefield_file(
                 component_class,
                 None,  # None for bonds and angles
                 n_workers=n_workers,
+                base_ff=template_ff,
             )
 
     logger.info(f"Writing new force field: {filename_offxml_out.resolve()}")

@@ -40,7 +40,6 @@ Examples
 """
 
 import os
-from multiprocessing import get_context
 from copy import deepcopy
 from enum import Enum
 from typing import Any
@@ -52,7 +51,12 @@ from rdkit import Chem
 from openff.toolkit import ForceField
 from openff.toolkit.typing.engines.smirnoff.parameters import ParameterType
 
-from .molecular_classes import MMComponent, SpecificityLevel
+from .molecular_classes import (
+    MMComponent,
+    SpecificityLevel,
+    precompute_ff_parameter_cache,
+    get_parameters_for_components_cached,
+)
 
 TYPE_TO_SMARTS = {
     Chem.BondType.SINGLE: "-",
@@ -626,7 +630,7 @@ class SMIRKSFactory:
 
 
 # Module-level globals set once per worker via Pool initializer.
-# This avoids pickling ff and component_class for every task.
+# These remain available for any future parallel helpers that still use a pool.
 _worker_ff = None
 _worker_component_class = None
 
@@ -652,16 +656,21 @@ def _process_component_for_ff(args):
     Parameters
     ----------
     args : tuple
-        (i, smirks, components, specificity_num)
+        (i, smirks, sampled_components, component_count, specificity_num)
 
     Returns
     -------
     ParameterType
         Generated parameter for the component.
     """
-    i, smirks, components, specificity_num = args
+    i, smirks, components, component_count, specificity_num = args
     return _worker_component_class.get_parameter(
-        smirks, specificity_num, components, i, _worker_ff
+        smirks,
+        specificity_num,
+        components,
+        i,
+        _worker_ff,
+        component_count=component_count,
     )
 
 
@@ -671,6 +680,7 @@ def add_types_to_ff(
     component_class: type[MMComponent],
     extra_parameters: list[ParameterType] | None = None,
     n_workers: int | None = None,
+    base_ff: ForceField | None = None,
 ) -> ForceField:
     """
     Add component parameters to a force field.
@@ -678,7 +688,8 @@ def add_types_to_ff(
     Parameters
     ----------
     ff : openff.toolkit.ForceField
-        Base force field to extend.
+        Base force field to extend (may already have accumulated parameters
+        from prior component passes).
     component_types : dict[int, dict[str, list[MMComponent]]]
         Component organization: {specificity_level: {smirks: [components]}}.
     component_class : type[MMComponent]
@@ -686,12 +697,41 @@ def add_types_to_ff(
     extra_parameters : list[ParameterType], optional
         Additional parameters to append.
     n_workers : int, optional
-        Number of worker processes. If None, uses all CPU cores.
+        Number of worker processes used for pre-computing the parameter cache.
+        If None, uses all CPU cores.
+    base_ff : openff.toolkit.ForceField, optional
+        The original compact template force field used exclusively for
+        label_molecules calls in the cache-build phase.  Must be provided
+        when ``ff`` has already been extended with parameters from earlier
+        component passes (e.g. ff already contains Bond parameters when
+        processing Angles), otherwise label_molecules will evaluate every
+        accumulated SMIRKS pattern per molecule, causing a severe hang.
+        If None, ``ff`` is used (correct only for the first component pass).
 
     Returns
     -------
     openff.toolkit.ForceField
         New force field with added parameters.
+
+    Notes
+    -----
+    The assembly uses a two-phase strategy to avoid serialising full
+    ``Molecule`` objects over IPC for every SMIRKS type:
+
+    1. **Cache phase** – ``forcefield.label_molecules`` is called once per
+       *unique* molecule across all sampled components (using a ``fork``
+       process pool).  Results are stored in a ``(mapped_smiles, indices)``
+       keyed dict so downstream lookups are O(1).
+    2. **Assembly phase** – Parameter objects are constructed serially on the
+       main process using cache lookups.  ``ParameterType`` construction is
+       O(microseconds) per type, so 500k types finish in seconds rather than
+       the hours required when each task spawns a full round-trip to a worker.
+
+    This eliminates the previous deadlock/hang caused by:
+    - Pickling ``Molecule`` objects (each 10–100 KB) into the OS IPC pipe for
+      every one of 500k+ tasks, causing pipe-buffer saturation.
+    - ``spawn`` context forcing a full Python re-import and FF deserialisation
+      in each worker for every ``Pool`` creation.
 
     Examples
     --------
@@ -702,72 +742,69 @@ def add_types_to_ff(
     handler = component_class.handler_class(version=component_class.handler_version)
 
     if n_workers is None:
-        n_workers = os.cpu_count() or 1  # Fallback to 1 if cpu_count() returns None
-    logger.info(f"Using {n_workers} workers to assemble the force field.")
+        n_workers = os.cpu_count() or 1
 
-    # Create pool once for all specificity levels.
-    # ff and component_class are sent once per worker via the initializer,
-    # avoiding re-pickling them for every task (critical at 500k+ tasks).
-    ctx = get_context("spawn")
-    with ctx.Pool(
-        processes=n_workers,
-        initializer=_worker_init,
-        initargs=(ff, component_class),
-    ) as pool:
-        # Write the lowest specificity level first
-        for specificity_num, components_by_type in sorted(
-            component_types.items(), key=lambda item: item[0]
-        ):
-            # Prepare items for parallel processing
-            items = list(
-                enumerate(
-                    sorted(
-                        components_by_type.items(),
-                        key=lambda item: (
-                            # Sort by number of ";@" patterns (fewer instances first)
-                            item[0].count(";@"),
-                            # Secondary sort by number of components (descending)
-                            -len(item[1]),
-                        ),
-                    )
+    # ------------------------------------------------------------------
+    # Phase 1: pre-compute base-FF parameter cache.
+    # label_molecules is called once per unique molecule (fork pool),
+    # not once per SMIRKS type × 10 samples.
+    # Use base_ff (the compact template FF) if provided, so that
+    # label_molecules does not evaluate the large set of accumulated
+    # Bond/Angle SMIRKS patterns from earlier component passes.
+    # ------------------------------------------------------------------
+    cache_ff = base_ff if base_ff is not None else ff
+    param_cache = precompute_ff_parameter_cache(
+        component_types, cache_ff, component_class, n_workers=n_workers
+    )
+
+    # ------------------------------------------------------------------
+    # Phase 2: serial parameter assembly using O(1) cache lookups.
+    # ParameterType construction is trivially fast (microseconds each),
+    # so there is no benefit to adding IPC overhead here.
+    # ------------------------------------------------------------------
+    for specificity_num, components_by_type in sorted(
+        component_types.items(), key=lambda item: item[0]
+    ):
+        ordered_items = sorted(
+            components_by_type.items(),
+            key=lambda item: (
+                item[0].count(";@"),
+                -len(item[1]),
+            ),
+        )
+        logger.info(f"Finished pre-sort of {component_class}.")
+
+        total_items = len(ordered_items)
+        next_log_threshold = 0.05
+        processed = 0
+
+        logger.info(
+            f"Adding parameters for specificity {specificity_num} "
+            f"({total_items} items)..."
+        )
+
+        for i, (smirks, components) in enumerate(ordered_items):
+            cached_params = get_parameters_for_components_cached(
+                components, param_cache
+            )
+            parameter = component_class.get_parameter(
+                smirks,
+                specificity_num,
+                components,
+                i,
+                ff,
+                component_count=len(components),
+                cached_params=cached_params,
+            )
+            handler.parameters.append(parameter)
+            processed += 1
+
+            progress = processed / total_items
+            if progress >= next_log_threshold:
+                logger.info(
+                    f"Progress: {processed}/{total_items} parameters ({progress*100:.1f}%)"
                 )
-            )
-
-            # Each task only carries (i, smirks, components, specificity_num);
-            # ff and component_class live in worker globals after initialization.
-            args_list = [
-                (i, smirks, components, specificity_num)
-                for i, (smirks, components) in items
-            ]
-
-            total_items = len(args_list)
-            # Larger chunksize reduces IPC round-trips at scale.
-            chunksize = max(10, total_items // (n_workers * 4))
-
-            parameters = []
-            next_log_threshold = 0.05
-            processed = 0
-
-            logger.info(
-                f"Adding parameters for specificity {specificity_num} "
-                f"({total_items} items, chunksize={chunksize})..."
-            )
-            for parameter in pool.imap(
-                _process_component_for_ff, args_list, chunksize=chunksize
-            ):
-                parameters.append(parameter)
-                processed += 1
-
-                progress = processed / total_items
-                if progress >= next_log_threshold:
-                    logger.info(
-                        f"Progress: {processed}/{total_items} parameters ({progress*100:.1f}%)"
-                    )
-                    next_log_threshold += 0.05
-
-            # Add parameters to handler in order
-            for parameter in parameters:
-                handler.parameters.append(parameter)
+                next_log_threshold += 0.05
 
     # Add any extra parameters at the end
     if extra_parameters:
