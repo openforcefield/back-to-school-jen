@@ -3,3 +3,4 @@
 *parameter_to_molecules.json filter=lfs diff=lfs merge=lfs -text
 *msm-out.json filter=lfs diff=lfs merge=lfs -text
 4_make_offxmls/g_gen_recursion2/openff-2.3.0-bondanglegen-recursion2.offxml filter=lfs diff=lfs merge=lfs -text
+*openff-ff-g-msm.offxml filter=lfs diff=lfs merge=lfs -text
