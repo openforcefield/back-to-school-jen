@@ -55,6 +55,7 @@ from abc import ABC, abstractmethod
 from collections import namedtuple
 import os
 from multiprocessing import get_context as mp_get_context
+from multiprocessing import TimeoutError as MPTimeoutError
 import re
 
 import numpy as np
@@ -1210,30 +1211,38 @@ def precompute_ff_parameter_cache(
         # we detect the stall within *timeout* seconds and raise a clear
         # error instead of hanging indefinitely.
         _WORKER_TIMEOUT = 300  # seconds between liveness checks
-        while True:
-            try:
-                smiles, assigned = results_iter.next(timeout=_WORKER_TIMEOUT)
-            except StopIteration:
-                break
-            except TimeoutError:
-                dead = [p for p in pool._pool if not p.is_alive()]  # type: ignore[attr-defined]
-                if dead:
-                    pool.terminate()
-                    avail_gb = _read_meminfo_kb("MemAvailable") / 1024**2
-                    rss_gb = _read_self_rss_kb() / 1024**2
-                    raise RuntimeError(
-                        f"{len(dead)}/{n_workers} cache-build worker process(es) died "
-                        f"unexpectedly during label_molecules (OOM is likely). "
-                        f"Process RSS at failure: {rss_gb:.1f} GB; "
-                        f"available memory: {avail_gb:.1f} GB. "
-                        f"To fix: (1) increase --mem-per-cpu in the SLURM script, or "
-                        f"(2) reduce -n (number of workers)."
-                    )
-                # Spurious timeout (very slow molecule or heavy node load) — keep waiting.
-                continue
-            if tag_name and tag_name in assigned:
-                for indices, param in assigned[tag_name].items():
-                    cache[(smiles, indices)] = param
+        next_with_timeout = getattr(results_iter, "next", None)
+        if callable(next_with_timeout):
+            while True:
+                try:
+                    smiles, assigned = next_with_timeout(timeout=_WORKER_TIMEOUT)
+                except StopIteration:
+                    break
+                except MPTimeoutError:
+                    dead = [p for p in pool._pool if not p.is_alive()]  # type: ignore[attr-defined]
+                    if dead:
+                        pool.terminate()
+                        avail_gb = _read_meminfo_kb("MemAvailable") / 1024**2
+                        rss_gb = _read_self_rss_kb() / 1024**2
+                        raise RuntimeError(
+                            f"{len(dead)}/{n_workers} cache-build worker process(es) died "
+                            f"unexpectedly during label_molecules (OOM is likely). "
+                            f"Process RSS at failure: {rss_gb:.1f} GB; "
+                            f"available memory: {avail_gb:.1f} GB. "
+                            f"To fix: (1) increase --mem-per-cpu in the SLURM script, or "
+                            f"(2) reduce -n (number of workers)."
+                        )
+                    # Spurious timeout (very slow molecule or heavy node load) - keep waiting.
+                    continue
+                if tag_name and tag_name in assigned:
+                    for indices, param in assigned[tag_name].items():
+                        cache[(smiles, indices)] = param
+        else:
+            # Some runtimes return a plain generator here; iterate without timeout support.
+            for smiles, assigned in results_iter:
+                if tag_name and tag_name in assigned:
+                    for indices, param in assigned[tag_name].items():
+                        cache[(smiles, indices)] = param
 
     logger.info(f"Parameter cache built: {len(cache):,} entries.")
     return cache

@@ -1,10 +1,14 @@
-Mon Apr  6 10:14:47 AM PDT 2026
-Running job on host hpc3-22-01
+Thu Apr 23 11:41:26 AM PDT 2026
+Running job on host hpc3-21-08
 16 allocated CPUs
-2026-04-06 10:15:01.447 | INFO     | __main__:get_train_test_smiles_dict:353 - Reading test/train smiles from ../../3_split_train_test/full_split_uci/smiles_test_train.json
-2026-04-06 10:15:01.784 | INFO     | __main__:get_train_test_smiles_dict:356 - In the training and test sets there are 23109 and 1217 SMILES strings respectively.
-2026-04-06 10:15:01.784 | INFO     | __main__:load_specificity_config:87 - Configuration file contents from specificity.json:
-2026-04-06 10:15:01.803 | INFO     | __main__:load_specificity_config:90 - {
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+2026-04-23 11:41:34.807 | INFO     | __main__:get_train_test_smiles_dict:359 - Reading test/train smiles from ../../3_split_train_test/full_split_uci/smiles_test_train.json
+2026-04-23 11:41:34.865 | INFO     | __main__:get_train_test_smiles_dict:362 - In the training and test sets there are 23109 and 1217 SMILES strings respectively.
+2026-04-23 11:41:34.865 | INFO     | __main__:load_specificity_config:87 - Configuration file contents from specificity.json:
+2026-04-23 11:41:34.872 | INFO     | __main__:load_specificity_config:90 - {
   "bond_specificities": {
     "AtomStandardRing-BondStandardRing": {
       "atom_include_ring_info": true,
@@ -25,246 +29,774 @@ Running job on host hpc3-22-01
   }
 }
 
-2026-04-06 10:15:01.804 | INFO     | __main__:get_components_by_type:189 - Getting components by type:
-2026-04-06 10:15:06.581 | INFO     | __main__:get_components_by_type:203 - 
+2026-04-23 11:41:34.873 | INFO     | __main__:get_components_by_type:189 - Getting components by type:
+2026-04-23 11:41:35.050 | INFO     | __main__:get_components_by_type:203 - 
 ====================
 Processing Bond
 ====================
-2026-04-06 10:15:06.581 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:274 - Unwanted SMIRKS to filter: None
-2026-04-06 10:15:06.581 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:275 - Using 16 workers for parallel processing
-2026-04-06 10:15:06.581 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:287 - Processing 23109 molecules from HuggingFace Dataset
-Warning: bond stereochemistry may be assigned incorrectly for molecule 
-2026-04-06 10:15:15.738 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 1156/23109 molecules (5.0%)
-2026-04-06 10:15:18.443 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 2311/23109 molecules (10.0%)
-Warning: bond stereochemistry may be assigned incorrectly for molecule 
-Warning: bond stereochemistry may be assigned incorrectly for molecule 
-2026-04-06 10:15:21.543 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 3467/23109 molecules (15.0%)
-Warning: bond stereochemistry may be assigned incorrectly for molecule 
-Warning: bond stereochemistry may be assigned incorrectly for molecule 
-Warning: bond stereochemistry may be assigned incorrectly for molecule 
-Warning: bond stereochemistry may be assigned incorrectly for molecule 
-Warning: bond stereochemistry may be assigned incorrectly for molecule 
-2026-04-06 10:15:24.139 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 4622/23109 molecules (20.0%)
-Warning: bond stereochemistry may be assigned incorrectly for molecule 
-Warning: bond stereochemistry may be assigned incorrectly for molecule 
-Warning: bond stereochemistry may be assigned incorrectly for molecule 
-Warning: bond stereochemistry may be assigned incorrectly for molecule 
-Warning: bond stereochemistry may be assigned incorrectly for molecule 
-Warning: bond stereochemistry may be assigned incorrectly for molecule 
-Warning: bond stereochemistry may be assigned incorrectly for molecule 
-2026-04-06 10:15:27.182 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 5778/23109 molecules (25.0%)
-Warning: bond stereochemistry may be assigned incorrectly for molecule 
-2026-04-06 10:15:29.274 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 6933/23109 molecules (30.0%)
-Warning: bond stereochemistry may be assigned incorrectly for molecule 
-Warning: bond stereochemistry may be assigned incorrectly for molecule 
-Warning: bond stereochemistry may be assigned incorrectly for molecule 
-Warning: bond stereochemistry may be assigned incorrectly for molecule 
-Warning: bond stereochemistry may be assigned incorrectly for molecule 
-2026-04-06 10:15:31.982 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 8089/23109 molecules (35.0%)
-Warning: bond stereochemistry may be assigned incorrectly for molecule 
-Warning: bond stereochemistry may be assigned incorrectly for molecule 
-Warning: bond stereochemistry may be assigned incorrectly for molecule 
-Warning: bond stereochemistry may be assigned incorrectly for molecule 
-Warning: bond stereochemistry may be assigned incorrectly for molecule 
-2026-04-06 10:15:33.835 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 9244/23109 molecules (40.0%)
-Warning: bond stereochemistry may be assigned incorrectly for molecule 
-Warning: bond stereochemistry may be assigned incorrectly for molecule 
-2026-04-06 10:15:36.845 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 10400/23109 molecules (45.0%)
-Warning: bond stereochemistry may be assigned incorrectly for molecule 
-Warning: bond stereochemistry may be assigned incorrectly for molecule 
-2026-04-06 10:15:40.009 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 11555/23109 molecules (50.0%)
-2026-04-06 10:15:42.216 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 12710/23109 molecules (55.0%)
-Warning: bond stereochemistry may be assigned incorrectly for molecule 
-2026-04-06 10:15:45.833 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 13866/23109 molecules (60.0%)
-Warning: bond stereochemistry may be assigned incorrectly for molecule 
-2026-04-06 10:15:48.348 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 15021/23109 molecules (65.0%)
-Warning: bond stereochemistry may be assigned incorrectly for molecule 
-Warning: bond stereochemistry may be assigned incorrectly for molecule 
-Warning: bond stereochemistry may be assigned incorrectly for molecule 
-2026-04-06 10:15:50.340 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 16177/23109 molecules (70.0%)
-Warning: bond stereochemistry may be assigned incorrectly for molecule 
-2026-04-06 10:15:54.120 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 17332/23109 molecules (75.0%)
-Warning: bond stereochemistry may be assigned incorrectly for molecule 
-2026-04-06 10:15:56.233 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 18488/23109 molecules (80.0%)
-2026-04-06 10:16:00.521 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 19643/23109 molecules (85.0%)
-Warning: bond stereochemistry may be assigned incorrectly for molecule 
-Warning: bond stereochemistry may be assigned incorrectly for molecule 
-2026-04-06 10:16:02.769 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 20799/23109 molecules (90.0%)
-2026-04-06 10:16:04.920 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 21954/23109 molecules (95.0%)
-2026-04-06 10:16:06.810 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:316 - Filtered out 0 unwanted components.
-2026-04-06 10:16:06.811 | INFO     | __main__:get_components_by_type:210 - Found 917178 Bonds.
-2026-04-06 10:16:06.863 | INFO     | from_finlay.process_mmcomponents:get_mm_components_by_specificity_by_type:552 - Getting Components by Type with Specificity 0: 0:AtomStandardRing-BondStandardRing
-2026-04-06 10:16:06.873 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:433 - Processing 917178 components with 16 workers
-2026-04-06 10:16:19.894 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 45859/917178 components (5.0%)
-2026-04-06 10:16:23.320 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 91718/917178 components (10.0%)
-2026-04-06 10:16:26.708 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 137577/917178 components (15.0%)
-2026-04-06 10:16:33.669 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 183436/917178 components (20.0%)
-2026-04-06 10:16:36.394 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 229295/917178 components (25.0%)
-2026-04-06 10:16:39.242 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 275154/917178 components (30.0%)
-2026-04-06 10:16:42.222 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 321013/917178 components (35.0%)
-2026-04-06 10:16:49.603 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 366872/917178 components (40.0%)
-2026-04-06 10:16:52.590 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 412731/917178 components (45.0%)
-2026-04-06 10:16:56.066 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 458589/917178 components (50.0%)
-2026-04-06 10:16:59.487 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 504448/917178 components (55.0%)
-2026-04-06 10:17:02.972 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 550307/917178 components (60.0%)
-2026-04-06 10:17:06.270 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 596166/917178 components (65.0%)
-2026-04-06 10:17:15.399 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 642025/917178 components (70.0%)
-2026-04-06 10:17:19.004 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 687884/917178 components (75.0%)
-2026-04-06 10:17:22.534 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 733743/917178 components (80.0%)
-2026-04-06 10:17:26.210 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 779602/917178 components (85.0%)
-2026-04-06 10:17:29.723 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 825461/917178 components (90.0%)
-2026-04-06 10:17:33.328 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 871320/917178 components (95.0%)
-2026-04-06 10:17:42.639 | INFO     | from_finlay.process_mmcomponents:get_mm_components_by_specificity_by_type:562 - Finding component types that are too specific...
-2026-04-06 10:17:42.776 | INFO     | __main__:summarize_all_types:116 - Total unique component types at specificity level 0: 180979
-2026-04-06 10:17:42.776 | INFO     | __main__:summarize_all_types:119 - Most common component types:
-2026-04-06 10:17:42.838 | INFO     | __main__:summarize_all_types:123 - [#1X1;!r3;!r4;!r5;!r6;!r7;!r8&$([#1X1;!r3;!r4;!r5;!r6;!r7;!r8](~[$([#6X3](~[#1X1])(~[#6X3])~[#6X3])])):1]-[#6X3;r6&$([#6X3;r6](~[$([#1X1]~[#6X3])])(~[$([#6X3](~[#1X1])(~[#6X3])~[#6X3])])(~[$([#6X3](~[#1X1])(~[#6X3])~[#6X3])])):2]: 22053
-2026-04-06 10:17:42.838 | INFO     | __main__:summarize_all_types:123 - [#1X1;!r3;!r4;!r5;!r6;!r7;!r8&$([#1X1;!r3;!r4;!r5;!r6;!r7;!r8](~[$([#6X3](~[#1X1])(~[#6X3])~[#6X3])])):1]-[#6X3;r6&$([#6X3;r6](~[$([#1X1]~[#6X3])])(~[$([#6X3](~[#1X1])(~[#6X3])~[#6X3])])(~[$([#6X3](~[#6X3])(~[#6X3])~[#6X3])])):2]: 12889
-2026-04-06 10:17:42.838 | INFO     | __main__:summarize_all_types:123 - [#6X3;r6&$([#6X3;r6](~[$([#1X1]~[#6X3])])(~[$([#6X3](~[#1X1])(~[#6X3])~[#6X3])])(~[$([#6X3](~[#1X1])(~[#6X3])~[#6X3])])):1]:;@[#6X3;r6&$([#6X3;r6](~[$([#1X1]~[#6X3])])(~[$([#6X3](~[#1X1])(~[#6X3])~[#6X3])])(~[$([#6X3](~[#1X1])(~[#6X3])~[#6X3])])):2]: 11530
-2026-04-06 10:17:42.838 | INFO     | __main__:summarize_all_types:123 - [#1X1;!r3;!r4;!r5;!r6;!r7;!r8&$([#1X1;!r3;!r4;!r5;!r6;!r7;!r8](~[$([#6X3](~[#1X1])(~[#6X3])~[#6X3])])):1]-[#6X3;r6&$([#6X3;r6](~[$([#1X1]~[#6X3])])(~[$([#6X3](~[#1X1])(~[#6X3])~[#6X3])])(~[$([#6X3](~[#6X3])(~[#6X3])~[#6X4])])):2]: 9721
-2026-04-06 10:17:42.838 | INFO     | __main__:summarize_all_types:123 - [#1X1;!r3;!r4;!r5;!r6;!r7;!r8&$([#1X1;!r3;!r4;!r5;!r6;!r7;!r8](~[$([#6X3](~[#1X1])(~[#6X3])~[#6X3])])):1]-[#6X3;r6&$([#6X3;r6](~[$([#1X1]~[#6X3])])(~[$([#6X3](~[#1X1])(~[#6X3])~[#6X3])])(~[$([#6X3](~[#6X3])(~[#6X3])~[#7X3])])):2]: 7787
-2026-04-06 10:17:42.838 | INFO     | __main__:summarize_all_types:123 - [#1X1;!r3;!r4;!r5;!r6;!r7;!r8&$([#1X1;!r3;!r4;!r5;!r6;!r7;!r8](~[$([#6X4](~[#1X1])(~[#1X1])(~[#1X1])~[#6X3])])):1]-[#6X4;!r3;!r4;!r5;!r6;!r7;!r8&$([#6X4;!r3;!r4;!r5;!r6;!r7;!r8](~[$([#1X1]~[#6X4])])(~[$([#1X1]~[#6X4])])(~[$([#1X1]~[#6X4])])(~[$([#6X3](~[#6X3])(~[#6X3])~[#6X4])])):2]: 7137
-2026-04-06 10:17:42.838 | INFO     | __main__:summarize_all_types:123 - [#1X1;!r3;!r4;!r5;!r6;!r7;!r8&$([#1X1;!r3;!r4;!r5;!r6;!r7;!r8](~[$([#6X4](~[#1X1])(~[#1X1])(~[#1X1])~[#8X2])])):1]-[#6X4;!r3;!r4;!r5;!r6;!r7;!r8&$([#6X4;!r3;!r4;!r5;!r6;!r7;!r8](~[$([#1X1]~[#6X4])])(~[$([#1X1]~[#6X4])])(~[$([#1X1]~[#6X4])])(~[$([#8X2](~[#6X3])~[#6X4])])):2]: 6804
-2026-04-06 10:17:42.838 | INFO     | __main__:summarize_all_types:123 - [#6X3;r6&$([#6X3;r6](~[$([#1X1]~[#6X3])])(~[$([#6X3](~[#1X1])(~[#6X3])~[#6X3])])(~[$([#6X3](~[#1X1])(~[#6X3])~[#6X3])])):1]:;@[#6X3;r6&$([#6X3;r6](~[$([#1X1]~[#6X3])])(~[$([#6X3](~[#1X1])(~[#6X3])~[#6X3])])(~[$([#6X3](~[#6X3])(~[#6X3])~[#6X3])])):2]: 6668
-2026-04-06 10:17:42.838 | INFO     | __main__:summarize_all_types:123 - [#1X1;!r3;!r4;!r5;!r6;!r7;!r8&$([#1X1;!r3;!r4;!r5;!r6;!r7;!r8](~[$([#6X4](~[#1X1])(~[#1X1])(~[#1X1])~[#6X4])])):1]-[#6X4;!r3;!r4;!r5;!r6;!r7;!r8&$([#6X4;!r3;!r4;!r5;!r6;!r7;!r8](~[$([#1X1]~[#6X4])])(~[$([#1X1]~[#6X4])])(~[$([#1X1]~[#6X4])])(~[$([#6X4](~[#1X1])(~[#1X1])(~[#6X4])~[#6X4])])):2]: 5271
-2026-04-06 10:17:42.838 | INFO     | __main__:summarize_all_types:123 - [#1X1;!r3;!r4;!r5;!r6;!r7;!r8&$([#1X1;!r3;!r4;!r5;!r6;!r7;!r8](~[$([#6X4](~[#1X1])(~[#1X1])(~[#1X1])~[#6X4])])):1]-[#6X4;!r3;!r4;!r5;!r6;!r7;!r8&$([#6X4;!r3;!r4;!r5;!r6;!r7;!r8](~[$([#1X1]~[#6X4])])(~[$([#1X1]~[#6X4])])(~[$([#1X1]~[#6X4])])(~[$([#6X4](~[#1X1])(~[#6X4])(~[#6X4])~[#6X4])])):2]: 4992
-2026-04-06 10:17:42.911 | INFO     | __main__:summarize_all_types:127 - % of component types with count < 5: 89.52%
-2026-04-06 10:17:42.918 | INFO     | __main__:summarize_all_types:130 - % of component types with count = 1: 65.63%
-2026-04-06 10:17:42.918 | INFO     | __main__:summarize_all_types:140 - 
+2026-04-23 11:41:35.050 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:274 - Unwanted SMIRKS to filter: None
+2026-04-23 11:41:35.050 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:275 - Using 16 workers for parallel processing
+2026-04-23 11:41:35.050 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:287 - Processing 23109 molecules from HuggingFace Dataset
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+2026-04-23 11:41:44.669 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 1156/23109 molecules (5.0%)
+2026-04-23 11:41:47.200 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 2311/23109 molecules (10.0%)
+2026-04-23 11:41:50.175 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 3467/23109 molecules (15.0%)
+2026-04-23 11:41:52.563 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 4622/23109 molecules (20.0%)
+2026-04-23 11:41:54.980 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 5778/23109 molecules (25.0%)
+2026-04-23 11:41:56.695 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 6933/23109 molecules (30.0%)
+2026-04-23 11:41:59.499 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 8089/23109 molecules (35.0%)
+2026-04-23 11:42:02.428 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 9244/23109 molecules (40.0%)
+2026-04-23 11:42:04.551 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 10400/23109 molecules (45.0%)
+2026-04-23 11:42:08.261 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 11555/23109 molecules (50.0%)
+2026-04-23 11:42:10.211 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 12710/23109 molecules (55.0%)
+2026-04-23 11:42:13.964 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 13866/23109 molecules (60.0%)
+2026-04-23 11:42:16.034 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 15021/23109 molecules (65.0%)
+2026-04-23 11:42:20.204 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 16177/23109 molecules (70.0%)
+2026-04-23 11:42:22.297 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 17332/23109 molecules (75.0%)
+2026-04-23 11:42:24.433 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 18488/23109 molecules (80.0%)
+2026-04-23 11:42:28.980 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 19643/23109 molecules (85.0%)
+2026-04-23 11:42:30.826 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 20799/23109 molecules (90.0%)
+2026-04-23 11:42:32.768 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 21954/23109 molecules (95.0%)
+2026-04-23 11:42:37.512 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:316 - Filtered out 0 unwanted components.
+2026-04-23 11:42:37.513 | INFO     | __main__:get_components_by_type:210 - Found 917178 Bonds.
+2026-04-23 11:42:37.526 | INFO     | from_finlay.process_mmcomponents:get_mm_components_by_specificity_by_type:552 - Getting Components by Type with Specificity 0: 0:AtomStandardRing-BondStandardRing
+2026-04-23 11:42:37.537 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:433 - Processing 917178 components with 16 workers
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+2026-04-23 11:42:49.866 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 45859/917178 components (5.0%)
+2026-04-23 11:42:55.646 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 91718/917178 components (10.0%)
+2026-04-23 11:43:01.384 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 137577/917178 components (15.0%)
+2026-04-23 11:43:09.940 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 183436/917178 components (20.0%)
+2026-04-23 11:43:14.281 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 229295/917178 components (25.0%)
+2026-04-23 11:43:18.987 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 275154/917178 components (30.0%)
+2026-04-23 11:43:23.912 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 321013/917178 components (35.0%)
+2026-04-23 11:43:33.251 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 366872/917178 components (40.0%)
+2026-04-23 11:43:38.193 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 412731/917178 components (45.0%)
+2026-04-23 11:43:44.051 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 458589/917178 components (50.0%)
+2026-04-23 11:43:49.849 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 504448/917178 components (55.0%)
+2026-04-23 11:43:55.852 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 550307/917178 components (60.0%)
+2026-04-23 11:44:07.035 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 596166/917178 components (65.0%)
+2026-04-23 11:44:12.968 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 642025/917178 components (70.0%)
+2026-04-23 11:44:19.184 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 687884/917178 components (75.0%)
+2026-04-23 11:44:25.345 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 733743/917178 components (80.0%)
+2026-04-23 11:44:31.588 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 779602/917178 components (85.0%)
+2026-04-23 11:44:37.612 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 825461/917178 components (90.0%)
+2026-04-23 11:44:50.673 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 871320/917178 components (95.0%)
+2026-04-23 11:44:54.248 | INFO     | from_finlay.process_mmcomponents:get_mm_components_by_specificity_by_type:562 - Finding component types that are too specific...
+2026-04-23 11:44:54.411 | INFO     | __main__:summarize_all_types:116 - Total unique component types at specificity level 0: 206870
+2026-04-23 11:44:54.411 | INFO     | __main__:summarize_all_types:119 - Most common component types:
+2026-04-23 11:44:54.484 | INFO     | __main__:summarize_all_types:123 - [#1X1;!r3;!r4;!r5;!r6;!r7;!r8&$([#1X1;!r3;!r4;!r5;!r6;!r7;!r8](~[$([#6X3](~;@[#6X3])(~;@[#6X3])~[#1X1])])):1]-[#6X3;r6&$([#6X3;r6](~;@[$([#6X3](~;@[#6X3])(~;@[#6X3])~[#1X1])])(~;@[$([#6X3](~;@[#6X3])(~;@[#6X3])~[#1X1])])(~[$([#1X1]~[#6X3])])):2]: 22053
+2026-04-23 11:44:54.485 | INFO     | __main__:summarize_all_types:123 - [#6X3;r6&$([#6X3;r6](~;@[$([#6X3](~;@[#6X3])(~;@[#6X3])~[#1X1])])(~;@[$([#6X3](~;@[#6X3])(~;@[#6X3])~[#1X1])])(~[$([#1X1]~[#6X3])])):1]:;@[#6X3;r6&$([#6X3;r6](~;@[$([#6X3](~;@[#6X3])(~;@[#6X3])~[#1X1])])(~;@[$([#6X3](~;@[#6X3])(~;@[#6X3])~[#1X1])])(~[$([#1X1]~[#6X3])])):2]: 11530
+2026-04-23 11:44:54.485 | INFO     | __main__:summarize_all_types:123 - [#1X1;!r3;!r4;!r5;!r6;!r7;!r8&$([#1X1;!r3;!r4;!r5;!r6;!r7;!r8](~[$([#6X3](~;@[#6X3])(~;@[#6X3])~[#1X1])])):1]-[#6X3;r6&$([#6X3;r6](~;@[$([#6X3](~;@[#6X3])(~;@[#6X3])~[#1X1])])(~;@[$([#6X3](~;@[#6X3])(~;@[#6X3])~[#6X3])])(~[$([#1X1]~[#6X3])])):2]: 8404
+2026-04-23 11:44:54.485 | INFO     | __main__:summarize_all_types:123 - [#1X1;!r3;!r4;!r5;!r6;!r7;!r8&$([#1X1;!r3;!r4;!r5;!r6;!r7;!r8](~[$([#6X3](~;@[#6X3])(~;@[#6X3])~[#1X1])])):1]-[#6X3;r6&$([#6X3;r6](~;@[$([#6X3](~;@[#6X3])(~;@[#6X3])~[#1X1])])(~;@[$([#6X3](~;@[#6X3])(~;@[#6X3])~[#6X4])])(~[$([#1X1]~[#6X3])])):2]: 8283
+2026-04-23 11:44:54.485 | INFO     | __main__:summarize_all_types:123 - [#1X1;!r3;!r4;!r5;!r6;!r7;!r8&$([#1X1;!r3;!r4;!r5;!r6;!r7;!r8](~[$([#6X4](~[#1X1])(~[#1X1])(~[#1X1])~[#6X3])])):1]-[#6X4;!r3;!r4;!r5;!r6;!r7;!r8&$([#6X4;!r3;!r4;!r5;!r6;!r7;!r8](~[$([#1X1]~[#6X4])])(~[$([#1X1]~[#6X4])])(~[$([#1X1]~[#6X4])])(~[$([#6X3](~;@[#6X3])(~;@[#6X3])~[#6X4])])):2]: 6834
+2026-04-23 11:44:54.485 | INFO     | __main__:summarize_all_types:123 - [#1X1;!r3;!r4;!r5;!r6;!r7;!r8&$([#1X1;!r3;!r4;!r5;!r6;!r7;!r8](~[$([#6X4](~[#1X1])(~[#1X1])(~[#1X1])~[#8X2])])):1]-[#6X4;!r3;!r4;!r5;!r6;!r7;!r8&$([#6X4;!r3;!r4;!r5;!r6;!r7;!r8](~[$([#1X1]~[#6X4])])(~[$([#1X1]~[#6X4])])(~[$([#1X1]~[#6X4])])(~[$([#8X2](~[#6X3])~[#6X4])])):2]: 6804
+2026-04-23 11:44:54.485 | INFO     | __main__:summarize_all_types:123 - [#1X1;!r3;!r4;!r5;!r6;!r7;!r8&$([#1X1;!r3;!r4;!r5;!r6;!r7;!r8](~[$([#6X3](~;@[#6X3])(~;@[#6X3])~[#1X1])])):1]-[#6X3;r6&$([#6X3;r6](~;@[$([#6X3](~;@[#6X3])(~;@[#6X3])~[#1X1])])(~;@[$([#6X3](~;@[#6X3])(~;@[#6X3])~[#7X3])])(~[$([#1X1]~[#6X3])])):2]: 5589
+2026-04-23 11:44:54.485 | INFO     | __main__:summarize_all_types:123 - [#1X1;!r3;!r4;!r5;!r6;!r7;!r8&$([#1X1;!r3;!r4;!r5;!r6;!r7;!r8](~[$([#6X4](~[#1X1])(~[#1X1])(~[#1X1])~[#6X4])])):1]-[#6X4;!r3;!r4;!r5;!r6;!r7;!r8&$([#6X4;!r3;!r4;!r5;!r6;!r7;!r8](~[$([#1X1]~[#6X4])])(~[$([#1X1]~[#6X4])])(~[$([#1X1]~[#6X4])])(~[$([#6X4](~[#1X1])(~[#1X1])(~[#6X4])~[#6X4])])):2]: 5271
+2026-04-23 11:44:54.485 | INFO     | __main__:summarize_all_types:123 - [#1X1;!r3;!r4;!r5;!r6;!r7;!r8&$([#1X1;!r3;!r4;!r5;!r6;!r7;!r8](~[$([#6X3](~;@[#6X3])(~;@[#6X3])~[#1X1])])):1]-[#6X3;r6&$([#6X3;r6](~;@[$([#6X3](~;@[#6X3])(~;@[#6X3])~;@[#6X3])])(~;@[$([#6X3](~;@[#6X3])(~;@[#6X3])~[#1X1])])(~[$([#1X1]~[#6X3])])):2]: 4485
+2026-04-23 11:44:54.485 | INFO     | __main__:summarize_all_types:123 - [#1X1;!r3;!r4;!r5;!r6;!r7;!r8&$([#1X1;!r3;!r4;!r5;!r6;!r7;!r8](~[$([#6X4](~[#1X1])(~[#1X1])(~[#1X1])~[#6X4])])):1]-[#6X4;!r3;!r4;!r5;!r6;!r7;!r8&$([#6X4;!r3;!r4;!r5;!r6;!r7;!r8](~[$([#1X1]~[#6X4])])(~[$([#1X1]~[#6X4])])(~[$([#1X1]~[#6X4])])(~[$([#6X4](~[#1X1])(~[#6X4])(~[#6X4])~[#6X4])])):2]: 4170
+2026-04-23 11:44:54.568 | INFO     | __main__:summarize_all_types:127 - % of component types with count < 5: 90.85%
+2026-04-23 11:44:54.579 | INFO     | __main__:summarize_all_types:130 - % of component types with count = 1: 67.71%
+2026-04-23 11:44:54.579 | INFO     | __main__:summarize_all_types:140 - 
 ==================================================
-Total unique component types, Bond, across all specificity levels: 180979
+Total unique component types, Bond, across all specificity levels: 206870
 ==================================================
-2026-04-06 10:17:42.922 | INFO     | __main__:get_components_by_type:203 - 
+2026-04-23 11:44:54.586 | INFO     | __main__:get_components_by_type:203 - 
 ====================
 Processing Angle
 ====================
-2026-04-06 10:17:42.922 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:274 - Unwanted SMIRKS to filter: None
-2026-04-06 10:17:42.922 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:275 - Using 16 workers for parallel processing
-2026-04-06 10:17:42.922 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:287 - Processing 23109 molecules from HuggingFace Dataset
-Warning: bond stereochemistry may be assigned incorrectly for molecule 
-2026-04-06 10:17:51.724 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 1156/23109 molecules (5.0%)
-2026-04-06 10:17:53.953 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 2311/23109 molecules (10.0%)
-Warning: bond stereochemistry may be assigned incorrectly for molecule 
-Warning: bond stereochemistry may be assigned incorrectly for molecule 
-2026-04-06 10:17:56.197 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 3467/23109 molecules (15.0%)
-Warning: bond stereochemistry may be assigned incorrectly for molecule 
-Warning: bond stereochemistry may be assigned incorrectly for molecule 
-Warning: bond stereochemistry may be assigned incorrectly for molecule 
-Warning: bond stereochemistry may be assigned incorrectly for molecule 
-Warning: bond stereochemistry may be assigned incorrectly for molecule 
-2026-04-06 10:17:58.267 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 4622/23109 molecules (20.0%)
-Warning: bond stereochemistry may be assigned incorrectly for molecule 
-Warning: bond stereochemistry may be assigned incorrectly for molecule 
-Warning: bond stereochemistry may be assigned incorrectly for molecule 
-Warning: bond stereochemistry may be assigned incorrectly for molecule 
-Warning: bond stereochemistry may be assigned incorrectly for molecule 
-Warning: bond stereochemistry may be assigned incorrectly for molecule 
-Warning: bond stereochemistry may be assigned incorrectly for molecule 
-2026-04-06 10:18:00.402 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 5778/23109 molecules (25.0%)
-Warning: bond stereochemistry may be assigned incorrectly for molecule 
-2026-04-06 10:18:02.273 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 6933/23109 molecules (30.0%)
-Warning: bond stereochemistry may be assigned incorrectly for molecule 
-Warning: bond stereochemistry may be assigned incorrectly for molecule 
-Warning: bond stereochemistry may be assigned incorrectly for molecule 
-Warning: bond stereochemistry may be assigned incorrectly for molecule 
-Warning: bond stereochemistry may be assigned incorrectly for molecule 
-2026-04-06 10:18:15.072 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 8089/23109 molecules (35.0%)
-Warning: bond stereochemistry may be assigned incorrectly for molecule 
-Warning: bond stereochemistry may be assigned incorrectly for molecule 
-Warning: bond stereochemistry may be assigned incorrectly for molecule 
-Warning: bond stereochemistry may be assigned incorrectly for molecule 
-Warning: bond stereochemistry may be assigned incorrectly for molecule 
-2026-04-06 10:18:17.107 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 9244/23109 molecules (40.0%)
-Warning: bond stereochemistry may be assigned incorrectly for molecule 
-Warning: bond stereochemistry may be assigned incorrectly for molecule 
-Warning: bond stereochemistry may be assigned incorrectly for molecule 
-2026-04-06 10:18:19.123 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 10400/23109 molecules (45.0%)
-Warning: bond stereochemistry may be assigned incorrectly for molecule 
-2026-04-06 10:18:21.384 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 11555/23109 molecules (50.0%)
-2026-04-06 10:18:23.731 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 12710/23109 molecules (55.0%)
-Warning: bond stereochemistry may be assigned incorrectly for molecule 
-2026-04-06 10:18:25.993 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 13866/23109 molecules (60.0%)
-Warning: bond stereochemistry may be assigned incorrectly for molecule 
-2026-04-06 10:18:28.176 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 15021/23109 molecules (65.0%)
-Warning: bond stereochemistry may be assigned incorrectly for molecule 
-Warning: bond stereochemistry may be assigned incorrectly for molecule 
-Warning: bond stereochemistry may be assigned incorrectly for molecule 
-2026-04-06 10:18:30.383 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 16177/23109 molecules (70.0%)
-Warning: bond stereochemistry may be assigned incorrectly for molecule 
-2026-04-06 10:18:45.111 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 17332/23109 molecules (75.0%)
-Warning: bond stereochemistry may be assigned incorrectly for molecule 
-2026-04-06 10:18:47.537 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 18488/23109 molecules (80.0%)
-2026-04-06 10:18:49.862 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 19643/23109 molecules (85.0%)
-Warning: bond stereochemistry may be assigned incorrectly for molecule 
-Warning: bond stereochemistry may be assigned incorrectly for molecule 
-2026-04-06 10:18:52.148 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 20799/23109 molecules (90.0%)
-2026-04-06 10:18:54.557 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 21954/23109 molecules (95.0%)
-2026-04-06 10:18:56.709 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:316 - Filtered out 0 unwanted components.
-2026-04-06 10:18:57.393 | INFO     | __main__:get_components_by_type:210 - Found 1587714 Angles.
-2026-04-06 10:18:57.467 | INFO     | from_finlay.process_mmcomponents:get_mm_components_by_specificity_by_type:552 - Getting Components by Type with Specificity 0: 0:AtomStandardRing-BondStandardRing
-2026-04-06 10:18:57.484 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:433 - Processing 1587714 components with 16 workers
-2026-04-06 10:19:12.671 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 79386/1587714 components (5.0%)
-2026-04-06 10:19:21.584 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 158772/1587714 components (10.0%)
-2026-04-06 10:19:48.008 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 238158/1587714 components (15.0%)
-2026-04-06 10:19:55.867 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 317543/1587714 components (20.0%)
-2026-04-06 10:20:02.658 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 396929/1587714 components (25.0%)
-2026-04-06 10:20:09.937 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 476315/1587714 components (30.0%)
-2026-04-06 10:20:17.568 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 555700/1587714 components (35.0%)
-2026-04-06 10:20:24.972 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 635086/1587714 components (40.0%)
-2026-04-06 10:20:32.632 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 714472/1587714 components (45.0%)
-2026-04-06 10:20:56.062 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 793857/1587714 components (50.0%)
-2026-04-06 10:21:05.024 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 873243/1587714 components (55.0%)
-2026-04-06 10:21:14.417 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 952629/1587714 components (60.0%)
-2026-04-06 10:21:22.889 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1032015/1587714 components (65.0%)
-2026-04-06 10:21:31.596 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1111400/1587714 components (70.0%)
-2026-04-06 10:21:40.878 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1190786/1587714 components (75.0%)
-2026-04-06 10:21:50.194 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1270172/1587714 components (80.0%)
-2026-04-06 10:22:16.941 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1349557/1587714 components (85.0%)
-2026-04-06 10:22:26.000 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1428943/1587714 components (90.0%)
-2026-04-06 10:22:35.399 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1508329/1587714 components (95.0%)
-2026-04-06 10:22:41.199 | INFO     | from_finlay.process_mmcomponents:get_mm_components_by_specificity_by_type:562 - Finding component types that are too specific...
-2026-04-06 10:22:41.758 | INFO     | __main__:summarize_all_types:116 - Total unique component types at specificity level 0: 491633
-2026-04-06 10:22:41.758 | INFO     | __main__:summarize_all_types:119 - Most common component types:
-2026-04-06 10:22:41.944 | INFO     | __main__:summarize_all_types:123 - [#1X1;!r3;!r4;!r5;!r6;!r7;!r8&$([#1X1;!r3;!r4;!r5;!r6;!r7;!r8](~[$([#6X3](~[#1X1])(~[#6X3])~[#6X3])])):1]-[#6X3;r6&$([#6X3;r6](~[$([#1X1]~[#6X3])])(~[$([#6X3](~[#1X1])(~[#6X3])~[#6X3])])(~[$([#6X3](~[#1X1])(~[#6X3])~[#6X3])])):2]:;@[#6X3;r6&$([#6X3;r6](~[$([#1X1]~[#6X3])])(~[$([#6X3](~[#1X1])(~[#6X3])~[#6X3])])(~[$([#6X3](~[#1X1])(~[#6X3])~[#6X3])])):3]: 23060
-2026-04-06 10:22:41.944 | INFO     | __main__:summarize_all_types:123 - [#1X1;!r3;!r4;!r5;!r6;!r7;!r8&$([#1X1;!r3;!r4;!r5;!r6;!r7;!r8](~[$([#6X4](~[#1X1])(~[#1X1])(~[#1X1])~[#6X3])])):1]-[#6X4;!r3;!r4;!r5;!r6;!r7;!r8&$([#6X4;!r3;!r4;!r5;!r6;!r7;!r8](~[$([#1X1]~[#6X4])])(~[$([#1X1]~[#6X4])])(~[$([#1X1]~[#6X4])])(~[$([#6X3](~[#6X3])(~[#6X3])~[#6X4])])):2]-[#1X1;!r3;!r4;!r5;!r6;!r7;!r8&$([#1X1;!r3;!r4;!r5;!r6;!r7;!r8](~[$([#6X4](~[#1X1])(~[#1X1])(~[#1X1])~[#6X3])])):3]: 7137
-2026-04-06 10:22:41.944 | INFO     | __main__:summarize_all_types:123 - [#1X1;!r3;!r4;!r5;!r6;!r7;!r8&$([#1X1;!r3;!r4;!r5;!r6;!r7;!r8](~[$([#6X4](~[#1X1])(~[#1X1])(~[#1X1])~[#8X2])])):1]-[#6X4;!r3;!r4;!r5;!r6;!r7;!r8&$([#6X4;!r3;!r4;!r5;!r6;!r7;!r8](~[$([#1X1]~[#6X4])])(~[$([#1X1]~[#6X4])])(~[$([#1X1]~[#6X4])])(~[$([#8X2](~[#6X3])~[#6X4])])):2]-[#1X1;!r3;!r4;!r5;!r6;!r7;!r8&$([#1X1;!r3;!r4;!r5;!r6;!r7;!r8](~[$([#6X4](~[#1X1])(~[#1X1])(~[#1X1])~[#8X2])])):3]: 6804
-2026-04-06 10:22:41.944 | INFO     | __main__:summarize_all_types:123 - [#1X1;!r3;!r4;!r5;!r6;!r7;!r8&$([#1X1;!r3;!r4;!r5;!r6;!r7;!r8](~[$([#6X3](~[#1X1])(~[#6X3])~[#6X3])])):1]-[#6X3;r6&$([#6X3;r6](~[$([#1X1]~[#6X3])])(~[$([#6X3](~[#1X1])(~[#6X3])~[#6X3])])(~[$([#6X3](~[#6X3])(~[#6X3])~[#6X3])])):2]:;@[#6X3;r6&$([#6X3;r6](~[$([#1X1]~[#6X3])])(~[$([#6X3](~[#1X1])(~[#6X3])~[#6X3])])(~[$([#6X3](~[#1X1])(~[#6X3])~[#6X3])])):3]: 6668
-2026-04-06 10:22:41.944 | INFO     | __main__:summarize_all_types:123 - [#1X1;!r3;!r4;!r5;!r6;!r7;!r8&$([#1X1;!r3;!r4;!r5;!r6;!r7;!r8](~[$([#6X3](~[#1X1])(~[#6X3])~[#6X3])])):1]-[#6X3;r6&$([#6X3;r6](~[$([#1X1]~[#6X3])])(~[$([#6X3](~[#1X1])(~[#6X3])~[#6X3])])(~[$([#6X3](~[#1X1])(~[#6X3])~[#6X3])])):2]:;@[#6X3;r6&$([#6X3;r6](~[$([#1X1]~[#6X3])])(~[$([#6X3](~[#1X1])(~[#6X3])~[#6X3])])(~[$([#6X3](~[#6X3])(~[#6X3])~[#6X3])])):3]: 6668
-2026-04-06 10:22:41.944 | INFO     | __main__:summarize_all_types:123 - [#6X3;r6&$([#6X3;r6](~[$([#1X1]~[#6X3])])(~[$([#6X3](~[#1X1])(~[#6X3])~[#6X3])])(~[$([#6X3](~[#1X1])(~[#6X3])~[#6X3])])):1]:;@[#6X3;r6&$([#6X3;r6](~[$([#1X1]~[#6X3])])(~[$([#6X3](~[#1X1])(~[#6X3])~[#6X3])])(~[$([#6X3](~[#1X1])(~[#6X3])~[#6X3])])):2]:;@[#6X3;r6&$([#6X3;r6](~[$([#1X1]~[#6X3])])(~[$([#6X3](~[#1X1])(~[#6X3])~[#6X3])])(~[$([#6X3](~[#6X3])(~[#6X3])~[#6X3])])):3]: 5458
-2026-04-06 10:22:41.944 | INFO     | __main__:summarize_all_types:123 - [#1X1;!r3;!r4;!r5;!r6;!r7;!r8&$([#1X1;!r3;!r4;!r5;!r6;!r7;!r8](~[$([#6X4](~[#1X1])(~[#1X1])(~[#1X1])~[#6X4])])):1]-[#6X4;!r3;!r4;!r5;!r6;!r7;!r8&$([#6X4;!r3;!r4;!r5;!r6;!r7;!r8](~[$([#1X1]~[#6X4])])(~[$([#1X1]~[#6X4])])(~[$([#1X1]~[#6X4])])(~[$([#6X4](~[#1X1])(~[#1X1])(~[#6X4])~[#6X4])])):2]-[#1X1;!r3;!r4;!r5;!r6;!r7;!r8&$([#1X1;!r3;!r4;!r5;!r6;!r7;!r8](~[$([#6X4](~[#1X1])(~[#1X1])(~[#1X1])~[#6X4])])):3]: 5271
-2026-04-06 10:22:41.944 | INFO     | __main__:summarize_all_types:123 - [#1X1;!r3;!r4;!r5;!r6;!r7;!r8&$([#1X1;!r3;!r4;!r5;!r6;!r7;!r8](~[$([#6X4](~[#1X1])(~[#1X1])(~[#1X1])~[#6X4])])):1]-[#6X4;!r3;!r4;!r5;!r6;!r7;!r8&$([#6X4;!r3;!r4;!r5;!r6;!r7;!r8](~[$([#1X1]~[#6X4])])(~[$([#1X1]~[#6X4])])(~[$([#1X1]~[#6X4])])(~[$([#6X4](~[#1X1])(~[#6X4])(~[#6X4])~[#6X4])])):2]-[#1X1;!r3;!r4;!r5;!r6;!r7;!r8&$([#1X1;!r3;!r4;!r5;!r6;!r7;!r8](~[$([#6X4](~[#1X1])(~[#1X1])(~[#1X1])~[#6X4])])):3]: 4992
-2026-04-06 10:22:41.944 | INFO     | __main__:summarize_all_types:123 - [#1X1;!r3;!r4;!r5;!r6;!r7;!r8&$([#1X1;!r3;!r4;!r5;!r6;!r7;!r8](~[$([#6X3](~[#1X1])(~[#6X3])~[#6X3])])):1]-[#6X3;r6&$([#6X3;r6](~[$([#1X1]~[#6X3])])(~[$([#6X3](~[#1X1])(~[#6X3])~[#6X3])])(~[$([#6X3](~[#1X1])(~[#6X3])~[#6X3])])):2]:;@[#6X3;r6&$([#6X3;r6](~[$([#1X1]~[#6X3])])(~[$([#6X3](~[#1X1])(~[#6X3])~[#6X3])])(~[$([#6X3](~[#6X3])(~[#6X3])~[#6X4])])):3]: 4832
-2026-04-06 10:22:41.944 | INFO     | __main__:summarize_all_types:123 - [#1X1;!r3;!r4;!r5;!r6;!r7;!r8&$([#1X1;!r3;!r4;!r5;!r6;!r7;!r8](~[$([#6X3](~[#1X1])(~[#6X3])~[#6X3])])):1]-[#6X3;r6&$([#6X3;r6](~[$([#1X1]~[#6X3])])(~[$([#6X3](~[#1X1])(~[#6X3])~[#6X3])])(~[$([#6X3](~[#6X3])(~[#6X3])~[#6X4])])):2]:;@[#6X3;r6&$([#6X3;r6](~[$([#1X1]~[#6X3])])(~[$([#6X3](~[#1X1])(~[#6X3])~[#6X3])])(~[$([#6X3](~[#1X1])(~[#6X3])~[#6X3])])):3]: 4832
-2026-04-06 10:22:42.165 | INFO     | __main__:summarize_all_types:127 - % of component types with count < 5: 92.86%
-2026-04-06 10:22:42.184 | INFO     | __main__:summarize_all_types:130 - % of component types with count = 1: 68.65%
-2026-04-06 10:22:42.184 | INFO     | __main__:summarize_all_types:140 - 
+2026-04-23 11:44:54.586 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:274 - Unwanted SMIRKS to filter: None
+2026-04-23 11:44:54.586 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:275 - Using 16 workers for parallel processing
+2026-04-23 11:44:54.586 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:287 - Processing 23109 molecules from HuggingFace Dataset
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+2026-04-23 11:45:04.454 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 1156/23109 molecules (5.0%)
+2026-04-23 11:45:06.667 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 2311/23109 molecules (10.0%)
+2026-04-23 11:45:08.867 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 3467/23109 molecules (15.0%)
+2026-04-23 11:45:10.860 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 4622/23109 molecules (20.0%)
+2026-04-23 11:45:12.966 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 5778/23109 molecules (25.0%)
+2026-04-23 11:45:25.258 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 6933/23109 molecules (30.0%)
+2026-04-23 11:45:27.256 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 8089/23109 molecules (35.0%)
+2026-04-23 11:45:29.256 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 9244/23109 molecules (40.0%)
+2026-04-23 11:45:31.248 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 10400/23109 molecules (45.0%)
+2026-04-23 11:45:33.496 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 11555/23109 molecules (50.0%)
+2026-04-23 11:45:35.826 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 12710/23109 molecules (55.0%)
+2026-04-23 11:45:38.063 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 13866/23109 molecules (60.0%)
+2026-04-23 11:45:40.233 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 15021/23109 molecules (65.0%)
+2026-04-23 11:45:54.346 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 16177/23109 molecules (70.0%)
+2026-04-23 11:45:56.737 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 17332/23109 molecules (75.0%)
+2026-04-23 11:45:58.948 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 18488/23109 molecules (80.0%)
+2026-04-23 11:46:01.248 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 19643/23109 molecules (85.0%)
+2026-04-23 11:46:03.513 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 20799/23109 molecules (90.0%)
+2026-04-23 11:46:05.960 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:311 - Progress: 21954/23109 molecules (95.0%)
+2026-04-23 11:46:07.958 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components:316 - Filtered out 0 unwanted components.
+2026-04-23 11:46:08.495 | INFO     | __main__:get_components_by_type:210 - Found 1587714 Angles.
+2026-04-23 11:46:08.568 | INFO     | from_finlay.process_mmcomponents:get_mm_components_by_specificity_by_type:552 - Getting Components by Type with Specificity 0: 0:AtomStandardRing-BondStandardRing
+2026-04-23 11:46:08.584 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:433 - Processing 1587714 components with 16 workers
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+2026-04-23 11:46:30.074 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 79386/1587714 components (5.0%)
+2026-04-23 11:47:02.035 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 158772/1587714 components (10.0%)
+2026-04-23 11:47:17.273 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 238158/1587714 components (15.0%)
+2026-04-23 11:47:30.599 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 317543/1587714 components (20.0%)
+2026-04-23 11:47:42.055 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 396929/1587714 components (25.0%)
+2026-04-23 11:47:54.526 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 476315/1587714 components (30.0%)
+2026-04-23 11:48:07.610 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 555700/1587714 components (35.0%)
+2026-04-23 11:48:20.196 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 635086/1587714 components (40.0%)
+2026-04-23 11:48:47.679 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 714472/1587714 components (45.0%)
+2026-04-23 11:49:03.152 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 793857/1587714 components (50.0%)
+2026-04-23 11:49:18.640 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 873243/1587714 components (55.0%)
+2026-04-23 11:49:34.717 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 952629/1587714 components (60.0%)
+2026-04-23 11:49:49.068 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1032015/1587714 components (65.0%)
+2026-04-23 11:50:04.223 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1111400/1587714 components (70.0%)
+2026-04-23 11:50:20.631 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1190786/1587714 components (75.0%)
+2026-04-23 11:50:54.243 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1270172/1587714 components (80.0%)
+2026-04-23 11:51:10.818 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1349557/1587714 components (85.0%)
+2026-04-23 11:51:26.666 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1428943/1587714 components (90.0%)
+2026-04-23 11:51:43.084 | INFO     | from_finlay.process_mmcomponents:get_all_mm_components_by_type_parallel:456 - Progress: 1508329/1587714 components (95.0%)
+2026-04-23 11:51:52.218 | INFO     | from_finlay.process_mmcomponents:get_mm_components_by_specificity_by_type:562 - Finding component types that are too specific...
+2026-04-23 11:51:52.842 | INFO     | __main__:summarize_all_types:116 - Total unique component types at specificity level 0: 530745
+2026-04-23 11:51:52.842 | INFO     | __main__:summarize_all_types:119 - Most common component types:
+2026-04-23 11:51:53.058 | INFO     | __main__:summarize_all_types:123 - [#1X1;!r3;!r4;!r5;!r6;!r7;!r8&$([#1X1;!r3;!r4;!r5;!r6;!r7;!r8](~[$([#6X3](~;@[#6X3])(~;@[#6X3])~[#1X1])])):1]-[#6X3;r6&$([#6X3;r6](~;@[$([#6X3](~;@[#6X3])(~;@[#6X3])~[#1X1])])(~;@[$([#6X3](~;@[#6X3])(~;@[#6X3])~[#1X1])])(~[$([#1X1]~[#6X3])])):2]:;@[#6X3;r6&$([#6X3;r6](~;@[$([#6X3](~;@[#6X3])(~;@[#6X3])~[#1X1])])(~;@[$([#6X3](~;@[#6X3])(~;@[#6X3])~[#1X1])])(~[$([#1X1]~[#6X3])])):3]: 23060
+2026-04-23 11:51:53.058 | INFO     | __main__:summarize_all_types:123 - [#1X1;!r3;!r4;!r5;!r6;!r7;!r8&$([#1X1;!r3;!r4;!r5;!r6;!r7;!r8](~[$([#6X4](~[#1X1])(~[#1X1])(~[#1X1])~[#6X3])])):1]-[#6X4;!r3;!r4;!r5;!r6;!r7;!r8&$([#6X4;!r3;!r4;!r5;!r6;!r7;!r8](~[$([#1X1]~[#6X4])])(~[$([#1X1]~[#6X4])])(~[$([#1X1]~[#6X4])])(~[$([#6X3](~;@[#6X3])(~;@[#6X3])~[#6X4])])):2]-[#1X1;!r3;!r4;!r5;!r6;!r7;!r8&$([#1X1;!r3;!r4;!r5;!r6;!r7;!r8](~[$([#6X4](~[#1X1])(~[#1X1])(~[#1X1])~[#6X3])])):3]: 6834
+2026-04-23 11:51:53.059 | INFO     | __main__:summarize_all_types:123 - [#1X1;!r3;!r4;!r5;!r6;!r7;!r8&$([#1X1;!r3;!r4;!r5;!r6;!r7;!r8](~[$([#6X4](~[#1X1])(~[#1X1])(~[#1X1])~[#8X2])])):1]-[#6X4;!r3;!r4;!r5;!r6;!r7;!r8&$([#6X4;!r3;!r4;!r5;!r6;!r7;!r8](~[$([#1X1]~[#6X4])])(~[$([#1X1]~[#6X4])])(~[$([#1X1]~[#6X4])])(~[$([#8X2](~[#6X3])~[#6X4])])):2]-[#1X1;!r3;!r4;!r5;!r6;!r7;!r8&$([#1X1;!r3;!r4;!r5;!r6;!r7;!r8](~[$([#6X4](~[#1X1])(~[#1X1])(~[#1X1])~[#8X2])])):3]: 6804
+2026-04-23 11:51:53.059 | INFO     | __main__:summarize_all_types:123 - [#1X1;!r3;!r4;!r5;!r6;!r7;!r8&$([#1X1;!r3;!r4;!r5;!r6;!r7;!r8](~[$([#6X4](~[#1X1])(~[#1X1])(~[#1X1])~[#6X4])])):1]-[#6X4;!r3;!r4;!r5;!r6;!r7;!r8&$([#6X4;!r3;!r4;!r5;!r6;!r7;!r8](~[$([#1X1]~[#6X4])])(~[$([#1X1]~[#6X4])])(~[$([#1X1]~[#6X4])])(~[$([#6X4](~[#1X1])(~[#1X1])(~[#6X4])~[#6X4])])):2]-[#1X1;!r3;!r4;!r5;!r6;!r7;!r8&$([#1X1;!r3;!r4;!r5;!r6;!r7;!r8](~[$([#6X4](~[#1X1])(~[#1X1])(~[#1X1])~[#6X4])])):3]: 5271
+2026-04-23 11:51:53.059 | INFO     | __main__:summarize_all_types:123 - [#1X1;!r3;!r4;!r5;!r6;!r7;!r8&$([#1X1;!r3;!r4;!r5;!r6;!r7;!r8](~[$([#6X4](~[#1X1])(~[#1X1])(~[#1X1])~[#8X2])])):1]-[#6X4;!r3;!r4;!r5;!r6;!r7;!r8&$([#6X4;!r3;!r4;!r5;!r6;!r7;!r8](~[$([#1X1]~[#6X4])])(~[$([#1X1]~[#6X4])])(~[$([#1X1]~[#6X4])])(~[$([#8X2](~[#6X3])~[#6X4])])):2]-[#8X2;!r3;!r4;!r5;!r6;!r7;!r8&$([#8X2;!r3;!r4;!r5;!r6;!r7;!r8](~[$([#6X3](~;@[#6X3])(~;@[#6X3])~[#8X2])])(~[$([#6X4](~[#1X1])(~[#1X1])(~[#1X1])~[#8X2])])):3]: 4227
+2026-04-23 11:51:53.059 | INFO     | __main__:summarize_all_types:123 - [#1X1;!r3;!r4;!r5;!r6;!r7;!r8&$([#1X1;!r3;!r4;!r5;!r6;!r7;!r8](~[$([#6X4](~;@[#6X4])(~;@[#6X4])(~[#1X1])~[#1X1])])):1]-[#6X4;r6&$([#6X4;r6](~;@[$([#6X4](~;@[#6X4])(~;@[#6X4])(~[#1X1])~[#1X1])])(~;@[$([#6X4](~;@[#6X4])(~;@[#6X4])(~[#1X1])~[#1X1])])(~[$([#1X1]~[#6X4])])(~[$([#1X1]~[#6X4])])):2]-;@[#6X4;r6&$([#6X4;r6](~;@[$([#6X4](~;@[#6X4])(~;@[#6X4])(~[#1X1])~[#1X1])])(~;@[$([#6X4](~;@[#6X4])(~;@[#6X4])(~[#1X1])~[#1X1])])(~[$([#1X1]~[#6X4])])(~[$([#1X1]~[#6X4])])):3]: 4216
+2026-04-23 11:51:53.059 | INFO     | __main__:summarize_all_types:123 - [#1X1;!r3;!r4;!r5;!r6;!r7;!r8&$([#1X1;!r3;!r4;!r5;!r6;!r7;!r8](~[$([#6X4](~[#1X1])(~[#1X1])(~[#1X1])~[#6X4])])):1]-[#6X4;!r3;!r4;!r5;!r6;!r7;!r8&$([#6X4;!r3;!r4;!r5;!r6;!r7;!r8](~[$([#1X1]~[#6X4])])(~[$([#1X1]~[#6X4])])(~[$([#1X1]~[#6X4])])(~[$([#6X4](~[#1X1])(~[#6X4])(~[#6X4])~[#6X4])])):2]-[#1X1;!r3;!r4;!r5;!r6;!r7;!r8&$([#1X1;!r3;!r4;!r5;!r6;!r7;!r8](~[$([#6X4](~[#1X1])(~[#1X1])(~[#1X1])~[#6X4])])):3]: 4170
+2026-04-23 11:51:53.059 | INFO     | __main__:summarize_all_types:123 - [#1X1;!r3;!r4;!r5;!r6;!r7;!r8&$([#1X1;!r3;!r4;!r5;!r6;!r7;!r8](~[$([#6X3](~;@[#6X3])(~;@[#6X3])~[#1X1])])):1]-[#6X3;r6&$([#6X3;r6](~;@[$([#6X3](~;@[#6X3])(~;@[#6X3])~[#1X1])])(~;@[$([#6X3](~;@[#6X3])(~;@[#6X3])~[#1X1])])(~[$([#1X1]~[#6X3])])):2]:;@[#6X3;r6&$([#6X3;r6](~;@[$([#6X3](~;@[#6X3])(~;@[#6X3])~[#1X1])])(~;@[$([#6X3](~;@[#6X3])(~;@[#6X3])~[#6X4])])(~[$([#1X1]~[#6X3])])):3]: 3808
+2026-04-23 11:51:53.059 | INFO     | __main__:summarize_all_types:123 - [#1X1;!r3;!r4;!r5;!r6;!r7;!r8&$([#1X1;!r3;!r4;!r5;!r6;!r7;!r8](~[$([#6X3](~;@[#6X3])(~;@[#6X3])~[#1X1])])):1]-[#6X3;r6&$([#6X3;r6](~;@[$([#6X3](~;@[#6X3])(~;@[#6X3])~[#1X1])])(~;@[$([#6X3](~;@[#6X3])(~;@[#6X3])~[#6X4])])(~[$([#1X1]~[#6X3])])):2]:;@[#6X3;r6&$([#6X3;r6](~;@[$([#6X3](~;@[#6X3])(~;@[#6X3])~[#1X1])])(~;@[$([#6X3](~;@[#6X3])(~;@[#6X3])~[#1X1])])(~[$([#1X1]~[#6X3])])):3]: 3808
+2026-04-23 11:51:53.059 | INFO     | __main__:summarize_all_types:123 - [#6X3;r6&$([#6X3;r6](~;@[$([#6X3](~;@[#6X3])(~;@[#6X3])~[#1X1])])(~;@[$([#6X3](~;@[#6X3])(~;@[#6X3])~[#1X1])])(~[$([#1X1]~[#6X3])])):1]:;@[#6X3;r6&$([#6X3;r6](~;@[$([#6X3](~;@[#6X3])(~;@[#6X3])~[#1X1])])(~;@[$([#6X3](~;@[#6X3])(~;@[#6X3])~[#1X1])])(~[$([#1X1]~[#6X3])])):2]:;@[#6X3;r6&$([#6X3;r6](~;@[$([#6X3](~;@[#6X3])(~;@[#6X3])~[#1X1])])(~;@[$([#6X3](~;@[#6X3])(~;@[#6X3])~[#1X1])])(~[$([#1X1]~[#6X3])])):3]: 3754
+2026-04-23 11:51:53.360 | INFO     | __main__:summarize_all_types:127 - % of component types with count < 5: 93.49%
+2026-04-23 11:51:53.381 | INFO     | __main__:summarize_all_types:130 - % of component types with count = 1: 69.70%
+2026-04-23 11:51:53.381 | INFO     | __main__:summarize_all_types:140 - 
 ==================================================
-Total unique component types, Angle, across all specificity levels: 491633
+Total unique component types, Angle, across all specificity levels: 530745
 ==================================================
-2026-04-06 10:22:43.388 | INFO     | __main__:write_forcefield_file:266 - Reading template force field: /dfs9/dmobley-lab/jclark9/descent/back-to-school-jen/forcefields/openff_unconstrained-2.3.0-rc2.offxml
-2026-04-06 10:22:43.791 | INFO     | __main__:write_forcefield_file:275 - 
+2026-04-23 11:51:54.356 | INFO     | __main__:write_forcefield_file:266 - Reading template force field: /dfs9/dmobley-lab/jclark9/descent/back-to-school-jen/forcefields/openff_unconstrained-2.3.0-rc2.offxml
+2026-04-23 11:51:54.976 | INFO     | __main__:write_forcefield_file:280 - 
 Adding Bond parameters to force field...
-2026-04-06 10:22:43.847 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:675 - Using 16 workers to assemble the force field.
-2026-04-06 10:22:44.487 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:714 - Adding parameters for specificity 0...
-2026-04-06 10:29:25.093 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:721 - Progress: 9049/180979 parameters (5.0%)
-2026-04-06 10:31:30.465 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:721 - Progress: 18098/180979 parameters (10.0%)
-2026-04-06 10:32:39.351 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:721 - Progress: 27147/180979 parameters (15.0%)
-2026-04-06 10:33:55.733 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:721 - Progress: 36196/180979 parameters (20.0%)
-2026-04-06 10:34:33.841 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:721 - Progress: 45245/180979 parameters (25.0%)
-2026-04-06 10:35:10.173 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:721 - Progress: 54294/180979 parameters (30.0%)
-2026-04-06 10:35:48.687 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:721 - Progress: 63343/180979 parameters (35.0%)
-2026-04-06 10:36:46.431 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:721 - Progress: 72392/180979 parameters (40.0%)
-2026-04-06 10:37:27.721 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:721 - Progress: 81441/180979 parameters (45.0%)
-2026-04-06 10:42:39.824 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:721 - Progress: 90490/180979 parameters (50.0%)
-2026-04-06 10:44:38.873 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:721 - Progress: 99539/180979 parameters (55.0%)
-2026-04-06 10:46:11.707 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:721 - Progress: 108588/180979 parameters (60.0%)
-2026-04-06 10:47:09.162 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:721 - Progress: 117637/180979 parameters (65.0%)
-2026-04-06 10:47:49.460 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:721 - Progress: 126686/180979 parameters (70.0%)
-2026-04-06 10:48:28.941 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:721 - Progress: 135735/180979 parameters (75.0%)
-2026-04-06 10:49:08.259 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:721 - Progress: 144784/180979 parameters (80.0%)
-2026-04-06 10:50:09.201 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:721 - Progress: 153833/180979 parameters (85.0%)
-2026-04-06 10:50:50.057 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:721 - Progress: 162882/180979 parameters (90.0%)
-2026-04-06 10:51:32.782 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:721 - Progress: 171931/180979 parameters (95.0%)
-2026-04-06 10:52:15.649 | INFO     | __main__:write_forcefield_file:275 - 
+2026-04-23 11:51:55.315 | INFO     | from_finlay.molecular_classes:precompute_ff_parameter_cache:1177 - Pre-computing base FF parameter cache for 22,561 unique molecules (Bond)...
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+2026-04-23 11:54:17.808 | INFO     | from_finlay.molecular_classes:precompute_ff_parameter_cache:1247 - Parameter cache built: 893,971 entries.
+2026-04-23 11:54:18.398 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:775 - Finished pre-sort of <class 'from_finlay.molecular_classes.Bond'>.
+2026-04-23 11:54:18.398 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:781 - Adding parameters for specificity 0 (206870 items)...
+/data/homezvol2/jclark9/miniforge3/envs/bts/lib/python3.12/site-packages/numpy/core/fromnumeric.py:3504: RuntimeWarning: Mean of empty slice.
+  return _methods._mean(a, axis=axis, dtype=dtype,
+/data/homezvol2/jclark9/miniforge3/envs/bts/lib/python3.12/site-packages/numpy/core/_methods.py:129: RuntimeWarning: invalid value encountered in scalar divide
+  ret = ret.dtype.type(ret / rcount)
+2026-04-23 11:54:24.206 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:804 - Progress: 10344/206870 parameters (5.0%)
+2026-04-23 11:54:28.983 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:804 - Progress: 20687/206870 parameters (10.0%)
+2026-04-23 11:54:34.428 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:804 - Progress: 31031/206870 parameters (15.0%)
+2026-04-23 11:54:40.132 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:804 - Progress: 41374/206870 parameters (20.0%)
+2026-04-23 11:54:45.026 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:804 - Progress: 51718/206870 parameters (25.0%)
+2026-04-23 11:54:49.781 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:804 - Progress: 62061/206870 parameters (30.0%)
+2026-04-23 11:54:54.867 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:804 - Progress: 72405/206870 parameters (35.0%)
+2026-04-23 11:54:59.772 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:804 - Progress: 82748/206870 parameters (40.0%)
+2026-04-23 11:55:05.400 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:804 - Progress: 93092/206870 parameters (45.0%)
+2026-04-23 11:55:10.181 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:804 - Progress: 103435/206870 parameters (50.0%)
+2026-04-23 11:55:14.901 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:804 - Progress: 113779/206870 parameters (55.0%)
+2026-04-23 11:55:19.910 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:804 - Progress: 124122/206870 parameters (60.0%)
+2026-04-23 11:55:24.642 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:804 - Progress: 134466/206870 parameters (65.0%)
+2026-04-23 11:55:29.602 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:804 - Progress: 144810/206870 parameters (70.0%)
+2026-04-23 11:55:34.435 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:804 - Progress: 155153/206870 parameters (75.0%)
+2026-04-23 11:55:39.404 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:804 - Progress: 165497/206870 parameters (80.0%)
+2026-04-23 11:55:44.083 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:804 - Progress: 175840/206870 parameters (85.0%)
+2026-04-23 11:55:48.824 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:804 - Progress: 186184/206870 parameters (90.0%)
+2026-04-23 11:55:53.591 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:804 - Progress: 196527/206870 parameters (95.0%)
+2026-04-23 11:55:58.773 | INFO     | __main__:write_forcefield_file:280 - 
 Adding Angle parameters to force field...
-2026-04-06 10:52:45.432 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:675 - Using 16 workers to assemble the force field.
-2026-04-06 10:52:47.477 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:714 - Adding parameters for specificity 0...
+2026-04-23 11:56:37.032 | INFO     | from_finlay.molecular_classes:precompute_ff_parameter_cache:1177 - Pre-computing base FF parameter cache for 22,722 unique molecules (Angle)...
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+2026-04-23 11:59:01.357 | INFO     | from_finlay.molecular_classes:precompute_ff_parameter_cache:1247 - Parameter cache built: 1,557,396 entries.
+2026-04-23 11:59:02.484 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:775 - Finished pre-sort of <class 'from_finlay.molecular_classes.Angle'>.
+2026-04-23 11:59:02.484 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:781 - Adding parameters for specificity 0 (530745 items)...
+2026-04-23 11:59:15.547 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:804 - Progress: 26538/530745 parameters (5.0%)
+2026-04-23 11:59:27.884 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:804 - Progress: 53075/530745 parameters (10.0%)
+2026-04-23 11:59:40.073 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:804 - Progress: 79612/530745 parameters (15.0%)
+2026-04-23 11:59:51.791 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:804 - Progress: 106149/530745 parameters (20.0%)
+2026-04-23 12:00:04.362 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:804 - Progress: 132687/530745 parameters (25.0%)
+2026-04-23 12:00:16.942 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:804 - Progress: 159224/530745 parameters (30.0%)
+2026-04-23 12:00:28.381 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:804 - Progress: 185761/530745 parameters (35.0%)
+2026-04-23 12:00:40.357 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:804 - Progress: 212298/530745 parameters (40.0%)
+2026-04-23 12:00:52.261 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:804 - Progress: 238836/530745 parameters (45.0%)
+2026-04-23 12:01:04.289 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:804 - Progress: 265373/530745 parameters (50.0%)
+2026-04-23 12:01:35.823 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:804 - Progress: 291910/530745 parameters (55.0%)
+2026-04-23 12:01:47.365 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:804 - Progress: 318447/530745 parameters (60.0%)
+2026-04-23 12:01:59.265 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:804 - Progress: 344985/530745 parameters (65.0%)
+2026-04-23 12:02:11.287 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:804 - Progress: 371522/530745 parameters (70.0%)
+2026-04-23 12:02:23.142 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:804 - Progress: 398059/530745 parameters (75.0%)
+2026-04-23 12:02:34.902 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:804 - Progress: 424597/530745 parameters (80.0%)
+2026-04-23 12:02:46.492 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:804 - Progress: 451134/530745 parameters (85.0%)
+2026-04-23 12:02:58.242 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:804 - Progress: 477671/530745 parameters (90.0%)
+2026-04-23 12:03:09.736 | INFO     | from_finlay.process_SMIRKS:add_types_to_ff:804 - Progress: 504208/530745 parameters (95.0%)
+2026-04-23 12:03:22.145 | INFO     | __main__:write_forcefield_file:292 - Writing new force field: /dfs9/dmobley-lab/jclark9/descent/back-to-school-jen/4_make_offxmls/f_broad_spec_recursion2/openff-2.3.0-bondangletypes-recursion2.offxml
+2026-04-23 12:07:45.680 | INFO     | __main__:test_coverage:404 - 
+Checking coverage for train dataset with 23109 SMILES strings...
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
+The OpenEye Toolkits are found to be installed but not licensed and therefore will not be used.
+The OpenEye Toolkits require a (free for academics) license, see https://docs.eyesopen.com/toolkits/python/quickstart-python/license.html
